@@ -10,8 +10,10 @@
 $splunkdir = "/logs/splunk";
 
 $file = "$splunkdir/etc/apps/hpc/lookups/jobs.csv";
+open OUTFILE, ">>$file" or die "can't open $file: !$\n";
 if (! -s $file) {
 	$when = "earliest=-10d@d";
+	print OUTFILE "start,host,user,job,jobt\n";
 }
 else {
 	$lastline = `tail -1 $file`;
@@ -42,6 +44,5 @@ while(<INEVENTS>) {
 }
 close INEVENTS;
 
-open OUTFILE, ">>$file" or die "can't open $file: !$\n";
 print OUTFILE $newjobs;
 close OUTFILE;
