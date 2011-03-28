@@ -7,26 +7,20 @@
 # update with a cron job like:
 # 3,8,13,18,23,28,33,38,43,48,53,58 * * * * cd /admin/splunk/current/etc/system/lookups; nice ./moab2csv
 
-$file = "jobs.csv";
+$splunkdir = "/logs/splunk";
 
-if ($ARGV[0] eq '-new') {
-	open OUTFILE, ">$file" or die "can't open $file: !$\n";
-	print OUTFILE "start,node,user,job,jobt\n";
-	close OUTFILE;
-	open INEVENTS, "new" or die "can't read new\n";
-}
-elsif (-s $file) {
-	$lastline = `tail -1 $file`;
-	($time) = split /,/, $lastline;
-
-	$cmd = "/admin/splunk/current/bin/splunk search 'sourcetype=moab etype=jobstart _time>$time' -maxout 9999999999 -auth admin:redsky101 | sort -k2 | uniq";
-	open INEVENTS, "$cmd |" or die "can't run splunk\n";
+$file = "$splunkdir/etc/apps/hpc/lookups/jobs.csv";
+if (! -s $file) {
+	$when = "earliest=-10d@d";
 }
 else {
-	die "$file not nonzero\n";
+	$lastline = `tail -1 $file`;
+	($lasttime) = split /,/, $lastline;
+	$when = "_time>$lasttime";
 }
 
-
+$cmd = "$splunkdir/bin/splunk search 'sourcetype=moabs etype=jobstart $when' -maxout 9999999999 -auth admin:glory101";
+open INEVENTS, "$cmd |" or die "can't run splunk\n";
 
 while(<INEVENTS>) {
 	reset 'h';
@@ -46,6 +40,7 @@ while(<INEVENTS>) {
 		$newjobs .= "$start,$host,$user,$job,$job.$start\n"
 	}
 }
+close INEVENTS;
 
 open OUTFILE, ">>$file" or die "can't open $file: !$\n";
 print OUTFILE $newjobs;
