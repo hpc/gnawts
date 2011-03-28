@@ -1,0 +1,15 @@
+TO SETUP:
+1. seed jobs.csv lookup via:
+ splunk search 'sourcetype="moabstats" etype=jobend | dedup job start | fields + job start user nodes | eval jobt=job.".".start | makemv delim="," nodes | mvexpand nodes | outputlookup jobs'
+2. setup genders lookup via `./bin/genders2csv > lookups/genders.csv`
+
+TO USE:
+1. make a .bash_setup that adds PATH, and aliases for stuff like `splunk search '|savedsearch LoudHosts' | head`
+2. convert grep lines from scripts like
+  echo 'ccache|Lustr|ECC|ticks|publickey|CSG|csg|INFO:|Non-Fatal|default|ibtrackerror|without|correct|ERROR_ADDRESS|Normal|mce_handler|mcelog.cron|edac-util|edac_core|handle_mm_fault|do_page_fault|error_exit|overflow|anyway|fs/inotify|Sis|sshd:session|mailgate|kuserok|CHANNEL|overflow|Transaction|ACPI|rupt|DIMM|channel|/etc/modprobe.d|banks|mptbase|redsky-tools' |  perl -ne 'print join " OR ", split /\|/, $_'
+
+ISSUES:
+0. syslog-ng/groups/* just adds complexity; would rather just tail syslog-ng/messages.
+1. would like hpc/lookups/jobs.csv instead of search/lookups/jobs.csv
+2. saved searches are per-user (outside of hpc app)?  eg updatejoblookup and {hourly,daily}countbyhost
+3. how to control column orderings of `splunk search '|savedsearch "Chatty host (by day)"'` etc

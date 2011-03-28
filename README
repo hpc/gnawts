@@ -1,0 +1,9 @@
+Copy this whole directory structure to splunk/etc/apps/hpc/, eg
+  cd splunk/etc/apps/hpc
+  svn checkout svn+ssh://software.sandia.gov/svn/private/splunk-hpc/trunk/hpc hpc
+
+Then tailor via a local symlink to a system directory, eg
+  ln -s systems/redsky local
+
+The system directories contain both local conf and lookup files, so lookups is
+a symlink to local (splunk expects both local and lookups dirs).

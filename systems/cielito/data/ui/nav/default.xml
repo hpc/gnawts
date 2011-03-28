@@ -1,0 +1,23 @@
+<nav>
+    <view name="Volume" default='true' />
+    <view name="dashboard" />
+    <view name="flashtimeline" />
+
+    <collection label="Dashboards">
+        <view source="unclassified" match="dashboard" />
+    </collection>
+    <collection label="Views">
+        <view source="unclassified" />
+        <divider />
+        <a href="/manager/search/data/ui/views">Manage Views</a>  
+        <divider />
+        <a href="javascript:Splunk.Globals.Viewmaster.openDashCreateForm();">Create dashboard...</a>
+    </collection>
+    <collection label="Searches &amp; Reports">
+        <collection label="Reports">
+            <saved source="unclassified" match="report" />
+        </collection>
+        <divider />
+        <saved source="unclassified" />
+    </collection>
+</nav>

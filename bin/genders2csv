@@ -1,0 +1,31 @@
+#!/usr/bin/perl
+#
+# run on redsky to generate genders.csv, eg:
+# get a list of hosts
+# splunk search "earliest=-10d | stats count by host| sort count" -maxout 500000 > /tmp/loghosts
+# and grab their genders values
+# ./rackshelf /tmp/loghosts > genders.csv
+
+use Genders;
+$genders = Genders->new("/etc/genders");
+@attrs = qw/row col rack shelf slot x y z section ibport partner bootnode/;
+
+open HOSTS, "/etc/hosts" or die "can't open /etc/hosts: $!\n";
+while (<HOSTS>) {
+	next unless /^\d/;
+	($ip, $host, @foo) = split;
+	next unless $genders->isnode($host);
+	next if (exists $hosts{$host}); # already done it
+	$name = $host=~/(\w+)-sp$/ ? $1 : $host; # -sp's not in genders
+	foreach $attr (@attrs) {
+		$hosts{$host} .= $genders->getattrval($attr, $name) . ",";
+	}
+	chop $hosts{$host}; # omit that last comma
+}
+
+# print it out
+print "host,", join ",", @attrs; print "\n";
+foreach $host (sort keys %hosts) {
+	print "$host,$hosts{$host}\n";
+}
+

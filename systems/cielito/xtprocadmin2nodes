@@ -1,0 +1,19 @@
+#!/usr/bin/perl
+
+# this script makes the nodes.csv lookup file on a Cray XT/XE system via:
+#  xtprocadmin -A | ./xtprocadmin2nodes > nodes.csv
+
+while (<>) {
+	tr/\(\)//d; # delete parens
+	$_ = lc $_; # lower case
+	@F = split; # split on whitespace
+	if (/nid/) { # first line is header
+		$F[2] = "node";
+		delete @F[10,11,12,13]; # unwanted
+		print join ",", @F;
+	}
+	else {
+		print join ",", @F;
+	}
+	print "\n";
+}

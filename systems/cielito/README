@@ -1,0 +1,5 @@
+1. `systemStateTransitions` | collect index=summary
+2. python bin/backfill_systemUptimeHoursToday.py
+3. see cieloRASmetrics view
+4. ./xtprocadmin2nodes data/xtprocadmin.out > splunk/etc/apps/hpc/lookups/nodes.csv
+5. to see a lookup: sourcetype=cray NOT ec_smw_resi* | lookup nodes node AS host OUTPUT nid
