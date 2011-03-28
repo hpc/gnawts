@@ -1,0 +1,52 @@
+#!/usr/bin/perl
+
+# seed like this
+#  nice grep -h JOBSTART /admin/splunk/moab/stats/events.* | grep rs | sort -n -k 2 >new &
+#  ./moab2csv -new
+#
+# update with a cron job like:
+# 3,8,13,18,23,28,33,38,43,48,53,58 * * * * cd /admin/splunk/current/etc/system/lookups; nice ./moab2csv
+
+$file = "jobs.csv";
+
+if ($ARGV[0] eq '-new') {
+	open OUTFILE, ">$file" or die "can't open $file: !$\n";
+	print OUTFILE "start,node,user,job,jobt\n";
+	close OUTFILE;
+	open INEVENTS, "new" or die "can't read new\n";
+}
+elsif (-s $file) {
+	$lastline = `tail -1 $file`;
+	($time) = split /,/, $lastline;
+
+	$cmd = "/admin/splunk/current/bin/splunk search 'sourcetype=moab etype=jobstart _time>$time' -maxout 9999999999 -auth admin:redsky101 | sort -k2 | uniq";
+	open INEVENTS, "$cmd |" or die "can't run splunk\n";
+}
+else {
+	die "$file not nonzero\n";
+}
+
+
+
+while(<INEVENTS>) {
+	reset 'h';
+	@F = split;
+	$job = $F[3];
+	$user = $F[7];
+	$start = $F[14];
+	next if ($start == $time);  # i think this is needed to avoid duplicates, prior to splunk 4.1.4
+	$hosts = $F[41];
+	@hosts = split /,/, $hosts;
+
+	# remove dupes
+	map {$hosts{$_}++} @hosts;
+	@hosts = sort keys %hosts;
+
+	foreach $host (@hosts) {
+		$newjobs .= "$start,$host,$user,$job,$job.$start\n"
+	}
+}
+
+open OUTFILE, ">>$file" or die "can't open $file: !$\n";
+print OUTFILE $newjobs;
+close OUTFILE;
