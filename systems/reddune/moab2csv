@@ -27,12 +27,12 @@ open INEVENTS, "$cmd |" or die "can't run splunk\n";
 while(<INEVENTS>) {
 	reset 'h';
 	@F = split;
-	$job = $F[3];
-	$nnodes = $F[5];
-	$user = $F[7];
-	$start = $F[14];
+	$job = $F[4];
+	$nnodes = $F[6];
+	$user = $F[8];
+	$start = $F[15];
 	next if ($start == $time);  # i think this is needed to avoid duplicates, prior to splunk 4.1.4
-	$hosts = $F[41];
+	$hosts = $F[42];
 	@hosts = split /,/, $hosts;
 
 	# remove dupes
