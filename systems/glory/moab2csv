@@ -12,8 +12,8 @@ $splunkdir = "/logs/splunk";
 $file = "$splunkdir/etc/apps/hpc/lookups/jobs.csv";
 open OUTFILE, ">>$file" or die "can't open $file: !$\n";
 if (! -s $file) {
-	$when = "earliest=-10d@d";
-	print OUTFILE "start,host,user,job,jobt\n";
+	$when = "earliest=-60d@d";
+	print OUTFILE "start,host,user,job,jobt,nnodes\n";
 }
 else {
 	$lastline = `tail -1 $file`;
@@ -21,13 +21,14 @@ else {
 	$when = "_time>$lasttime";
 }
 
-$cmd = "$splunkdir/bin/splunk search 'sourcetype=moabs etype=jobstart $when' -maxout 9999999999 -auth admin:glory101";
+$cmd = "$splunkdir/bin/splunk search \'sourcetype=moabs etype=jobstart $when\ | dedup job start | sort 0 start' -maxout 9999999999 -auth admin:splunk-hpc";
 open INEVENTS, "$cmd |" or die "can't run splunk\n";
 
 while(<INEVENTS>) {
 	reset 'h';
 	@F = split;
 	$job = $F[3];
+	$nnodes = $F[5];
 	$user = $F[7];
 	$start = $F[14];
 	next if ($start == $time);  # i think this is needed to avoid duplicates, prior to splunk 4.1.4
@@ -39,7 +40,7 @@ while(<INEVENTS>) {
 	@hosts = sort keys %hosts;
 
 	foreach $host (@hosts) {
-		$newjobs .= "$start,$host,$user,$job,$job.$start\n"
+		$newjobs .= "$start,$host,$user,$job,$job.$start,$nnodes\n"
 	}
 }
 close INEVENTS;

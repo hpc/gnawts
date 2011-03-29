@@ -21,7 +21,7 @@ else {
 	$when = "_time>$lasttime";
 }
 
-$cmd = "$splunkdir/bin/splunk search \'sourcetype=moabs etype=jobstart $when\ | dedup job start | sort start' -maxout 9999999999 -auth admin:splunk-hpc";
+$cmd = "$splunkdir/bin/splunk search \'sourcetype=moabs etype=jobstart $when\ | dedup job start | sort 0 start' -maxout 9999999999 -auth admin:splunk-hpc";
 open INEVENTS, "$cmd |" or die "can't run splunk\n";
 
 while(<INEVENTS>) {
