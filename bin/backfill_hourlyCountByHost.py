@@ -7,15 +7,14 @@ import os,datetime
 
 #---------- change these variables ----------
 
-splunkSearch = "index=summary search_name=hourlycountbyhost | stats sum(count) as count by orig_host | addinfo | collect index=summary marker=\"search_name=dailycountbyhost\""
-
+splunkSearch = "sourcetype=syslog | stats count by host | addinfo | collect index=summary marker=\"search_name=hourlyCountByHost\""
 
 startDate = "03/01/2011"
 startTime = "00:00:00"
-endDate = "03/09/2011"
-endTime = "00:00:00"
+endDate = "03/29/2011"
+endTime = "16:00:00"
 
-intervalInMins = 1440
+intervalInMins = 60
 
 # default maxresults for CLI searches is 100
 maxResults = 50000
