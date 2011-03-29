@@ -5,6 +5,9 @@ import sys,splunk.Intersplunk,hostlist,logging
 #LOG_FILENAME = '/tmp/output_from_splunk_2.txt'
 #logging.basicConfig(filename=LOG_FILENAME,level=logging.DEBUG)
 
+# TODO's
+# TODO: return results in compact list but without the nodes that did not change state
+
 results = []
 output_results = []
 node_states = {}
