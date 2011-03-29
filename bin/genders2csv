@@ -1,10 +1,7 @@
 #!/usr/bin/perl
 #
-# run on redsky to generate genders.csv, eg:
-# get a list of hosts
-# splunk search "earliest=-10d | stats count by host| sort count" -maxout 500000 > /tmp/loghosts
-# and grab their genders values
-# ./rackshelf /tmp/loghosts > genders.csv
+# run as
+#   ./genders2csv > ../local/genders.csv
 
 use Genders;
 $genders = Genders->new("/etc/genders");

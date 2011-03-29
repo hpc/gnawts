@@ -1,6 +1,7 @@
 genders2csv can be used to create a genders.csv lookup.
 
-these can be used to backfill the summary index:
-backfill_daily.py
-backfill_hourly.py
-backfill_systemUptimeHoursToday.py
+use the below to backfill for the Volume view:
+  edit bin/backfill_{hourly,daily}CountByHost Date and Time ranges, then run
+
+and this is for the RAS Metrics view (edit, run):
+  backfill_systemUptimeHoursToday.py
