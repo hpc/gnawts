@@ -1,0 +1,70 @@
+<nav>
+    <view name="flashtimeline" default='true' />
+    <collection label="Views">
+        <view name="Volume" />
+        <view name="jobmonitor" />
+        <view source="unclassified" />
+        <divider />
+	    <a href="javascript:Splunk.Globals.Viewmaster.openDashCreateForm();">Create dashboard...</a>
+    </collection>
+    <collection label="Searches &amp; Reports">
+        <collection label="Reports">
+            <saved source="unclassified" match="report" />
+        </collection>
+        <collection label="Job-Centric">
+            <saved name="Alerts by host/type/user piechart" />
+            <saved name="Alerts: by type,user,job" />
+            <saved name="Alerts: by type/user: piechart" />
+            <saved name="Alerts: type/user: jobcount piechart" />
+            <saved name="Alerts: type/user: nodecount piechart" />
+            <saved name="alerts: host vs user" />
+            <saved name="alerts: host vs type" />
+            <saved name="alerts: host/type/user" />
+            <saved name="alerts: node/type" />
+            <saved name="alerts: user vs type" />
+            <saved name="joblog: name vs JobState" />
+            <saved name="joblog: name vs user" />
+            <saved name="joblog: user vs JobState" />
+        </collection>
+        <collection label="Network">
+            <saved name="badroute" />
+            <saved name="IB: SymbolErrors (Active, Host, 24hr)" />
+            <saved name="Infiniband: Route changes per minute" />
+            <saved name="Infiniband: SymbolErrors hostport vs state ctable" />
+            <saved name="Infiniband: SymbolErrors on all ports (24hr sum per state)" />
+            <saved name="Infiniband: route changes plot" />
+        </collection>
+        <collection label="Physical">
+            <saved name="Fans:Inlet:SlowTen" />
+            <saved name="Fans:Inlet:Summary" />
+            <saved name="Temperature:Inlet:Summary" />
+            <saved name="Temperature:Inlet:TopTen" />
+            <saved name="Temperature:Inlet:TopTen:wOther" />
+            <saved name="Temperature:Rack:TopTen:wOther" />
+            <saved name="Temperature:Shelf:TopTen:wOther" />
+            <saved name="Temperature:Summary" />
+            <saved name="Temperature:TopTen" />
+            <saved name="Temperature:TopTen:wOther" />
+            <saved name="CMM power faults during last 24 hours" />
+            <saved name="NEM faults during last 24 hours" />
+        </collection>
+        <collection label="RAS Metrics">
+            <saved name="JMTTI" />
+            <saved name="SMTTI" />
+            <saved name="EL" />
+        </collection>
+        <collection label="Other">
+            <saved name="Reservations:Names" />
+            <saved name="node up/down" />
+            <saved name="read-only file system" />
+            <saved name="Disk failures during last 24 hours" />
+            <saved name="Chatty host (by day)" />
+            <saved name="Chatty host (by hour)" />
+            <saved name="SilentHosts" />
+            <saved name="LoudHosts" />
+            <saved name="QuietHosts" />
+        </collection>
+        <divider />
+        <saved source="unclassified" />
+    </collection>
+</nav>

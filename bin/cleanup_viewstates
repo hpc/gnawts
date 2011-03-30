@@ -1,0 +1,54 @@
+#!/usr/bin/perl
+# lame perl script to help cleanup viewstates.
+# ended up doing it manually but wanted to capture this in the repo.
+$sys = "reddune";
+
+open DEFAULT, "default/savedsearches.conf" or die "cant open default";
+while (<DEFAULT>) {
+	next unless /^vsid/;
+	@F=split;
+	$def{$F[2]}++;
+}
+close DEFAULT;
+
+open SYS,     "systems/$sys/savedsearches.conf" or die "cant open sys";
+while (<SYS>) {
+	next unless /^vsid/;
+	@F=split;
+	$sys{$F[2]}++;
+}
+close SYS;
+
+
+open VIEWST, "default/viewstates.conf" or die "cant open viewstates";
+open NEWDEF, ">newdef" or die "cant open newdef";
+open NEWSYS, ">newsys" or die "cant open newsys";
+while (<VIEWST>) {
+	if (/^\[(\S+:\w+)/) {
+		$id = $1;
+		if (exists $def{$id}) {
+			print "newdef: $id\n";
+			print NEWDEF;
+			while (<VIEWST>) { 
+				/^\S/ ? print NEWDEF : break;
+			}
+		}
+		elsif (exists $sys{$id}) {
+			print "newsys: $id\n";
+			print NEWSYS;
+			while (<VIEWST>) { 
+				/^\S/ ? print NEWSYS : break;
+			}
+		}
+		else {
+			warn "ORPHAN: $id\n";
+			print "\n$_";
+			while (<VIEWST>) { 
+				/^\S/ ? print : break;
+			}
+		}
+	}
+}
+close VIEWST;
+close NEWDEF;
+close NEWSYS;
