@@ -1,23 +1,23 @@
 <?xml version='1.0' encoding='utf-8'?>
 <dashboard>
-  <label>cieloRASmetrics</label>
+  <label>RAS metrics</label>
   <row>
     <chart>
-      <searchName>jmtti</searchName>
+      <searchName>JMTTI</searchName>
       <title>Job Mean Time To Interrupt (9.12.1)</title>
       <option name="drilldown">all</option>
     </chart>
   </row>
   <row>
     <chart>
-      <searchName>smtti</searchName>
+      <searchName>SMTTI</searchName>
       <title>System Mean Time to Interrupt (9.12.2)</title>
       <option name="drilldown">all</option>
     </chart>
   </row>
   <row>
     <chart>
-      <searchName>el</searchName>
+      <searchName>EL</searchName>
       <title>System Effectiveness Level (9.12.3)</title>
       <option name="drilldown">all</option>
     </chart>
