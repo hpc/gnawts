@@ -18,6 +18,7 @@
             <saved name="Alerts: type/user: jobcount piechart" />
             <saved name="Alerts: type/user: nodecount piechart" />
             <saved name="alerts: host vs user" />
+            <saved name="alerts: host vs type" />
             <saved name="alerts: host/type/user" />
             <saved name="alerts: node/type" />
             <saved name="alerts: user vs type" />
@@ -31,7 +32,17 @@
             <saved name="EL" />
         </collection>
         <collection label="Other">
-            <saved source="unclassified" />
+            <saved name="Reservations:Names" />
+            <saved name="node up/down" />
+            <saved name="read-only file system" />
+            <saved name="Disk failures during last 24 hours" />
+            <saved name="Chatty host (by day)" />
+            <saved name="Chatty host (by hour)" />
+            <saved name="SilentHosts" />
+            <saved name="LoudHosts" />
+            <saved name="QuietHosts" />
         </collection>
+        <divider />
+        <saved source="unclassified" />
     </collection>
 </nav>

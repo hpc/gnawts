@@ -1,21 +1,47 @@
 <nav>
-    <view name="Volume" default='true' />
-    <view name="dashboard" />
-    <view name="flashtimeline" />
-
-    <collection label="Dashboards">
-        <view source="unclassified" match="dashboard" />
-    </collection>
+    <view name="flashtimeline" default='true' />
     <collection label="Views">
+        <view name="Volume" />
+        <view name="jobmonitor" />
+        <view name="RASmetrics" />
+        <divider />
         <view source="unclassified" />
-        <divider />
-        <a href="/manager/search/data/ui/views">Manage Views</a>  
-        <divider />
-        <a href="javascript:Splunk.Globals.Viewmaster.openDashCreateForm();">Create dashboard...</a>
+	    <a href="javascript:Splunk.Globals.Viewmaster.openDashCreateForm();">Create dashboard...</a>
     </collection>
     <collection label="Searches &amp; Reports">
         <collection label="Reports">
             <saved source="unclassified" match="report" />
+        </collection>
+        <collection label="Job-Centric">
+            <saved name="Alerts by host/type/user piechart" />
+            <saved name="Alerts: by type,user,job" />
+            <saved name="Alerts: by type/user: piechart" />
+            <saved name="Alerts: type/user: jobcount piechart" />
+            <saved name="Alerts: type/user: nodecount piechart" />
+            <saved name="alerts: host vs user" />
+            <saved name="alerts: host vs type" />
+            <saved name="alerts: host/type/user" />
+            <saved name="alerts: node/type" />
+            <saved name="alerts: user vs type" />
+            <saved name="joblog: name vs JobState" />
+            <saved name="joblog: name vs user" />
+            <saved name="joblog: user vs JobState" />
+        </collection>
+        <collection label="RAS Metrics">
+            <saved name="JMTTI" />
+            <saved name="SMTTI" />
+            <saved name="EL" />
+        </collection>
+        <collection label="Other">
+            <saved name="Reservations:Names" />
+            <saved name="node up/down" />
+            <saved name="read-only file system" />
+            <saved name="Disk failures during last 24 hours" />
+            <saved name="Chatty host (by day)" />
+            <saved name="Chatty host (by hour)" />
+            <saved name="SilentHosts" />
+            <saved name="LoudHosts" />
+            <saved name="QuietHosts" />
         </collection>
         <divider />
         <saved source="unclassified" />
