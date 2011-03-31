@@ -134,3 +134,53 @@ def main():
 debug("Starting")
 main()
 debug("Finished")
+
+# Here is how this stateChange script fits into the RAS Metrics implementation:
+# 1. Node state logic is encoded as eventtypes, formatted as FROM-TO where
+#    FROM and TO are arbitrary state names.  For example, events matching
+#    etype=nodedown could have eventtype=USR-ERR.  All such eventtypes must
+#    have priority=1 (appear first in the eventtype field), and be grouped via
+#    tag=state.
+# 3. this script processes such events which include a node field (events without
+#    a node field are ignored), and outputs:
+#   a. one event per actual node state change, including:
+#        _time node=NODE nodeStateChange=FROM-TO 
+#   b. one event per system state change, including:
+#        _time systemStateChange=FROM-TO 
+#      this should only occur if an argument FROM-TO_Threshold is given,
+#      for example USR-ERR_Threshold=10 would result in an event like
+#        _time systemStateChange=USR-ERR
+#      when the total number of nodes in an ERR state become >= 10, and 
+#        _time systemStateChange=USR-ERR
+#      when the running count of nodes in ERR becomes <10.  "Becomes" means
+#      that events should only be output when the threshold is crossed
+#      (eg, not all nodeStateChange events cause a threshold crossing).
+#   c. just before exiting, an event including:
+#        _time eventtype=nodeStateList XXX=hostlist YYY=hostlist ZZZ=hostlist
+#      where _time is the time of the last seen event (regardless of whether it
+#      resulting in a nodeStateChange), XXX, YYY, and ZZZ are state names and
+#      hostlist is a compressed list of the nodes in each state.  For example:
+#        _time eventtype=nodeStateList USR=[1-50,71-90] ERR=[51-60,91-92] SYS=[61-70,93-100]
+#      indicates 70 nodes in USR, 12 nodes in ERR, and 17 in SYS.
+#   NOTE - output events should be a copy of the triggering event, with the
+#      above fields added in as appropriate.
+# 4. the output events of this script are saved to a summary index, for example:
+#        tag=state | stateChange | collect index=summary
+#     would store state changes into the summary index, using no initial
+#     state information, such that the earliest event for each node results in a
+#     nodeStateChange.  In contrast, tracking of state across invocations of
+#     this script is accomplished by using the latest nodeStateList in the
+#     summary index, for example:
+#        [search index=summary eventtype=nodeStateList | head 1 | eval query="(index=summary eventtype=nodeStateList) OR (tag=state earliest="._time.")" | fields + query] | stateChange | collect index=summary
+#     will result in this script setting the initial state of nodes via the
+#     nodeStateList event it receives as input (eg, the one from the last time
+#     this script ran), and then it will process in the normal way the other
+#     input events (eg, all the tag=state events events since the last time
+#     this script ran).  This latter example will be periodically run as a
+#     scheduled saved search.
+#
+# At this point, various per-node and system metrics are possible, for example:
+# MTTI is the mean time a node (or system) stays in a  USR state, and 
+# MTTR is the mean time a node (or system) stays in an ERR state.
+# These will be accomplished via saved searches and macros which process
+# nodeStateChange and systemStateChange events from the summary index.
