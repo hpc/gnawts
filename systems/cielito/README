@@ -3,3 +3,7 @@
 3. see cieloRASmetrics view
 4. ./xtprocadmin2nodes data/xtprocadmin.out > splunk/etc/apps/hpc/lookups/nodes.csv
 5. to see a lookup: sourcetype=cray NOT ec_smw_resi* | lookup nodes node AS host OUTPUT nid
+
+--------- jobs:
+1. run the resetJobsLookup saved search as admin
+2. search for Exception, note the job field is present now, try the pull-down macro
