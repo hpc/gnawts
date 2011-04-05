@@ -1,4 +1,4 @@
-import sys,os,splunk.Intersplunk,hostlist,logging,ast,pickle
+import sys,os,splunk.Intersplunk,hostlist,logging,ast
 
 # Example: tag=statechange NOT jobstart | search node="c0-0c1s6n1" | head 24 | getstate
 # to return ALL resuls even those not changing state use filter option of False
@@ -15,9 +15,7 @@ import sys,os,splunk.Intersplunk,hostlist,logging,ast,pickle
 LOG_FILENAME = '/tmp/output_from_splunk_2.txt'
 logging.basicConfig(filename=LOG_FILENAME,level=logging.DEBUG)
 
-PICKLE_FILENAME = 'data.pkl'
-
-options = {'filter': True, 'nodeField':'node', 'useNodeStatesFile': True}
+options = {'filter': True, 'nodeField':'node'}
 results = []
 output_results = []
 node_states = {}
@@ -58,6 +56,7 @@ def update_states(record): #, last_eventtype):
   debug("Getting state node and event type ##########################")
   debug("Node: " + node)
   debug("Eventtype: " + eventtype)
+
   # eventtypes can come in as many eventtypes, i.e., "USR-ERR donna-ignore"
   # in all cases, we want the FIRST eventtype which is the statechange
   eventtypes = eventtype.split(" ")
@@ -69,22 +68,28 @@ def update_states(record): #, last_eventtype):
     return
   debug("Start state from eventtype: " + start_state)
   debug("End state from eventtype: " + end_state)
+  
+  update_output_results_for_node(record, node, current_state, start_state, end_state)
+
+def update_output_results_for_node(record, node, current_state, start_state, end_state):
+  global output_results
   node_list = hostlist.expand_hostlist(node)
-  new_node_list = []
+
   for single_node in node_list:
     current_state = get_current_state(single_node)
     debug("Current state from lookup: " + str(current_state))
     new_record = record
     new_record[options.get('nodeField')] = single_node
-    if current_state == start_state:
+    if current_state == start_state or not current_state:
       new_record['state'] = end_state
     if new_record.get('state') or not options.get('filter'):
       output_results.append(new_record)
     store_current_state(single_node, end_state)
 
-def setup_node_states(pkl_file):
+def setup_node_states():
   try: 
-    return pickle.load(pkl_file)
+    #TODO return something
+    return {}
   except EOFError:
     return {}
 
@@ -103,26 +108,18 @@ def main():
 
     debug("OPTIONS: " + str(options))
 
-    if options.get('useNodeStatesFile'):
-      # this is our pickle file ... used for serializing our state data
-      # so we have previous states for nodes
-      pkl_file = open(PICKLE_FILENAME, 'ab+')
-      node_states = setup_node_states(pkl_file)
-      pkl_file.close()
+    # TODO get from passed in data
+    node_states = setup_node_states
 
     # our node states
     debug("Node States: ")
     debug(node_states)
 
     # sort the results by time
-    for r in sorted(results, key=lambda k: k['_time']):
-      update_states(r)
+    if len(results) and results[0].has_key('_time'):
+      for r in sorted(results, key=lambda k: k['_time']):
+        update_states(r)
 
-    if options.get('useNodeStatesFile'):
-      # dump the pickle data (our previous node states)
-      pkl_file = open(PICKLE_FILENAME, 'wb')
-      pickle.dump(node_states, pkl_file)
-      pkl_file.close()
   except:
     import traceback
     stack =  traceback.format_exc()
@@ -184,3 +181,4 @@ debug("Finished")
 # MTTR is the mean time a node (or system) stays in an ERR state.
 # These will be accomplished via saved searches and macros which process
 # nodeStateChange and systemStateChange events from the summary index.
+
