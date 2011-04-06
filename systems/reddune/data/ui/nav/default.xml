@@ -63,6 +63,10 @@
             <saved name="SilentHosts" />
             <saved name="LoudHosts" />
             <saved name="QuietHosts" />
+            <saved name="resetJobsLookup" />
+            <saved name="updateJobsLookup" />
+            <saved name="hourlyCountByHost" />
+            <saved name="dailyCountByHost" />
         </collection>
         <divider />
         <saved source="unclassified" />

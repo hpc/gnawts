@@ -81,8 +81,8 @@ def update_output_results_for_node(record, node, current_state, start_state, end
     new_record = record
     new_record[options.get('nodeField')] = single_node
     if current_state == start_state or not current_state:
-      new_record['state'] = end_state
-    if new_record.get('state') or not options.get('filter'):
+      new_record['nodeStateTransition'] = end_state
+    if new_record.get('nodeStateTransition') or not options.get('filter'):
       output_results.append(new_record)
     store_current_state(single_node, end_state)
 
@@ -138,7 +138,7 @@ debug("Finished")
 #    etype=nodedown could have eventtype=USR-ERR.  All such eventtypes must
 #    have priority=1 (appear first in the eventtype field), and be grouped via
 #    tag=state.
-# 3. this script processes such events which include a node field (events without
+# 2. this script processes such events which include a node field (events without
 #    a node field are ignored), and outputs:
 #   a. one event per actual node state change, including:
 #        _time node=NODE nodeStateChange=FROM-TO 
@@ -155,13 +155,13 @@ debug("Finished")
 #   c. just before exiting, an event including:
 #        _time eventtype=nodeStateList XXX=hostlist YYY=hostlist ZZZ=hostlist
 #      where _time is the time of the last seen event (regardless of whether it
-#      resulting in a nodeStateChange), XXX, YYY, and ZZZ are state names and
+#      resulted in a nodeStateChange), XXX, YYY, and ZZZ are state names and
 #      hostlist is a compressed list of the nodes in each state.  For example:
 #        _time eventtype=nodeStateList USR=[1-50,71-90] ERR=[51-60,91-92] SYS=[61-70,93-100]
-#      indicates 70 nodes in USR, 12 nodes in ERR, and 17 in SYS.
+#      indicates 71 nodes in USR, 12 nodes in ERR, and 18 in SYS.
 #   NOTE - output events should be a copy of the triggering event, with the
 #      above fields added in as appropriate.
-# 4. the output events of this script are saved to a summary index, for example:
+# 3. the output events of this script are saved to a summary index, for example:
 #        tag=state | stateChange | collect index=summary
 #     would store state changes into the summary index, using no initial
 #     state information, such that the earliest event for each node results in a
