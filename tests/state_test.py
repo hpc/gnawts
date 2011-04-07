@@ -112,7 +112,7 @@ class DefaultStateTestCase(unittest.TestCase):
 suite1 = unittest.TestLoader().loadTestsFromTestCase(DefaultStateTestCase)
 suite2 = unittest.TestLoader().loadTestsFromTestCase(AggregateEventsTestCase)
 suite3 = unittest.TestLoader().loadTestsFromTestCase(TriggerEventsTestCase)
-#unittest.TextTestRunner(verbosity=2).run(suite1)
-#unittest.TextTestRunner(verbosity=2).run(suite2)
+unittest.TextTestRunner(verbosity=2).run(suite1)
+unittest.TextTestRunner(verbosity=2).run(suite2)
 unittest.TextTestRunner(verbosity=2).run(suite3)
 
