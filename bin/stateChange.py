@@ -1,16 +1,18 @@
-import sys,os,splunk.Intersplunk,hostlist,logging,ast
+import sys,os,splunk.Intersplunk,hostlist,logging,ast,re
 
-# Example: tag=state NOT jobstart | search node="c0-0c1s6n1" | head 24 | getstate
+# Example: tag=state NOT jobstart | search node="c0-0c1s6n1" | head 24 | statechange
 # to return ALL resuls even those not changing state use filter option of False
-# Example: tag=state | getstate {'filter':False} 
+# Example: tag=state | statechange {'filter':False} 
 # this will return only those records with state change
-# Example: tag=state | getstate
+# Example: tag=state | statechange
 # if your node field is other than "node", i.e., "nodes" set the nodeField option (defaults to 'node')
-# Example: tag=state | getstate {'nodeField':'nodes'}
+# Example: tag=state | statechange {'nodeField':'nodes'}
 # if you don't want to preload node states or write out node states then set useNodeStatesFile to false
-# Example: tag=state | getstate {'useNodeStatesFile':False}
+# Example: tag=state | statechange {'useNodeStatesFile':False}
 # if you need to use more than one option then put them in quotes
-# tag=state | getstate "{'filter':False, 'useNodeStatesFile':False}" | table _time node eventtype state
+# tag=state | statechange "{'filter':False, 'useNodeStatesFile':False}" | table _time node eventtype state
+
+# tag=state NOT jobstart | statechange "{'ERR-USR_Threshold' : 5}" | table _time eventtype node nodeStateTransition systemStateChange crossing
 
 LOG_FILENAME = '/tmp/output_from_splunk_2.txt'
 logging.basicConfig(filename=LOG_FILENAME,level=logging.DEBUG)
@@ -173,7 +175,7 @@ def main():
     debug("OPTIONS: " + str(options))
 
     # TODO get from passed in data
-    node_states = setup_node_states
+    node_states = setup_node_states()
 
     # our node states
     debug("Node States: ")
