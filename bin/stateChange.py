@@ -98,10 +98,10 @@ def update_output_results_for_node(record, node, start_state, end_state):
     reverse_transition = end_state + "-" + start_state
     if current_state == start_state or not current_state:
       new_record['nodeStateChange'] = new_transition
-      new_record['TO'] = len(all_nodes_in_state(end_state)) + 1
-      new_record['FROM'] = len(all_nodes_in_state(start_state)) - 1
-      if new_record.get('FROM',0) < 0:
-        new_record['FROM'] = 0
+      new_record[end_state] = len(all_nodes_in_state(end_state)) + 1
+      new_record[start_state] = len(all_nodes_in_state(start_state)) - 1
+      if new_record.get(start_state,0) < 0:
+        new_record[start_state] = 0
     if new_record.get('nodeStateChange') or not options.get('filter'):
       store_state_transition(node, new_record.get('nodeStateChange'))
       new_record = add_trigger_transition(new_record, previous_transition, new_transition, reverse_transition)
