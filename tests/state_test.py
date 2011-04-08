@@ -21,7 +21,7 @@ class TriggerEventsTestCase(unittest.TestCase):
     stateChange.update_output_results_for_node({'_time':'1', 'node':'n1'}, 'n1', 'USR', 'SYS')
     stateChange.update_output_results_for_node({'_time':'2', 'node':'n2'}, 'n5', 'SYS', 'ERR')
     stateChange.update_output_results_for_node({'_time':'3', 'node':'n6'}, 'n6', 'SYS', 'ERR')
-    self.assertEqual(stateChange.output_results[-1], {'_time':'3', 'node':'n6','systemStateChange':'SYS-ERR', 'crossing': 'upward', 'nodeStateChange':'SYS-ERR', 'TO':2, 'FROM':0 })
+    self.assertEqual(stateChange.output_results[-1], {'_time':'3', 'node':'n6','systemStateChange':'SYS-ERR', 'crossing': 'upward', 'nodeStateChange':'SYS-ERR', 'ERR':2, 'SYS':0 })
   
   def test_state_change_for_more_complex_set(self):
     stateChange.trigger_options['SYS-ERR_Threshold'] = 2
@@ -33,9 +33,9 @@ class TriggerEventsTestCase(unittest.TestCase):
     stateChange.update_output_results_for_node({'_time':'5', 'node':'n6'}, 'n6', 'ERR', 'USR') # + 1 for err-usr
     stateChange.update_output_results_for_node({'_time':'6', 'node':'n7'}, 'n7', 'ERR', 'USR') # + 1 for err-usr, trigger up for err-usr
     stateChange.update_output_results_for_node({'_time':'7', 'node':'n8'}, 'n8', 'ERR', 'USR') # + 1 for err-usr
-    self.assertTrue({'_time':'3', 'node':'n6','systemStateChange':'SYS-ERR', 'crossing': 'upward', 'nodeStateChange': 'SYS-ERR', 'TO':2, 'FROM':0} in stateChange.output_results)
-    self.assertTrue({'_time':'4', 'node':'n5','systemStateChange':'SYS-ERR', 'crossing': 'downward', 'nodeStateChange': 'ERR-USR', 'TO':1, 'FROM':1} in stateChange.output_results)
-    self.assertTrue({'_time':'6', 'node':'n7','systemStateChange':'ERR-USR', 'crossing': 'upward', 'nodeStateChange': 'ERR-USR', 'TO':3, 'FROM':0} in stateChange.output_results)
+    self.assertTrue({'_time':'3', 'node':'n6','systemStateChange':'SYS-ERR', 'crossing': 'upward', 'nodeStateChange': 'SYS-ERR', 'ERR':2, 'SYS':0} in stateChange.output_results)
+    self.assertTrue({'_time':'4', 'node':'n5','systemStateChange':'SYS-ERR', 'crossing': 'downward', 'nodeStateChange': 'ERR-USR', 'USR':1, 'ERR':1} in stateChange.output_results)
+    self.assertTrue({'_time':'6', 'node':'n7','systemStateChange':'ERR-USR', 'crossing': 'upward', 'nodeStateChange': 'ERR-USR', 'USR':3, 'ERR':0} in stateChange.output_results)
 
 class AggregateEventsTestCase(unittest.TestCase):
   def setUp(self):
@@ -90,13 +90,13 @@ class DefaultStateTestCase(unittest.TestCase):
     self.assertEqual(stateChange.output_results, [])
     # record, node, start_state, end_state
     stateChange.update_output_results_for_node({'node':'n1'}, 'n1', 'USR', 'SYS')
-    self.assertEqual(stateChange.output_results, [{'node':'n1', 'nodeStateChange':'USR-SYS', 'TO':1, 'FROM':0}])
+    self.assertEqual(stateChange.output_results, [{'node':'n1', 'nodeStateChange':'USR-SYS', 'SYS':1, 'USR':0}])
   
   def test_update_output_results_should_produce_output_since_state_is_assumed_2(self):
     self.assertEqual(stateChange.output_results, [])
     # record, node, start_state, end_state
     stateChange.update_output_results_for_node({'node':'n1'}, 'n1', 'USR', 'SYS')
-    self.assertEqual(stateChange.output_results, [{'node':'n1', 'nodeStateChange':'USR-SYS', 'TO':1, 'FROM':0}])
+    self.assertEqual(stateChange.output_results, [{'node':'n1', 'nodeStateChange':'USR-SYS', 'SYS':1, 'USR':0}])
   
   def test_update_output_results_should_produce_output_only_if_state_changed_or_has_to_be_assumed(self):
     self.assertEqual(stateChange.output_results, [])
@@ -105,7 +105,7 @@ class DefaultStateTestCase(unittest.TestCase):
     stateChange.update_output_results_for_node({'node':'n2'}, 'n2', 'USR', 'SYS')
     stateChange.update_output_results_for_node({'node':'n1'}, 'n1', 'USR', 'SYS')
     stateChange.update_output_results_for_node({'node':'n2'}, 'n2', 'SYS', 'ERR')
-    self.assertEqual(stateChange.output_results, [{'node':'n1', 'nodeStateChange':'USR-SYS', 'TO':1, 'FROM':0}, {'node':'n2', 'nodeStateChange':'USR-SYS', 'TO':2, 'FROM':0}, {'node':'n2', 'nodeStateChange':'SYS-ERR', 'TO':1, 'FROM':1}])
+    self.assertEqual(stateChange.output_results, [{'node':'n1', 'nodeStateChange':'USR-SYS', 'SYS':1, 'USR':0}, {'node':'n2', 'nodeStateChange':'USR-SYS', 'SYS':2, 'USR':0}, {'node':'n2', 'nodeStateChange':'SYS-ERR', 'ERR':1, 'SYS':1}])
   
     
 # run the tests
