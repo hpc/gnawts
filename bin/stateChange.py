@@ -144,7 +144,7 @@ def aggregate_dict(adict):
   return new_hash
 
 def build_aggregate_event(r):
-  global node_states
+  global node_states, output_results
   debug("Building Aggregate Event")
   aggregate_event = {'_time': r['_time'], 'eventtype': 'nodeStateList'}
   new_hash = aggregate_dict(node_states)
