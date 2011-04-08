@@ -12,7 +12,7 @@ import sys,os,splunk.Intersplunk,hostlist,logging,ast,re
 # if you need to use more than one option then put them in quotes
 # tag=state | statechange "{'filter':False, 'useNodeStatesFile':False}" | table _time node eventtype state
 
-# tag=state NOT jobstart | statechange "{'ERR-USR_Threshold' : 5}" | table _time eventtype node nodeStateTransition systemStateChange crossing
+# tag=state NOT jobstart | statechange "{'ERR-USR_Threshold' : 5}" | table _time eventtype node nodeStateChange systemStateChange crossing
 
 LOG_FILENAME = '/tmp/output_from_splunk_2.txt'
 logging.basicConfig(filename=LOG_FILENAME,level=logging.DEBUG)
@@ -96,10 +96,10 @@ def update_output_results_for_node(record, node, start_state, end_state):
     new_record[options.get('nodeField')] = single_node
     new_transition = start_state + "-" + end_state
     if current_state == start_state or not current_state:
-      new_record['nodeStateTransition'] = new_transition
-    if new_record.get('nodeStateTransition') or not options.get('filter'):
+      new_record['nodeStateChange'] = new_transition
+    if new_record.get('nodeStateChange') or not options.get('filter'):
       output_results.append(new_record)
-      store_state_transition(node, new_record.get('nodeStateTransition'))
+      store_state_transition(node, new_record.get('nodeStateChange'))
       appended_new_record = True
     store_current_state(single_node, end_state)
 
