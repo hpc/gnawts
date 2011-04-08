@@ -104,17 +104,17 @@ def update_output_results_for_node(record, node, start_state, end_state):
         new_record[start_state] = 0
     if new_record.get('nodeStateChange') or not options.get('filter'):
       store_state_transition(node, new_record.get('nodeStateChange'))
-      new_record = add_trigger_transition(new_record, previous_transition, new_transition, reverse_transition)
       output_results.append(new_record)
+      add_trigger_transition(new_record, previous_transition, new_transition, reverse_transition)
     store_current_state(single_node, end_state)
 
-def add_trigger_transition(new_record, previous_transition, new_transition, reverse_transition): 
+def add_trigger_transition(record, previous_transition, new_transition, reverse_transition): 
   debug("Adding Trigger Transition to event")
-  global trigger_options, node_transitions
+  global trigger_options, node_transitions, output_results
   # if we 
   # 1) added a new record and 
   # 2) have trigger thresholds for eventtypes and
-  # 3) and our new_record's current or previous state transition matches one of the keys
+  # 3) and our record's current or previous state transition matches one of the keys
   # then we can talk transition:
   if len(trigger_options) and ((new_transition and trigger_options.has_key(new_transition + "_Threshold")) or (previous_transition and trigger_options.has_key(previous_transition + "_Threshold"))):
     debug("We have what we need to add trigger")
@@ -123,27 +123,17 @@ def add_trigger_transition(new_record, previous_transition, new_transition, reve
     aggregate_transitions = aggregate_dict(node_transitions)
     # count is increasing for new_transition and decreasing for previous transition
     # for new transition we only care about points of upward crossing, that's >= for going UP, so really just == VALUE for threshold
-    debug(new_transition)
-    debug(trigger_options.has_key(new_transition + "_Threshold"))
-    debug(len(aggregate_transitions.get(new_transition,[])) == trigger_options.get(new_transition + "_Threshold"))
-    debug(aggregate_transitions.get(new_transition,[]))
-    debug(trigger_options.get(new_transition + "_Threshold"))
-    debug(len(aggregate_transitions.get(new_transition,[])))
     if new_transition and trigger_options.has_key(new_transition + "_Threshold") and len(aggregate_transitions.get(new_transition,[])) == trigger_options.get(new_transition + "_Threshold"): 
       debug("UPWARD Trigger for " + new_transition + "_Threshold")
-      new_record.update({'systemStateChange': new_transition, 'crossing': 'upward'})
-      debug("NEW RECORD")
-      debug(new_record)
+      trigger_record = {'_time': record.get('_time'), 'systemStateChange': new_transition, 'crossing': 'upward'}
+      output_results.append(trigger_record)
 
     # count is decreasing for previous_transition
     # for previous transitions we only care about points of downward crossing, that's < for going DOWN, so really just == VALUE for threshold minus 1
     if previous_transition and trigger_options.has_key(previous_transition + "_Threshold") and len(aggregate_transitions.get(previous_transition,[])) == trigger_options.get(previous_transition + "_Threshold") - 1: 
       debug("DOWNWARD Trigger for " + previous_transition + "_Threshold")
-      new_record.update({'systemStateChange': previous_transition, 'crossing': 'downward'})
-      debug("NEW RECORD")
-      debug(new_record)
-  debug(new_record)
-  return new_record
+      trigger_record = {'_time': record.get('_time'), 'systemStateChange': previous_transition, 'crossing': 'downward'}
+      output_results.append(trigger_record)
 
 def setup_node_states():
   try: 
