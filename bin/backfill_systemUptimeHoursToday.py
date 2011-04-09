@@ -7,10 +7,9 @@ import os,time,datetime
 
 #---------- change these variables ----------
 
-
-startDate = "11/01/2010"
+startDate = "01/01/2011"
 startTime = "00:00:00"
-endDate = "02/10/2011"
+endDate = "04/11/2011"
 endTime = "00:00:00"
 
 intervalInMins = 1440
@@ -69,9 +68,19 @@ while (startDate < finishLineDate):
   startTime = startDate.strftime("%m/%d/%Y:%H:%M:%S")
   endTime = endDate.strftime("%m/%d/%Y:%H:%M:%S")
 
-  splunkSearch1 = "index=summary systemState=* | eval systemInterrupt=if(systemState==\"uptime\",1,0) | append [search systemState=* index=summary latest=" + endTime + "| head 1 | eval systemState=if(systemState==\"downtime\",\"uptime\",\"downtime\") "
-  splunkSearch2 = " eval durationHours=((nowTime-_time)/3600) | eval _time=nowTime] | eval uptime=if(systemState==\"uptime\",1,0) | eval systemUptimeHoursInPeriod=uptime*min(100000,durationHours,24) | stats sum(systemUptimeHoursInPeriod) AS systemUptimeHoursToday, sum(systemInterrupt) as systemInterruptCountToday"
-  searchCmd = "starttime=\"" + startTime + "\" endtime=\"" + endTime + "\" " + splunkSearch1 + " | eval nowTime=strptime(\"" + endTime + "\",\"%m/%d/%Y:%H:%M:%S\") | " + splunkSearch2 + " | collect index=summary"
+  # Events
+  WindowStart    = "index=summary systemStateChange=*   latest=\"" + startTime + "\" | head 1 | eval Time=strptime(\"" + startTime + "\",\"%m/%d/%Y:%H:%M:%S\") | eval Fake=1"
+  WindowEnd      = "index=summary systemStateChange=*   latest=\"" + endTime   + "\" | head 1 | eval Time=strptime(\"" + endTime   + "\",\"%m/%d/%Y:%H:%M:%S\") | eval Fake=1"
+  EventsInWindow = "index=summary systemStateChange=* earliest=\"" + startTime + "\" latest=\"" + endTime + "\" | eval Time=_time"
+  Events                = WindowStart + " | append [ search " + EventsInWindow + "] | append [ search " + WindowEnd + "] "
+
+  # Processing
+  Hours        = "sort Time | delta Time AS durationSeconds | eval systemUptimeHours=if(systemStateChange=\"USR-ERR\" AND ((crossing=\"increasing\" AND NOT Fake=1) OR (crossing=\"decreasing\" AND Fake=1)),round(durationSeconds/3600,2),0) "
+  ERRs         = "eval systemERR=if(systemStateChange=\"USR-ERR\" AND crossing=\"increasing\" AND NOT Fake=1,1,0) "
+  dayAggregate = "stats sum(systemUptimeHours) AS systemUptimeHoursToday, sum(systemERR) as systemERRCountToday "
+  Processing   = Hours + " | " + ERRs + " | " + dayAggregate
+  # one massive hairy search!
+  searchCmd = Events + " | " + Processing + " | addinfo | collect index=summary"
 
   # run it!
   if (bool(useDispatch)):

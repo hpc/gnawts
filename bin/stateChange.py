@@ -125,14 +125,14 @@ def add_trigger_transition(record, previous_transition, new_transition, reverse_
     # for new transition we only care about points of upward crossing, that's >= for going UP, so really just == VALUE for threshold
     if new_transition and trigger_options.has_key(new_transition + "_Threshold") and len(aggregate_transitions.get(new_transition,[])) == trigger_options.get(new_transition + "_Threshold"): 
       debug("UPWARD Trigger for " + new_transition + "_Threshold")
-      trigger_record = {'_time': record.get('_time'), 'systemStateChange': new_transition, 'crossing': 'upward'}
+      trigger_record = {'_time': record.get('_time'), 'systemStateChange': new_transition, 'crossing': 'increasing'}
       output_results.append(trigger_record)
 
     # count is decreasing for previous_transition
     # for previous transitions we only care about points of downward crossing, that's < for going DOWN, so really just == VALUE for threshold minus 1
     if previous_transition and trigger_options.has_key(previous_transition + "_Threshold") and len(aggregate_transitions.get(previous_transition,[])) == trigger_options.get(previous_transition + "_Threshold") - 1: 
       debug("DOWNWARD Trigger for " + previous_transition + "_Threshold")
-      trigger_record = {'_time': record.get('_time'), 'systemStateChange': previous_transition, 'crossing': 'downward'}
+      trigger_record = {'_time': record.get('_time'), 'systemStateChange': previous_transition, 'crossing': 'decreasing'}
       output_results.append(trigger_record)
 
 def setup_node_states():
