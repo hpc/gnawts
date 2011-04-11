@@ -1,9 +1,11 @@
-1. `systemStateTransitions` | collect index=summary
-2. python bin/backfill_systemUptimeHoursToday.py
-3. see cieloRASmetrics view
-4. ./xtprocadmin2nodes data/xtprocadmin.out > splunk/etc/apps/hpc/lookups/nodes.csv
-5. to see a lookup: sourcetype=cray NOT ec_smw_resi* | lookup nodes node AS host OUTPUT nid
+RAS Metrics Stuff:
+seed the summary index by doing this search:
+ tag=state NOT jobstart | statechange "{'USR-ERR_Threshold':7, 'nodeField':'nid'}" | collect index=summary
+backfill with systemUptimeHoursToday by running this command:
+ python bin/backfill_systemUptimeHoursToday.py
+now see the RAS Metrics view.  Need to review for correctness of metrics, particularly JMTTI.
 
---------- jobs:
-1. run the resetJobsLookup saved search as admin
-2. search for Exception, note the job field is present now, try the pull-down macro
+If we were doing number-of-uptime based stats, things would be much easier, eg:
+SMTTI of last 5 uptimes
+| delta _time AS durationSeconds | eval durationHours=round(durationSeconds/3600,2) | streamstats avg(durationHours) AS SMTTI window=5 global=f | timechart max(MTTI) AS SMTTI
+

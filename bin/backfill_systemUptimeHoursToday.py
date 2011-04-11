@@ -78,9 +78,11 @@ while (startDate < finishLineDate):
   Hours        = "sort Time | delta Time AS durationSeconds | eval systemUptimeHours=if(systemStateChange=\"USR-ERR\" AND ((crossing=\"increasing\" AND NOT Fake=1) OR (crossing=\"decreasing\" AND Fake=1)),round(durationSeconds/3600,2),0) "
   ERRs         = "eval systemERR=if(systemStateChange=\"USR-ERR\" AND crossing=\"increasing\" AND NOT Fake=1,1,0) "
   dayAggregate = "stats sum(systemUptimeHours) AS systemUptimeHoursToday, sum(systemERR) as systemERRCountToday "
-  Processing   = Hours + " | " + ERRs + " | " + dayAggregate
+  Processing   = Hours + " | " + ERRs + " | " + dayAggregate 
+  # simply passing through addinfo prevents join from working in jmtti, so hack this in for now
+  FixAddinfo   = "eval info_min_time=strptime(\"" + startTime + "\",\"%m/%d/%Y:%H:%M:%S\") | eval info_max_time=strptime(\"" + endTime + "\",\"%m/%d/%Y:%H:%M:%S\") | eval _time=info_min_time"
   # one massive hairy search!
-  searchCmd = Events + " | " + Processing + " | addinfo | collect index=summary"
+  searchCmd = Events + " | " + Processing + " | " + FixAddinfo + "| collect index=summary"
 
   # run it!
   if (bool(useDispatch)):
