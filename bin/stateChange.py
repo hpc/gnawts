@@ -26,7 +26,7 @@ node_transitions = {}
 
 # easy way to log data to LOG_FILENAME
 def debug(msg):
-  logging.debug(msg)
+  #  logging.debug(msg)
   return
 
 # store state transitions for counting later
@@ -104,7 +104,8 @@ def update_output_results_for_node(record, node, start_state, end_state):
         new_record[start_state] = 0
     if new_record.get('nodeStateChange') or not options.get('filter'):
       store_state_transition(node, new_record.get('nodeStateChange'))
-      output_results.append(new_record)
+      newer_record = {'_time': new_record.get('_time'), 'nodeStateChange': new_record.get('nodeStateChange'), options.get('nodeField'): new_record.get(options.get('nodeField')), end_state: new_record.get(end_state), start_state: new_record.get(start_state)}
+      output_results.append(newer_record)
       add_trigger_transition(new_record, previous_transition, new_transition, reverse_transition)
     store_current_state(single_node, end_state)
 
