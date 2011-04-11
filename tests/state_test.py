@@ -21,7 +21,7 @@ class TriggerEventsTestCase(unittest.TestCase):
     stateChange.update_output_results_for_node({'_time':'1', 'node':'n1'}, 'n1', 'USR', 'SYS')
     stateChange.update_output_results_for_node({'_time':'2', 'node':'n2'}, 'n5', 'SYS', 'ERR')
     stateChange.update_output_results_for_node({'_time':'3', 'node':'n6'}, 'n6', 'SYS', 'ERR')
-    self.assertEqual(stateChange.output_results[-1], {'_time':'3', 'systemStateChange':'SYS-ERR', 'crossing': 'upward'})
+    self.assertEqual(stateChange.output_results[-1], {'_time':'3', 'systemStateChange':'SYS-ERR', 'crossing': 'increasing'})
   
   def test_state_change_for_more_complex_set(self):
     stateChange.trigger_options['SYS-ERR_Threshold'] = 2
@@ -33,9 +33,9 @@ class TriggerEventsTestCase(unittest.TestCase):
     stateChange.update_output_results_for_node({'_time':'5', 'node':'n6'}, 'n6', 'ERR', 'USR') # + 1 for err-usr
     stateChange.update_output_results_for_node({'_time':'6', 'node':'n7'}, 'n7', 'ERR', 'USR') # + 1 for err-usr, trigger up for err-usr
     stateChange.update_output_results_for_node({'_time':'7', 'node':'n8'}, 'n8', 'ERR', 'USR') # + 1 for err-usr
-    self.assertTrue({'_time':'3', 'systemStateChange':'SYS-ERR', 'crossing': 'upward'} in stateChange.output_results)
-    self.assertTrue({'_time':'4', 'systemStateChange':'SYS-ERR', 'crossing': 'downward'} in stateChange.output_results)
-    self.assertTrue({'_time':'6', 'systemStateChange':'ERR-USR', 'crossing': 'upward'} in stateChange.output_results)
+    self.assertTrue({'_time':'3', 'systemStateChange':'SYS-ERR', 'crossing': 'increasing'} in stateChange.output_results)
+    self.assertTrue({'_time':'4', 'systemStateChange':'SYS-ERR', 'crossing': 'decreasing'} in stateChange.output_results)
+    self.assertTrue({'_time':'6', 'systemStateChange':'ERR-USR', 'crossing': 'increasing'} in stateChange.output_results)
     self.assertTrue({'_time':'3', 'node':'n6', 'nodeStateChange': 'SYS-ERR', 'ERR':2, 'SYS':0} in stateChange.output_results)
     self.assertTrue({'_time':'4', 'node':'n5', 'nodeStateChange': 'ERR-USR', 'USR':1, 'ERR':1} in stateChange.output_results)
     self.assertTrue({'_time':'6', 'node':'n7', 'nodeStateChange': 'ERR-USR', 'USR':3, 'ERR':0} in stateChange.output_results)
