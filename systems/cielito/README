@@ -1,3 +1,9 @@
+SETUP
+1. put the data in /cielito, eg in the splunk-hpc/data/cielo/cielito directory do
+   sudo ln -s `pwd` /cielito
+   
+
+
 RAS Metrics Stuff:
 seed the summary index by doing this search:
  tag=state NOT jobstart | statechange "{'USR-ERR_Threshold':7, 'nodeField':'nid'}" | collect index=summary
