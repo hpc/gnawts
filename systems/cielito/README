@@ -1,9 +1,17 @@
+SETUP
+1. put the data in /cielito, eg in the splunk-hpc/logs/cielito directory do
+   sudo ln -s `pwd` /cielito
+   
+
+
 RAS Metrics Stuff:
-seed the summary index by doing this search:
- tag=state NOT jobstart | statechange "{'USR-ERR_Threshold':7, 'nodeField':'nid'}" | collect index=summary
-backfill with systemUptimeHoursToday by running this command:
+1. seed the summary index by doing this search OVER ALL TIME:
+     tag=state | statechange "{'USR-ERR_Threshold':7, 'nodeField':'nid'}" | collect index=summary
+   this is a good test search to see what statechange is doing:
+     tag=state | statechange "{'USR-ERR_Threshold':7, 'nodeField':'nid'}" | table _time nid nodeStateChange ERR SYS USR systemStateChange crossing 
+2. backfill with systemUptimeHoursToday by running this command:
  python bin/backfill_systemUptimeHoursToday.py
-now see the RAS Metrics view.  Need to review for correctness of metrics, particularly JMTTI.
+3. now see the RAS Metrics view.  Need to review for correctness of metrics, particularly JMTTI.
 
 If we were doing number-of-uptime based stats, things would be much easier, eg:
 SMTTI of last 5 uptimes
