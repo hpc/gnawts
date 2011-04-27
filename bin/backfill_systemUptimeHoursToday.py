@@ -7,6 +7,10 @@ import os,time,datetime
 
 #---------- change these variables ----------
 
+# a handy range for testing
+startDate = "02/01/2011"
+endDate = "02/11/2011"
+
 startDate = "01/01/2011"
 startTime = "00:00:00"
 endDate = "04/11/2011"
@@ -63,8 +67,8 @@ while (startDate < finishLineDate):
   if (endDate >= finishLineDate):
     endDate = datetime.datetime(endYear,endMonth,endDay,endHour,endMin,endSec)
 
-  endDay = endDate.strftime("%Y-%m-%d")
-  startTime = startDate.strftime("%s")
+#  startTime = startDate.strftime("%s")
+#  DayNote = endDate.strftime("%Y-%m-%d")
   endTime = endDate.strftime("%s")
   searchCmd = "`systemUptimeYesterday("+endTime+")` | collect index=summary"
 
@@ -73,7 +77,7 @@ while (startDate < finishLineDate):
     searchCLI = "splunk dispatch \'" + searchCmd + "\' -maxout " + str(maxOut) + " -app hpc"
   else:
     searchCLI = "splunk search \"" + searchCmd + "\" -maxresults " + str(maxResults) + " -app hpc"
-  print "\n\nendDay=" + endDay + ": Executing [" + searchCLI + "]"
+  print "\n\nExecuting [" + searchCLI + "]"
   result = str.split(os.popen(searchCLI).read())
   print result
 
