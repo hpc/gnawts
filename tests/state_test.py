@@ -93,13 +93,13 @@ class DefaultStateTestCase(unittest.TestCase):
     self.assertEqual(stateChange.output_results, [])
     # record, node, start_state, end_state
     stateChange.update_output_results_for_node({'node':'n1'}, 'n1', 'USR', 'SYS')
-    self.assertEqual(stateChange.output_results, [{'node':'n1', 'nodeStateChange':'USR-SYS', 'SYS':1, 'USR':0}])
+    self.assertEqual(stateChange.output_results, [{'node':'n1', '_time': None, 'nodeStateChange':'USR-SYS', 'SYS':1, 'USR':0}])
   
   def test_update_output_results_should_produce_output_since_state_is_assumed_2(self):
     self.assertEqual(stateChange.output_results, [])
     # record, node, start_state, end_state
     stateChange.update_output_results_for_node({'node':'n1'}, 'n1', 'USR', 'SYS')
-    self.assertEqual(stateChange.output_results, [{'node':'n1', 'nodeStateChange':'USR-SYS', 'SYS':1, 'USR':0}])
+    self.assertEqual(stateChange.output_results, [{'node':'n1', '_time': None, 'nodeStateChange':'USR-SYS', 'SYS':1, 'USR':0}])
   
   def test_update_output_results_should_produce_output_only_if_state_changed_or_has_to_be_assumed(self):
     self.assertEqual(stateChange.output_results, [])
@@ -108,7 +108,7 @@ class DefaultStateTestCase(unittest.TestCase):
     stateChange.update_output_results_for_node({'node':'n2'}, 'n2', 'USR', 'SYS')
     stateChange.update_output_results_for_node({'node':'n1'}, 'n1', 'USR', 'SYS')
     stateChange.update_output_results_for_node({'node':'n2'}, 'n2', 'SYS', 'ERR')
-    self.assertEqual(stateChange.output_results, [{'node':'n1', 'nodeStateChange':'USR-SYS', 'SYS':1, 'USR':0}, {'node':'n2', 'nodeStateChange':'USR-SYS', 'SYS':2, 'USR':0}, {'node':'n2', 'nodeStateChange':'SYS-ERR', 'ERR':1, 'SYS':1}])
+    self.assertEqual(stateChange.output_results, [{'node':'n1', '_time': None, 'nodeStateChange':'USR-SYS', 'SYS':1, 'USR':0}, {'node':'n2', '_time': None, 'nodeStateChange':'USR-SYS', 'SYS':2, 'USR':0}, {'node':'n2', '_time': None, 'nodeStateChange':'SYS-ERR', 'ERR':1, 'SYS':1}])
   
     
 # run the tests
