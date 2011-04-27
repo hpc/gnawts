@@ -31,6 +31,7 @@
             <saved name="JMTTI" />
             <saved name="SMTTI" />
             <saved name="EL" />
+            <saved name="nodeStateCounts" />
         </collection>
         <collection label="Other">
             <saved name="Reservations:Names" />
@@ -41,7 +42,8 @@
             <saved name="Chatty host (by hour)" />
             <saved name="SilentHosts" />
             <saved name="LoudHosts" />
-            <saved name="QuietHosts" />
+            <saved name="SystemUptime" />
+            <saved name="StateChange" />
         </collection>
         <divider />
         <saved source="unclassified" />

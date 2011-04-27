@@ -3,12 +3,9 @@
   <label>RAS metrics</label>
   <row>
     <chart>
-      <searchName>JMTTI</searchName>
-      <title>Job Mean Time To Interrupt (9.12.1)</title>
-      <option name="drilldown">all</option>
+      <searchName>nodeStateCounts</searchName>
+      <title>Total Count of Nodes in Each State</title>
     </chart>
-  </row>
-  <row>
     <chart>
       <searchName>SMTTI</searchName>
       <title>System Mean Time to Interrupt (9.12.2)</title>
@@ -16,6 +13,11 @@
     </chart>
   </row>
   <row>
+    <chart>
+      <searchName>JMTTI</searchName>
+      <title>Job Mean Time To Interrupt (9.12.1)</title>
+      <option name="drilldown">all</option>
+    </chart>
     <chart>
       <searchName>EL</searchName>
       <title>System Effectiveness Level (9.12.3)</title>
