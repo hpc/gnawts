@@ -158,12 +158,12 @@ def setup_node_states(results):
         if p.match(r['_raw']):
           debug("Found a matching nodeStateList")
           last_record = r
-    if last_record:
-      # get states from raw data
-      p = re.compile("(\w+)=\"\[")
-      for a_node_state in p.findall(last_record['_raw']):
-        for a_node in hostlist.expand_hostlist(last_record.get(a_node_state)):
-          store_current_state(a_node, a_node_state)
+      if last_record:
+        # get states from raw data
+        p = re.compile("(\w+)=\"\[")
+        for a_node_state in p.findall(last_record['_raw']):
+          for a_node in hostlist.expand_hostlist(last_record.get(a_node_state)):
+            store_current_state(a_node, a_node_state)
   except EOFError:
     return {}
 
