@@ -14,6 +14,18 @@ import sys,os,splunk.Intersplunk,hostlist,logging,ast,re
 
 # tag=state NOT jobstart | statechange "{'ERR-USR_Threshold' : 5}" | table _time eventtype node nodeStateChange systemStateChange crossing
 
+# For populating the initial node states -
+
+# 1) grab the last nodeStateList with this query:
+# index=summary "eventtype=nodeStateList" NOT search_name=* | head 1
+
+# 2) combine that with this query `tag=state` and you get this:
+# (tag=state NOT jobstart) OR (index=summary "eventtype=nodeStateList" NOT search_name=*)
+
+# 3) now add the stateChange
+# (tag=state NOT jobstart) OR (index=summary "eventtype=nodeStateList" NOT search_name=*) | stateChange "{'nodeField':'nid'}"
+
+
 LOG_FILENAME = '/tmp/output_from_splunk_2.txt'
 logging.basicConfig(filename=LOG_FILENAME,level=logging.DEBUG)
 
@@ -26,7 +38,7 @@ node_transitions = {}
 
 # easy way to log data to LOG_FILENAME
 def debug(msg):
-  #  logging.debug(msg)
+  #logging.debug(msg)
   return
 
 # store state transitions for counting later
@@ -136,10 +148,22 @@ def add_trigger_transition(record, previous_transition, new_transition, reverse_
       trigger_record = {'_time': record.get('_time'), 'systemStateChange': previous_transition, 'crossing': 'decreasing'}
       output_results.append(trigger_record)
 
-def setup_node_states():
+def setup_node_states(results):
+  debug("Setting initial node states")
   try: 
-    #TODO return something
-    return {}
+    if len(results) and results[0].has_key('_time'):
+      p = re.compile(".*eventtype=nodeStateList.*")
+      last_record = None
+      for r in results:
+        if p.match(r['_raw']):
+          debug("Found a matching nodeStateList")
+          last_record = r
+    if last_record:
+      # get states from raw data
+      p = re.compile("(\w+)=\"\[")
+      for a_node_state in p.findall(last_record['_raw']):
+        for a_node in hostlist.expand_hostlist(last_record.get(a_node_state)):
+          store_current_state(a_node, a_node_state)
   except EOFError:
     return {}
 
@@ -160,6 +184,12 @@ def aggregate_dict(adict):
 
   return new_hash
 
+def get_sorted_results(results):
+  if len(results) and results[0].has_key('_time'):
+    return sorted(results, key=lambda k: k['_time'])
+  else:
+    return results
+
 def build_aggregate_event(r):
   global node_states, output_results
   debug("Building Aggregate Event")
@@ -171,6 +201,7 @@ def build_aggregate_event(r):
     new_hash[k] = hostlist.collect_hostlist(v)
 
   aggregate_event.update(new_hash)
+  debug(aggregate_event);
   output_results.append(aggregate_event)
   
 
@@ -190,22 +221,28 @@ def main():
         trigger_options[k] = options[k]
 
     debug("OPTIONS: " + str(options))
+    
+    sorted_results = get_sorted_results(results)
 
-    # TODO get from passed in data
-    node_states = setup_node_states()
+    setup_node_states(sorted_results)
 
     # our node states
     debug("Node States: ")
     debug(node_states)
 
     # sort the results by time
-    if len(results) and results[0].has_key('_time'):
+    if len(sorted_results) and sorted_results[0].has_key('_time'):
+      p = re.compile(".*eventtype=nodeStateList.*")
       last_record = None
-      for r in sorted(results, key=lambda k: k['_time']):
-        update_states(r)
-        last_record = r
+      for r in sorted_results:
+        if p.match(r['_raw']):
+          debug("Skipping nodeStateList")
+        else:
+          update_states(r)
+          last_record = r
       if options.get('addAggregate'):
         # need the last record for '_time' entry
+        debug("AGGREGATE: Building aggregate event");
         build_aggregate_event(last_record)
 
   except:
