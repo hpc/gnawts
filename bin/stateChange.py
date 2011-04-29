@@ -148,25 +148,6 @@ def add_trigger_transition(record, previous_transition, new_transition, reverse_
       trigger_record = {'_time': record.get('_time'), 'systemStateChange': previous_transition, 'crossing': 'decreasing'}
       output_results.append(trigger_record)
 
-def setup_node_states(results):
-  debug("Setting initial node states")
-  try: 
-    if len(results) and results[0].has_key('_time'):
-      p = re.compile(".*eventtype=nodeStateList.*")
-      last_record = None
-      for r in results:
-        if p.match(r['_raw']):
-          debug("Found a matching nodeStateList")
-          last_record = r
-      if last_record:
-        # get states from raw data
-        p = re.compile("(\w+)=\"\[")
-        for a_node_state in p.findall(last_record['_raw']):
-          for a_node in hostlist.expand_hostlist(last_record.get(a_node_state)):
-            store_current_state(a_node, a_node_state)
-  except EOFError:
-    return {}
-
 def all_nodes_in_state(state):
   global node_states
   nodes_by_state = aggregate_dict(node_states)
@@ -197,10 +178,11 @@ def build_aggregate_event(r):
   new_hash = aggregate_dict(node_states)
 
   # put in proper form
+  final_hash = {}
   for k,v in new_hash.iteritems():
-    new_hash[k] = hostlist.collect_hostlist(v)
+    final_hash['StateName_'+k] = hostlist.collect_hostlist(v)
 
-  aggregate_event.update(new_hash)
+  aggregate_event.update(final_hash)
   debug(aggregate_event);
   output_results.append(aggregate_event)
   
@@ -222,25 +204,31 @@ def main():
 
     debug("OPTIONS: " + str(options))
     
+    # sort the results by time
     sorted_results = get_sorted_results(results)
 
-    setup_node_states(sorted_results)
-
-    # our node states
-    debug("Node States: ")
-    debug(node_states)
-
-    # sort the results by time
+    i=0
     if len(sorted_results) and sorted_results[0].has_key('_time'):
+      i=i+1
       p = re.compile(".*eventtype=nodeStateList.*")
       last_record = None
       for r in sorted_results:
-        if p.match(r['_raw']):
-          debug("Skipping nodeStateList")
+        if i==1 and p.match(r['_raw']): # only check first record
+          debug("Setting initial node states")
+          p  = re.compile("(StateName_\w+)=")
+          ps = re.compile("StateName_(\w+)")
+          for a_node_state in p.findall(r['_raw']):
+            mobj = ps.match(a_node_state)
+            if (mobj != None):
+              stateName = mobj.group(1)
+            else:
+              stateName = a_state_name
+            for a_node in hostlist.expand_hostlist(r.get(a_node_state)):
+              store_current_state(a_node, stateName)
         else:
           update_states(r)
           last_record = r
-      if options.get('addAggregate'):
+      if last_record!=None and options.get('addAggregate'):
         # need the last record for '_time' entry
         debug("AGGREGATE: Building aggregate event");
         build_aggregate_event(last_record)
