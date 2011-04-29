@@ -52,7 +52,7 @@ class AggregateEventsTestCase(unittest.TestCase):
     stateChange.update_output_results_for_node({'_time':'1', 'node':'n1'}, 'n1', 'USR', 'SYS')
     stateChange.update_output_results_for_node({'_time':'1', 'node':'n2'}, 'n2', 'USR', 'ERR')
     stateChange.build_aggregate_event({'_time':'1'})
-    self.assertEqual(stateChange.output_results[-1], {'_time':'1', 'eventtype':'nodeStateList', 'SYS':'n1', 'ERR': 'n2'})
+    self.assertEqual(stateChange.output_results[-1], {'_time':'1', 'eventtype':'nodeStateList', 'StateName_SYS':'n1', 'StateName_ERR': 'n2'})
   
   def test_more_complicated_output_results_should_contain_an_aggregate_event(self):
     # record, node, start_state, end_state
@@ -63,7 +63,7 @@ class AggregateEventsTestCase(unittest.TestCase):
     stateChange.update_output_results_for_node({'_time':'1', 'node':'n2'}, 'n5', 'USR', 'SYS')
     stateChange.update_output_results_for_node({'_time':'1', 'node':'n2'}, 'n6', 'USR', 'SYS')
     stateChange.build_aggregate_event({'_time':'1'})
-    self.assertEqual(stateChange.output_results[-1], {'_time':'1', 'eventtype':'nodeStateList', 'SYS':'n[1,5-6]', 'ERR': 'n[2-4]'})
+    self.assertEqual(stateChange.output_results[-1], {'_time':'1', 'eventtype':'nodeStateList', 'StateName_SYS':'n[1,5-6]', 'StateName_ERR': 'n[2-4]'})
 
 class DefaultStateTestCase(unittest.TestCase):
 
