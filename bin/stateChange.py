@@ -1,4 +1,4 @@
-import sys,os,splunk.Intersplunk,hostlist,logging,ast,re
+import sys,os,splunk.Intersplunk,hostlist,logging,ast,re,math
 
 # Example: tag=state NOT jobstart | search node="c0-0c1s6n1" | head 24 | statechange
 # to return ALL resuls even those not changing state use filter option of False
@@ -26,10 +26,13 @@ import sys,os,splunk.Intersplunk,hostlist,logging,ast,re
 # (tag=state NOT jobstart) OR (index=summary "eventtype=nodeStateList" NOT search_name=*) | stateChange "{'nodeField':'nid'}"
 
 
+# TO Add interpolation events - example
+# tag=state NOT jobstart | stateChange "{'nodeField':'nid', 'eventInterpolation':3600}"
+
 LOG_FILENAME = '/tmp/output_from_splunk_2.txt'
 logging.basicConfig(filename=LOG_FILENAME,level=logging.DEBUG)
 
-options = {'filter': True, 'nodeField':'node', 'addAggregate': True}
+options = {'filter': True, 'nodeField':'node', 'addAggregate': True, 'eventInterpolation' : 0}
 trigger_options = {}
 results = []
 output_results = []
@@ -70,7 +73,7 @@ def get_current_state(node):
 # the list of nodes can be in short (1-3) or long (1,2,3) form
 # each node can have a different state or NOT a state at all
 # only return the nodes that have a new state applied
-def update_states(record): #, last_eventtype):
+def update_states(record, additional_details={}): #, last_eventtype):
   global output_results, options
   node = record.get(options.get('nodeField'))
   eventtype = record.get('eventtype')
@@ -93,12 +96,12 @@ def update_states(record): #, last_eventtype):
   debug("Start state from eventtype: " + start_state)
   debug("End state from eventtype: " + end_state)
   
-  update_output_results_for_node(record, node, start_state, end_state)
+  update_output_results_for_node(record, node, start_state, end_state, additional_details)
 
-def update_output_results_for_node(record, node, start_state, end_state):
-  global output_results, trigger_options
+def update_output_results_for_node(record, node, start_state, end_state, additional_details={}):
+  global output_results, trigger_options, options
   node_list = hostlist.expand_hostlist(node)
-
+      
   for single_node in node_list:
     previous_transition = node_transitions.get(node)
     current_state = get_current_state(single_node)
@@ -117,9 +120,14 @@ def update_output_results_for_node(record, node, start_state, end_state):
     if new_record.get('nodeStateChange') or not options.get('filter'):
       store_state_transition(node, new_record.get('nodeStateChange'))
       newer_record = {'_time': new_record.get('_time'), 'nodeStateChange': new_record.get('nodeStateChange'), options.get('nodeField'): new_record.get(options.get('nodeField')), end_state: new_record.get(end_state), start_state: new_record.get(start_state)}
+      newer_record.update(additional_details)
       output_results.append(newer_record)
-      add_trigger_transition(new_record, previous_transition, new_transition, reverse_transition)
-    store_current_state(single_node, end_state)
+      if not additional_details.get('interpolationRecord'):
+        # don't add triggers for interpolation records
+        add_trigger_transition(new_record, previous_transition, new_transition, reverse_transition)
+    if not additional_details.get('interpolationRecord'):
+      # don't update state changes for interpolation records
+      store_current_state(single_node, end_state)
 
 def add_trigger_transition(record, previous_transition, new_transition, reverse_transition): 
   debug("Adding Trigger Transition to event")
@@ -188,6 +196,7 @@ def build_aggregate_event(r):
   
 
 def main():
+  global output_results
   try:
     global results, options, node_states
     results, dummyresults, settings = splunk.Intersplunk.getOrganizedResults()
@@ -222,10 +231,34 @@ def main():
             if (mobj != None):
               stateName = mobj.group(1)
             else:
-              stateName = a_state_name
+              stateName = None #a_state_name
             for a_node in hostlist.expand_hostlist(r.get(a_node_state)):
               store_current_state(a_node, stateName)
         else:
+          ############ BEGIN INTERPOLATION #################
+          # add interpolation records to fill the gap between records
+          allowable_threshold = options.get('eventInterpolation')
+          debug("Allowable Threshold: ")
+          debug(allowable_threshold)
+          if allowable_threshold > 0 and last_record:
+            debug("Interpolating ...")
+            diff_time = int(r.get('_time')) - int(last_record.get('_time'))
+            # if the gap between records is bigger than the given time span then 
+            # we fill the time span with records for each period of the given time span
+            # if the diff in time is 20 seconds and we have a given threshold of 5 seconds
+            # we need to fill in previous record _time + 5 seconds, prev record time + 10 seconds 
+            # and prev record _time + 15 seconds
+            # the time intervals are figured by how many times the gap between records is divisable 
+            # by the given time threshold so math.ceil(diff_time / allowable_threshold) - 1, eg (22 / 5) - 1 => 4
+            if diff_time > options.get('eventInterpolation'):
+              interpolation_record = last_record
+              last_record_time = last_record.get('_time')
+              for i in range(math.ceil(diff_time / allowable_threshold) - 1):
+                # we need to add events every eventInterpolation value to fill the gap
+                interpolation_record['_time'] = int(last_record_time) + (allowable_threshold * (i+1))
+                update_states(interpolation_record, {'interpolationRecord':i})
+          ############ END INTERPOLATION #################
+          # now update our record
           update_states(r)
           last_record = r
       if last_record!=None and options.get('addAggregate'):
