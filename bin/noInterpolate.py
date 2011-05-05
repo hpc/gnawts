@@ -1,7 +1,10 @@
 import sys,os,splunk.Intersplunk,logging
 
-# Example: 
+# Example:
+# parameter passed to noInterpolate is in seconds
 # tag=state NOT jobstart | stateChange "{'nodeField':'nid'}" | noInterpoloate 38000
+# Or use the default time span of 1 day - 86400 seconds
+# tag=state NOT jobstart | stateChange "{'nodeField':'nid'}" | noInterpoloate 
 
 LOG_FILENAME = '/tmp/output_from_splunk_3.txt'
 logging.basicConfig(filename=LOG_FILENAME,level=logging.DEBUG)
