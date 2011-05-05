@@ -49,7 +49,8 @@ def main():
             # we need to add events every eventInterpolation value to fill the gap
             interpolation_record['_time'] = int(current_record_time) - allowable_threshold
             interpolation_record['interpolationRecord'] = 'yes'
-            output_results.append(interpolation_record)
+            if interpolation_record not in output_results:
+              output_results.append(interpolation_record)
         ############ END INTERPOLATION #################
         last_record = r
         output_results.append(r)
