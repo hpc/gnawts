@@ -26,13 +26,10 @@ import sys,os,splunk.Intersplunk,hostlist,logging,ast,re,math
 # (tag=state NOT jobstart) OR (index=summary "eventtype=nodeStateList" NOT search_name=*) | stateChange "{'nodeField':'nid'}"
 
 
-# TO Add interpolation events - example
-# tag=state NOT jobstart | stateChange "{'nodeField':'nid', 'eventInterpolation':3600}"
-
 LOG_FILENAME = '/tmp/output_from_splunk_2.txt'
 logging.basicConfig(filename=LOG_FILENAME,level=logging.DEBUG)
 
-options = {'filter': True, 'nodeField':'node', 'addAggregate': True, 'eventInterpolation' : 0}
+options = {'filter': True, 'nodeField':'node', 'addAggregate': True}
 trigger_options = {}
 results = []
 output_results = []
@@ -41,6 +38,10 @@ node_transitions = {}
 
 # easy way to log data to LOG_FILENAME
 def debug(msg):
+  #logging.debug(msg)
+  return
+
+def debug2(msg):
   #logging.debug(msg)
   return
 
@@ -122,12 +123,8 @@ def update_output_results_for_node(record, node, start_state, end_state, additio
       newer_record = {'_time': new_record.get('_time'), 'nodeStateChange': new_record.get('nodeStateChange'), options.get('nodeField'): new_record.get(options.get('nodeField')), end_state: new_record.get(end_state), start_state: new_record.get(start_state)}
       newer_record.update(additional_details)
       output_results.append(newer_record)
-      if not additional_details.get('interpolationRecord'):
-        # don't add triggers for interpolation records
-        add_trigger_transition(new_record, previous_transition, new_transition, reverse_transition)
-    if not additional_details.get('interpolationRecord'):
-      # don't update state changes for interpolation records
-      store_current_state(single_node, end_state)
+      add_trigger_transition(new_record, previous_transition, new_transition, reverse_transition)
+    store_current_state(single_node, end_state)
 
 def add_trigger_transition(record, previous_transition, new_transition, reverse_transition): 
   debug("Adding Trigger Transition to event")
@@ -216,6 +213,7 @@ def main():
     # sort the results by time
     sorted_results = get_sorted_results(results)
 
+    debug2(len(sorted_results))
     i=0
     if len(sorted_results) and sorted_results[0].has_key('_time'):
       i=i+1
@@ -235,29 +233,6 @@ def main():
             for a_node in hostlist.expand_hostlist(r.get(a_node_state)):
               store_current_state(a_node, stateName)
         else:
-          ############ BEGIN INTERPOLATION #################
-          # add interpolation records to fill the gap between records
-          allowable_threshold = options.get('eventInterpolation')
-          debug("Allowable Threshold: ")
-          debug(allowable_threshold)
-          if allowable_threshold > 0 and last_record:
-            debug("Interpolating ...")
-            diff_time = int(r.get('_time')) - int(last_record.get('_time'))
-            # if the gap between records is bigger than the given time span then 
-            # we fill the time span with records for each period of the given time span
-            # if the diff in time is 20 seconds and we have a given threshold of 5 seconds
-            # we need to fill in previous record _time + 5 seconds, prev record time + 10 seconds 
-            # and prev record _time + 15 seconds
-            # the time intervals are figured by how many times the gap between records is divisable 
-            # by the given time threshold so math.ceil(diff_time / allowable_threshold) - 1, eg (22 / 5) - 1 => 4
-            if diff_time > options.get('eventInterpolation'):
-              interpolation_record = last_record
-              last_record_time = last_record.get('_time')
-              for i in range(math.ceil(diff_time / allowable_threshold) - 1):
-                # we need to add events every eventInterpolation value to fill the gap
-                interpolation_record['_time'] = int(last_record_time) + (allowable_threshold * (i+1))
-                update_states(interpolation_record, {'interpolationRecord':i})
-          ############ END INTERPOLATION #################
           # now update our record
           update_states(r)
           last_record = r
@@ -274,9 +249,9 @@ def main():
   splunk.Intersplunk.outputResults( output_results )
 
 
-debug("Starting")
+debug2("Starting")
 main()
-debug("Finished")
+debug2("Finished")
 
 # Here is how this stateChange script fits into the RAS Metrics implementation:
 # 1. Node state logic is encoded as eventtypes, formatted as FROM-TO where
