@@ -14,12 +14,6 @@ def debug(msg):
   #logging.debug(msg)
   return
 
-def get_sorted_results(results):
-  if len(results) and results[0].has_key('_time'):
-    return sorted(results, key=lambda k: k['_time'])
-  else:
-    return results
-
 def main():
   output_results = []
   try:
@@ -30,13 +24,10 @@ def main():
       allowable_threshold = int(sys.argv[1])
     
     # sort the results by time
-    sorted_results = get_sorted_results(results)
 
-    debug(len(sorted_results))
-
-    if len(sorted_results):
+    if len(results):
       last_record = None
-      for r in sorted_results:
+      for r in results:
         ############ BEGIN INTERPOLATION #################
         # add interpolation records to fill the gap between records
         if allowable_threshold > 0 and last_record:
@@ -44,10 +35,10 @@ def main():
           # if the gap between the current event and the last event is > the allowable time threshold
           # then we add an event a gaps length from the current event
           if diff_time > allowable_threshold:
-            interpolation_record = last_record
+            interpolation_record = last_record.copy()
             current_record_time = r.get('_time')
             # we need to add events every eventInterpolation value to fill the gap
-            interpolation_record['_time'] = int(current_record_time) - allowable_threshold
+            interpolation_record['_time'] = int(current_record_time) - 1
             interpolation_record['interpolationRecord'] = 'yes'
             if interpolation_record not in output_results:
               output_results.append(interpolation_record)
