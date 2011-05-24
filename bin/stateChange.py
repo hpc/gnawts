@@ -29,7 +29,7 @@ import sys,os,splunk.Intersplunk,hostlist,logging,ast,re,math
 LOG_FILENAME = '/tmp/output_from_splunk_2.txt'
 logging.basicConfig(filename=LOG_FILENAME,level=logging.DEBUG)
 
-options = {'filter': True, 'nodeField':'node', 'addAggregate': True}
+options = {'filter': True, 'nodeField':'nid', 'addAggregate': True}
 trigger_options = {}
 results = []
 output_results = []
@@ -38,11 +38,11 @@ node_transitions = {}
 
 # easy way to log data to LOG_FILENAME
 def debug(msg):
-  #logging.debug(msg)
+  logging.debug(msg)
   return
 
 def debug2(msg):
-  #logging.debug(msg)
+  logging.debug(msg)
   return
 
 # store state transitions for counting later
@@ -85,8 +85,8 @@ def update_states(record, additional_details={}): #, last_eventtype):
   debug("Node: " + node)
   debug("Eventtype: " + eventtype)
 
-  # eventtypes can come in as many eventtypes, i.e., "USR-ERR donna-ignore"
-  # in all cases, we want the FIRST eventtype which is the statechange
+  # eventtypes can come in with multiple values, i.e., "USR-ERR donna-ignore"
+  # we will depend on the first to be statechange relevant (set via eventtype priority)
   eventtypes = eventtype.split(" ")
   # now get our start and end states
   if not eventtypes:
@@ -101,7 +101,10 @@ def update_states(record, additional_details={}): #, last_eventtype):
 
 def update_output_results_for_node(record, node, start_state, end_state, additional_details={}):
   global output_results, trigger_options, options
+  # TODO: does expand waste many cycles when no expansion is needed?
+  # (eg, it may only be needed for otype=job events)
   node_list = hostlist.expand_hostlist(node)
+  debug("---- Working on: " + str(record))
       
   for single_node in node_list:
     previous_transition = node_transitions.get(node)
@@ -170,12 +173,6 @@ def aggregate_dict(adict):
 
   return new_hash
 
-def get_sorted_results(results):
-  if len(results) and results[0].has_key('_time'):
-    return sorted(results, key=lambda k: k['_time'])
-  else:
-    return results
-
 def build_aggregate_event(r):
   global node_states, output_results
   debug("Building Aggregate Event")
@@ -198,8 +195,6 @@ def main():
     global results, options, node_states
     results, dummyresults, settings = splunk.Intersplunk.getOrganizedResults()
 
-    debug(sys.argv)
-
     # flag to filter or not filter non-stated events
     # filter defaults to True
     if len(sys.argv) > 1:
@@ -208,18 +203,15 @@ def main():
       for k in filter(lambda x: re.match(".*_Threshold$", x), options.keys()):
         trigger_options[k] = options[k]
 
-    debug("OPTIONS: " + str(options))
+    debug2("OPTIONS: " + str(options))
     
-    # sort the results by time
-    sorted_results = get_sorted_results(results)
-
-    debug2(len(sorted_results))
     i=0
-    if len(sorted_results) and sorted_results[0].has_key('_time'):
+    if len(results) and results[0].has_key('_time'):
+      debug2("Starting on " + str(len(results)) + " events")
       i=i+1
       p = re.compile(".*eventtype=nodeStateList.*")
       last_record = None
-      for r in sorted_results:
+      for r in results:
         if i==1 and p.match(r['_raw']): # only check first record
           debug("Setting initial node states")
           p  = re.compile("(StateName_\w+)=")
@@ -246,6 +238,7 @@ def main():
     stack =  traceback.format_exc()
     results = splunk.Intersplunk.generateErrorResults("Error : Traceback: " + str(stack))
 
+  debug2("Outputting " + str(len(output_results)) + " events")
   splunk.Intersplunk.outputResults( output_results )
 
 
