@@ -29,7 +29,7 @@ import sys,os,splunk.Intersplunk,hostlist,logging,ast,re,math
 LOG_FILENAME = '/tmp/output_from_splunk_2.txt'
 logging.basicConfig(filename=LOG_FILENAME,level=logging.DEBUG)
 
-options = {'filter': True, 'nodeField':'nid', 'addAggregate': True}
+options = {'filter': True, 'nodeField':'nids', 'addAggregate': True}
 trigger_options = {}
 results = []
 output_results = []
