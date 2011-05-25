@@ -5,15 +5,17 @@ SETUP
 
 
 RAS Metrics Stuff:
-1. seed the summary index by doing this search OVER ALL TIME:
-     tag=state | statechange "{'USR-ERR_Threshold':7, 'nodeField':'nid'}" | collect index=summary
-   this is a good test search to see what statechange is doing:
-     tag=state | statechange "{'USR-ERR_Threshold':7, 'nodeField':'nid'}" | table _time nid nodeStateChange ERR SYS USR systemStateChange crossing 
-2. backfill with systemUptimeHoursToday by running this command:
- python bin/backfill_systemUptimeHoursToday.py
-3. now see the RAS Metrics view.  Need to review for correctness of metrics, particularly JMTTI.
+1. seed the summary index with statechanges by doing this search OVER ALL TIME:
+   tag=state | reverse | statechange "{'USR-ERR_Threshold':7, 'USR-SYS_Threshold':7}" | collect index=summary
+2. if the number of events processed above is greter than 50k, run (over all time):
+    [search index=summary nodeStateList | head 1 | eval query="(_time="._time." index=summary nodeStateList) OR (_time>"._time." tag=state)" | fields + query] | reverse | statechange "{'USR-ERR_Threshold':7, 'USR-SYS_Threshold':7}" 
+   and run it repeatedly until the number of events is less than 50k.
+2. backfill the summary index with system uptime records by running 
+    `python hpc/bin/backfill_systemUptimeHoursToday.py`
+3. now see the RAS Metrics view
 
-If we were doing number-of-uptime based stats, things would be much easier, eg:
+BTW: If we were doing number-of-uptime based stats (rather than a sliding window of days), 
+things would be much easier, eg:
 SMTTI of last 5 uptimes
 | delta _time AS durationSeconds | eval durationHours=round(durationSeconds/3600,2) | streamstats avg(durationHours) AS SMTTI window=5 global=f | timechart max(MTTI) AS SMTTI
 
