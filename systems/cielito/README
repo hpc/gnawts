@@ -19,4 +19,3 @@ things would be much easier, eg:
 SMTTI of last 5 uptimes
 | delta _time AS durationSeconds | eval durationHours=round(durationSeconds/3600,2) | streamstats avg(durationHours) AS SMTTI window=5 global=f | timechart max(MTTI) AS SMTTI
 
-
