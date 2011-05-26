@@ -185,9 +185,10 @@ def aggregate_dict(adict):
 
 def build_aggregate_event(r):
   global node_states, output_results
-  debug("Building Aggregate Event")
+  debug2("Building Aggregate Event")
   aggregate_event = {'_time': r['_time'], 'eventtype': 'nodeStateList'}
   new_hash = aggregate_dict(node_states)
+  debug2(new_hash)
 
   # put in proper form
   final_hash = {}
@@ -195,7 +196,7 @@ def build_aggregate_event(r):
     final_hash['StateName_'+k] = hostlist.collect_hostlist(v)
 
   aggregate_event.update(final_hash)
-  debug(aggregate_event);
+  debug2(aggregate_event);
   output_results.append(aggregate_event)
   
 
@@ -217,6 +218,8 @@ def main():
     
     i=0
     if len(results) and results[0].has_key('_time'):
+      if results[0].get('_time') > results[-1].get('_time'):
+        results = results[::-1]
       debug2("Starting on " + str(len(results)) + " events")
       i=i+1
       p = re.compile(".*eventtype=nodeStateList.*")
@@ -245,7 +248,9 @@ def main():
 
   except:
     import traceback
+    debug2("GTO HERE BAD")
     stack =  traceback.format_exc()
+    debug2(str(stack))
     results = splunk.Intersplunk.generateErrorResults("Error : Traceback: " + str(stack))
 
   debug2("Outputting " + str(len(output_results)) + " events")
