@@ -6,11 +6,12 @@ import csv,sys,os,hostlist,logging
 # to excersize forward and backward:
 # nnodes=16 | head 1 | lookup hostListLookup short | lookup hostListLookup long OUTPUTNEW short AS new_short
 
-LOG_FILENAME = '/tmp/output_from_splunk.txt'
+#LOG_FILENAME = '/tmp/output_from_splunk.txt'
+LOG_FILENAME = '/tmp/output_from_splunk_2.txt'
 logging.basicConfig(filename=LOG_FILENAME,level=logging.DEBUG)
 
 def debug(msg):
-  logging.debug(msg)
+  #logging.debug(msg)
   return
 
 # this is the forward lookup to take a list like this [1-10,15-16,18] and return
