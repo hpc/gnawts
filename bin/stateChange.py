@@ -92,7 +92,7 @@ def update_states(record, additional_details={}): #, last_eventtype):
   if not eventtypes:
     return
   start_state, end_state = eventtypes[0].split("-")
-  if not start_state or not end_state:
+  if not start_state and not end_state:
     return
   debug("Start state from eventtype: " + start_state)
   debug("End state from eventtype: " + end_state)
@@ -118,12 +118,27 @@ def update_output_results_for_node(record, node, start_state, end_state, additio
     new_record[options.get('nodeField')] = single_node
     new_transition = start_state + "-" + end_state
     reverse_transition = end_state + "-" + start_state
-    if current_state == start_state or not current_state:
+    if start_state and (current_state == start_state or not current_state):
       new_record['nodeStateChange'] = new_transition
       new_record[end_state] = len(all_nodes_in_state(end_state)) + 1
       new_record[start_state] = len(all_nodes_in_state(start_state)) - 1
       if new_record.get(start_state,0) < 0:
         new_record[start_state] = 0
+    elif not start_state:
+      # if no start state, then decrement current state
+      new_record['nodeStateChange'] = new_transition
+      new_record[end_state] = len(all_nodes_in_state(end_state)) + 1
+      if current_state:
+        new_record[current_state] = len(all_nodes_in_state(current_state)) - 1
+        if new_record.get(current_state,0) < 0:
+          new_record[current_state] = 0
+    elif not end_state:
+      # if no end state, then decrement current state
+      new_record['nodeStateChange'] = new_transition
+      if current_state:
+        new_record[current_state] = len(all_nodes_in_state(current_state)) - 1
+        if new_record.get(current_state,0) < 0:
+          new_record[current_state] = 0
     if new_record.get('nodeStateChange') or not options.get('filter'):
       store_state_transition(single_node, new_record.get('nodeStateChange'))
       newer_record = {'_time': new_record.get('_time'), 'nodeStateChange': new_record.get('nodeStateChange'), options.get('nodeField'): new_record.get(options.get('nodeField')), end_state: new_record.get(end_state), start_state: new_record.get(start_state)}
