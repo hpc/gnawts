@@ -35,6 +35,7 @@ results = []
 output_results = []
 node_states = {}
 node_transitions = {}
+known_states = []
 
 # easy way to log data to LOG_FILENAME
 def debug(msg):
@@ -42,7 +43,7 @@ def debug(msg):
   return
 
 def debug2(msg):
-  #logging.debug(msg)
+  logging.debug(msg)
   return
 
 # store state transitions for counting later
@@ -92,15 +93,23 @@ def update_states(record, additional_details={}): #, last_eventtype):
   if not eventtypes:
     return
   start_state, end_state = eventtypes[0].split("-")
-  if not start_state and not end_state:
-    return
+  if start_state == "*" or start_state == "UNK":
+    start_state = "" 
+  if end_state == "*" or end_state == "UNK":
+    end_state = ""
+  #if not start_state and not end_state:
+  #  return
+  if end_state != "" and not end_state in known_states:
+    known_states.append(end_state)
+  if start_state != "" and not start_state in known_states:
+    known_states.append(start_state)
   debug("Start state from eventtype: " + start_state)
   debug("End state from eventtype: " + end_state)
   
   update_output_results_for_node(record, node, start_state, end_state, additional_details)
 
 def update_output_results_for_node(record, node, start_state, end_state, additional_details={}):
-  global output_results, trigger_options, options
+  global output_results, trigger_options, options, known_states
   # TODO: does expand waste many cycles when no expansion is needed?
   # (eg, it may only be needed for otype=job events)
   node_list = hostlist.expand_hostlist(node)
@@ -116,8 +125,14 @@ def update_output_results_for_node(record, node, start_state, end_state, additio
     appended_new_record = False
     new_record = record
     new_record[options.get('nodeField')] = single_node
-    new_transition = start_state + "-" + end_state
-    reverse_transition = end_state + "-" + start_state
+    _start_state = start_state
+    _end_state   = end_state
+    if _start_state == "":
+      _start_state = "*"
+    if _end_state == "":
+      _end_state = "UNK"
+    new_transition = _start_state + "-" + _end_state
+    reverse_transition = _end_state + "-" + _start_state
     if start_state and end_state and (current_state == start_state or not current_state):
       new_record['nodeStateChange'] = new_transition
       new_record[end_state] = len(all_nodes_in_state(end_state)) + 1
@@ -142,6 +157,11 @@ def update_output_results_for_node(record, node, start_state, end_state, additio
     if new_record.get('nodeStateChange') or not options.get('filter'):
       store_state_transition(single_node, new_record.get('nodeStateChange'))
       newer_record = {'_time': new_record.get('_time'), 'nodeStateChange': new_record.get('nodeStateChange'), options.get('nodeField'): new_record.get(options.get('nodeField')), current_state: new_record.get(current_state), end_state: new_record.get(end_state), start_state: new_record.get(start_state)}
+      aggregate_states = aggregate_dict(node_states)
+      for k in known_states:
+        if (current_state and k == current_state) or (end_state and k == end_state) or (start_state and k == start_state):
+          continue
+        newer_record[k] = len(all_nodes_in_state(k))
       newer_record.update(additional_details)
       output_results.append(newer_record)
       add_trigger_transition(new_record, previous_transition, new_transition, reverse_transition)
