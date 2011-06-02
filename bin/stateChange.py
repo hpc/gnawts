@@ -118,7 +118,7 @@ def update_output_results_for_node(record, node, start_state, end_state, additio
     new_record[options.get('nodeField')] = single_node
     new_transition = start_state + "-" + end_state
     reverse_transition = end_state + "-" + start_state
-    if start_state and (current_state == start_state or not current_state):
+    if start_state and end_state and (current_state == start_state or not current_state):
       new_record['nodeStateChange'] = new_transition
       new_record[end_state] = len(all_nodes_in_state(end_state)) + 1
       new_record[start_state] = len(all_nodes_in_state(start_state)) - 1
@@ -141,7 +141,7 @@ def update_output_results_for_node(record, node, start_state, end_state, additio
           new_record[current_state] = 0
     if new_record.get('nodeStateChange') or not options.get('filter'):
       store_state_transition(single_node, new_record.get('nodeStateChange'))
-      newer_record = {'_time': new_record.get('_time'), 'nodeStateChange': new_record.get('nodeStateChange'), options.get('nodeField'): new_record.get(options.get('nodeField')), end_state: new_record.get(end_state), start_state: new_record.get(start_state)}
+      newer_record = {'_time': new_record.get('_time'), 'nodeStateChange': new_record.get('nodeStateChange'), options.get('nodeField'): new_record.get(options.get('nodeField')), current_state: new_record.get(current_state), end_state: new_record.get(end_state), start_state: new_record.get(start_state)}
       newer_record.update(additional_details)
       output_results.append(newer_record)
       add_trigger_transition(new_record, previous_transition, new_transition, reverse_transition)
