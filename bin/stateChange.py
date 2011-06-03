@@ -188,6 +188,13 @@ def add_trigger_state(record, prev_end_state, new_end_state):
     aggregate_states = aggregate_dict(node_states)
     debug("Aggregate states")
     debug(aggregate_states)
+    # count is decreasing for prev_end_state
+    # for previous end states we only care about points of downward crossing, that's < for going DOWN, so really just == VALUE for threshold minus 1
+    if prev_end_state and trigger_options.has_key(prev_end_state + "_Threshold") and len(aggregate_states.get(prev_end_state,[])) == trigger_options.get(prev_end_state + "_Threshold") - 1: 
+      debug("DOWNWARD Trigger for " + prev_end_state + "_Threshold")
+      trigger_record = {'_time': record.get('_time'), 'systemStateChange': prev_end_state, 'crossing': 'decreasing'}
+      output_results.append(trigger_record)
+    
     # count is increasing for new_end_state and decreasing for prev_end_state
     # for new end state we only care about points of upward crossing, that's >= for going UP, so really just == VALUE for threshold
     if new_end_state and trigger_options.has_key(new_end_state + "_Threshold") and len(aggregate_states.get(new_end_state,[])) == trigger_options.get(new_end_state + "_Threshold"): 
@@ -195,12 +202,6 @@ def add_trigger_state(record, prev_end_state, new_end_state):
       trigger_record = {'_time': record.get('_time'), 'systemStateChange': new_end_state, 'crossing': 'increasing'}
       output_results.append(trigger_record)
 
-    # count is decreasing for prev_end_state
-    # for previous end states we only care about points of downward crossing, that's < for going DOWN, so really just == VALUE for threshold minus 1
-    if prev_end_state and trigger_options.has_key(prev_end_state + "_Threshold") and len(aggregate_states.get(prev_end_state,[])) == trigger_options.get(prev_end_state + "_Threshold") - 1: 
-      debug("DOWNWARD Trigger for " + prev_end_state + "_Threshold")
-      trigger_record = {'_time': record.get('_time'), 'systemStateChange': prev_end_state, 'crossing': 'decreasing'}
-      output_results.append(trigger_record)
 
 def add_trigger_transition(record, previous_transition, new_transition, reverse_transition): 
   global trigger_options, node_transitions, output_results
