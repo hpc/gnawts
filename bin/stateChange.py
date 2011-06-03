@@ -43,7 +43,7 @@ def debug(msg):
   return
 
 def debug2(msg):
-  logging.debug(msg)
+  #logging.debug(msg)
   return
 
 # store state transitions for counting later
@@ -93,9 +93,9 @@ def update_states(record, additional_details={}): #, last_eventtype):
   if not eventtypes:
     return
   start_state, end_state = eventtypes[0].split("-")
-  if start_state == "*" or start_state == "UNK":
+  if start_state == "*":
     start_state = "" 
-  if end_state == "*" or end_state == "UNK":
+  if end_state == "*":
     end_state = ""
   #if not start_state and not end_state:
   #  return
@@ -112,7 +112,9 @@ def update_output_results_for_node(record, node, start_state, end_state, additio
   global output_results, trigger_options, options, known_states
   # TODO: does expand waste many cycles when no expansion is needed?
   # (eg, it may only be needed for otype=job events)
-  node_list = hostlist.expand_hostlist(node)
+  node_list = node.split(",")
+  if "-" in node or "[" in node:
+    node_list = hostlist.expand_hostlist(node)
   debug("---- Working on: " + str(record))
       
   for single_node in node_list:
@@ -127,8 +129,12 @@ def update_output_results_for_node(record, node, start_state, end_state, additio
     new_record[options.get('nodeField')] = single_node
     _start_state = start_state
     _end_state   = end_state
+    if not current_state:
+      _start_state = "UNK"
     if _start_state == "":
-      _start_state = "*"
+      _start_state = "UNK"
+      if current_state:
+        _start_state = current_state
     if _end_state == "":
       _end_state = "UNK"
     new_transition = _start_state + "-" + _end_state
@@ -185,7 +191,7 @@ def add_trigger_state(record, prev_end_state, new_end_state):
     # count is increasing for new_end_state and decreasing for prev_end_state
     # for new end state we only care about points of upward crossing, that's >= for going UP, so really just == VALUE for threshold
     if new_end_state and trigger_options.has_key(new_end_state + "_Threshold") and len(aggregate_states.get(new_end_state,[])) == trigger_options.get(new_end_state + "_Threshold"): 
-      debug("UPWARD Trigger for " + new_transition + "_Threshold")
+      debug("UPWARD Trigger for " + new_end_state + "_Threshold")
       trigger_record = {'_time': record.get('_time'), 'systemStateChange': new_end_state, 'crossing': 'increasing'}
       output_results.append(trigger_record)
 
@@ -279,10 +285,10 @@ def main():
       if results[0].get('_time') > results[-1].get('_time'):
         results = results[::-1]
       debug2("Starting on " + str(len(results)) + " events")
-      i=i+1
       p = re.compile(".*eventtype=nodeStateList.*")
       last_record = None
       for r in results:
+        i=i+1
         if i==1 and p.match(r['_raw']): # only check first record
           debug("Setting initial node states")
           p  = re.compile("(StateName_\w+)=")
