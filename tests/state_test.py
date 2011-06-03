@@ -6,6 +6,32 @@ sample_input_2 = open('sample_input_from_splunk_2.csv', 'r')
 sys.stdin = sample_input_1
 import stateChange
 
+class RSVSTARTTestCase(unittest.TestCase):
+  def setUp(self):
+    # for these tests, we expect some input from Splunk
+    sys.stdin = sample_input_1
+    stateChange.node_states = {}
+    stateChange.node_trasitions = {}
+    stateChange.output_results = []
+    stateChange.trigger_options = {}
+
+  def test_state_change_for_simple_set(self):
+    stateChange.trigger_options['-SYS_Threshold'] = 2
+    stateChange.trigger_options['USR-ERR_Threshold'] = 1
+    stateChange.update_output_results_for_node({'_time':'1', 'nids':'n1'}, 'n1', 'USR', 'ERR')
+    stateChange.update_output_results_for_node({'_time':'2', 'nids':'n2'}, 'n5', '*', 'SYS')
+    stateChange.update_output_results_for_node({'_time':'3', 'nids':'n6'}, 'n6', '*', 'SYS')
+    self.assertEqual(stateChange.output_results[1],  {'_time':'1', 'systemStateChange':'USR-ERR', 'crossing': 'increasing'})
+    self.assertEqual(stateChange.output_results[-1], {'_time':'3', 'systemStateChange':'UNK-SYS', 'crossing': 'increasing'})
+  
+  def test_state_change_for_simple_set2(self):
+    #    return # IGNORE FOR NOW, but would be nice to base thresholds on a single state rather than transition
+    stateChange.trigger_options['SYS_Threshold'] = 2
+    stateChange.update_output_results_for_node({'_time':'1', 'nids':'n1'}, 'n1', 'USR', 'ERR')
+    stateChange.update_output_results_for_node({'_time':'2', 'nids':'n2'}, 'n5', 'USR', 'SYS')
+    stateChange.update_output_results_for_node({'_time':'3', 'nids':'n6'}, 'n6', 'ERR', 'SYS')
+    self.assertEqual(stateChange.output_results[-1], {'_time':'3', 'systemStateChange':'SYS', 'crossing': 'increasing'})
+
 
 class TriggerEventsTestCase(unittest.TestCase):
   def setUp(self):
@@ -115,7 +141,9 @@ class DefaultStateTestCase(unittest.TestCase):
 suite1 = unittest.TestLoader().loadTestsFromTestCase(DefaultStateTestCase)
 suite2 = unittest.TestLoader().loadTestsFromTestCase(AggregateEventsTestCase)
 suite3 = unittest.TestLoader().loadTestsFromTestCase(TriggerEventsTestCase)
-unittest.TextTestRunner(verbosity=2).run(suite1)
-unittest.TextTestRunner(verbosity=2).run(suite2)
-unittest.TextTestRunner(verbosity=2).run(suite3)
+suite4 = unittest.TestLoader().loadTestsFromTestCase(RSVSTARTTestCase)
+#unittest.TextTestRunner(verbosity=2).run(suite1)
+#unittest.TextTestRunner(verbosity=2).run(suite2)
+#unittest.TextTestRunner(verbosity=2).run(suite3)
+unittest.TextTestRunner(verbosity=2).run(suite4)
 
