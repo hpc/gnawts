@@ -3,9 +3,14 @@ import sys,os,splunk.Intersplunk,hostlist,logging,ast,re,math
 LOG_FILENAME = '/tmp/output_from_splunk_2.txt'
 logging.basicConfig(filename=LOG_FILENAME,level=logging.DEBUG)
 
+# use double quotes to protect options when giving in search, eg:
+#  tag=state | statechange "{'nodeField':'node', 'USR_Threshold':500}"
 options = {'filter': True, 'nodeField':'nids', 'addAggregate': True}
 trigger_options = {}
-trigger_options = {'USR_Threshold':63, 'ERR_Threshold':7, 'SYS_Threshold':63}
+# USR and SYS should be integer(0.9*N) # where N is total system nodes
+# ERR should be integer(0.01*N)+1      # "more than 1% of nodes"
+# below is for cielito, where N=70
+trigger_options = {'USR_Threshold':63, 'ERR_Threshold':8, 'SYS_Threshold':63}
 results = []
 output_results = []
 node_states = {}
