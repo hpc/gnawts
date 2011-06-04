@@ -1,41 +1,18 @@
 import sys,os,splunk.Intersplunk,hostlist,logging,ast,re,math
 
-# Example: tag=state NOT jobstart | search node="c0-0c1s6n1" | head 24 | statechange
-# to return ALL resuls even those not changing state use filter option of False
-# Example: tag=state | statechange {'filter':False} 
-# this will return only those records with state change
-# Example: tag=state | statechange
-# if your node field is other than "node", i.e., "nodes" set the nodeField option (defaults to 'node')
-# Example: tag=state | statechange {'nodeField':'nodes'}
-# if you don't want to preload node states or write out node states then set useNodeStatesFile to false
-# Example: tag=state | statechange {'useNodeStatesFile':False}
-# if you need to use more than one option then put them in quotes
-# tag=state | statechange "{'filter':False, 'useNodeStatesFile':False}" | table _time node eventtype state
-
-# tag=state NOT jobstart | statechange "{'ERR-USR_Threshold' : 5}" | table _time eventtype node nodeStateChange systemStateChange crossing
-
-# For populating the initial node states -
-
-# 1) grab the last nodeStateList with this query:
-# index=summary "eventtype=nodeStateList" NOT search_name=* | head 1
-
-# 2) combine that with this query `tag=state` and you get this:
-# (tag=state NOT jobstart) OR (index=summary "eventtype=nodeStateList" NOT search_name=*)
-
-# 3) now add the stateChange
-# (tag=state NOT jobstart) OR (index=summary "eventtype=nodeStateList" NOT search_name=*) | stateChange "{'nodeField':'nid'}"
-
-
 LOG_FILENAME = '/tmp/output_from_splunk_2.txt'
 logging.basicConfig(filename=LOG_FILENAME,level=logging.DEBUG)
 
 options = {'filter': True, 'nodeField':'nids', 'addAggregate': True}
 trigger_options = {}
+trigger_options = {'USR_Threshold':63, 'ERR_Threshold':7, 'SYS_Threshold':63}
 results = []
 output_results = []
 node_states = {}
 node_transitions = {}
 known_states = []
+counts = {}
+thresholds = {}
 
 # easy way to log data to LOG_FILENAME
 def debug(msg):
@@ -46,36 +23,64 @@ def debug2(msg):
   logging.debug(msg)
   return
 
-# store state transitions for counting later
-def store_state_transition(node, transition):
-  debug("Storing state transition")
-  debug("Node to store to hash: " + node)
-  debug("Transition to store to hash: " + transition)
-  global node_transitions
-  node_transitions[node] = transition
+##################################################################
+def nodeStateChange(record, node, start_state, end_state):
+    global counts
+    node_states[node] = end_state
+    new = {'_time': record.get('_time'),
+           options.get('nodeField'): node,
+           'nodeStateChange': start_state + "-" + end_state}
+    for state in counts:
+      new[state] = counts[state]
+    output_results.append(new)
 
-def store_current_state(node, state):
-  debug("Storing current state ######################################")
-  debug("Node to store to hash: " + node)
-  debug("State to store to hash: " + state)
-  global node_states
-  debug("Current hash: " + str(node_states))
-  node_states[node] = state
-  debug("Updated hash: " + str(node_states))
+##################################################################
+def updateCounts(record, state, delta):
+  global thresholds, counts
 
-def get_current_state(node):
-  debug("Getting current state ######################################")
-  debug("Node to lookup: " + node)
-  global node_states
-  debug("Current hash: " + str(node_states))
-  return node_states.get(node)
+  if counts.get(state) == None: # first time this state is seen
+    counts[state] = 0
+  before = counts[state]
 
+  if delta > 0 or counts[state] > 0:
+    counts[state] = counts[state] + delta
+
+  if not thresholds.get(state) == None:
+    new = {'_time': record.get('_time'),
+           'systemStateChange': state}
+    if   before < counts[state] and counts[state] == thresholds[state]:
+      new['direction'] = "increasing"
+      output_results.append(new)
+    elif before > counts[state] and before        == thresholds[state]:
+      new['direction'] = "decreasing"
+      output_results.append(new)
+
+##################################################################
+def stateChangeLogic(record, nodes, start_state, end_state):
+  global output_results, trigger_options, options, known_states, node_states
+  if "-" in nodes or "[" in nodes:
+    node_list = hostlist.expand_hostlist(nodes)
+  else:
+    node_list = nodes.split(",")
+  debug("---- Working on: " + str(record))
+
+  for node in node_list:
+    current_state = node_states.get(node)
+    if not current_state:                                                        # first seen
+      updateCounts(record, end_state, 1)                           # increment
+      nodeStateChange(record, node, "UNK", end_state)              # change
+    elif current_state=="UNK" or start_state=="*" or current_state==start_state: # match
+      updateCounts(record, current_state, -1)                      # decrement
+      updateCounts(record, end_state, 1)                           # increment
+      nodeStateChange(record, node, current_state, end_state)      # change
+
+##################################################################
 # derive state for given node and eventtype
 # node can come in as a single node or list of nodes 
 # the list of nodes can be in short (1-3) or long (1,2,3) form
 # each node can have a different state or NOT a state at all
 # only return the nodes that have a new state applied
-def update_states(record, additional_details={}): #, last_eventtype):
+def parseRecord(record, additional_details={}): #, last_eventtype):
   global output_results, options
   node = record.get(options.get('nodeField'))
   eventtype = record.get('eventtype')
@@ -93,216 +98,80 @@ def update_states(record, additional_details={}): #, last_eventtype):
   if not eventtypes:
     return
   start_state, end_state = eventtypes[0].split("-")
-  if start_state == "*" or start_state == "UNK":
-    start_state = "" 
-  if end_state == "*" or end_state == "UNK":
-    end_state = ""
-  #if not start_state and not end_state:
-  #  return
-  if end_state != "" and not end_state in known_states:
-    known_states.append(end_state)
-  if start_state != "" and not start_state in known_states:
-    known_states.append(start_state)
-  debug("Start state from eventtype: " + start_state)
-  debug("End state from eventtype: " + end_state)
-  
-  update_output_results_for_node(record, node, start_state, end_state, additional_details)
+  stateChangeLogic(record, node, start_state, end_state)
 
-def update_output_results_for_node(record, node, start_state, end_state, additional_details={}):
-  global output_results, trigger_options, options, known_states
-  # TODO: does expand waste many cycles when no expansion is needed?
-  # (eg, it may only be needed for otype=job events)
-  node_list = hostlist.expand_hostlist(node)
-  debug("---- Working on: " + str(record))
-      
-  for single_node in node_list:
-    previous_transition = node_transitions.get(single_node)
-    prev_end_state = None
-    if previous_transition:
-      prev_start_state, prev_end_state = previous_transition.split("-")
-    current_state = get_current_state(single_node)
-    debug("Current state from lookup: " + str(current_state))
-    appended_new_record = False
-    new_record = record
-    new_record[options.get('nodeField')] = single_node
-    _start_state = start_state
-    _end_state   = end_state
-    if _start_state == "":
-      _start_state = "*"
-    if _end_state == "":
-      _end_state = "UNK"
-    new_transition = _start_state + "-" + _end_state
-    reverse_transition = _end_state + "-" + _start_state
-    if start_state and end_state and (current_state == start_state or not current_state):
-      new_record['nodeStateChange'] = new_transition
-      new_record[end_state] = len(all_nodes_in_state(end_state)) + 1
-      new_record[start_state] = len(all_nodes_in_state(start_state)) - 1
-      if new_record.get(start_state,0) < 0:
-        new_record[start_state] = 0
-    elif not start_state:
-      # if no start state, then decrement current state
-      new_record['nodeStateChange'] = new_transition
-      new_record[end_state] = len(all_nodes_in_state(end_state)) + 1
-      if current_state:
-        new_record[current_state] = len(all_nodes_in_state(current_state)) - 1
-        if new_record.get(current_state,0) < 0:
-          new_record[current_state] = 0
-    elif not end_state:
-      # if no end state, then decrement current state
-      new_record['nodeStateChange'] = new_transition
-      if current_state:
-        new_record[current_state] = len(all_nodes_in_state(current_state)) - 1
-        if new_record.get(current_state,0) < 0:
-          new_record[current_state] = 0
-    if new_record.get('nodeStateChange') or not options.get('filter'):
-      store_state_transition(single_node, new_record.get('nodeStateChange'))
-      newer_record = {'_time': new_record.get('_time'), 'nodeStateChange': new_record.get('nodeStateChange'), options.get('nodeField'): new_record.get(options.get('nodeField')), current_state: new_record.get(current_state), end_state: new_record.get(end_state), start_state: new_record.get(start_state)}
-      aggregate_states = aggregate_dict(node_states)
-      for k in known_states:
-        if (current_state and k == current_state) or (end_state and k == end_state) or (start_state and k == start_state):
-          continue
-        newer_record[k] = len(all_nodes_in_state(k))
-      newer_record.update(additional_details)
-      output_results.append(newer_record)
-      add_trigger_transition(new_record, previous_transition, new_transition, reverse_transition)
-      add_trigger_state(new_record, prev_end_state, end_state)
-    store_current_state(single_node, end_state)
 
-def add_trigger_state(record, prev_end_state, new_end_state): 
-  global trigger_options, node_transitions, output_results
-  # if we 
-  # 1) added a new record and 
-  # 2) have trigger thresholds for eventtypes and
-  # 3) and our record's current or previous state transition matches one of the keys
-  # then we can talk transition:
-  if len(trigger_options) and ((prev_end_state and trigger_options.has_key(prev_end_state + "_Threshold")) or (new_end_state and trigger_options.has_key(new_end_state + "_Threshold"))):
-    debug("We have what we need to add trigger")
-    # get the aggregate dict for node states
-    # basically from node => state to state => [nodem ... noden]
-    aggregate_states = aggregate_dict(node_states)
-    debug("Aggregate states")
-    debug(aggregate_states)
-    # count is increasing for new_end_state and decreasing for prev_end_state
-    # for new end state we only care about points of upward crossing, that's >= for going UP, so really just == VALUE for threshold
-    if new_end_state and trigger_options.has_key(new_end_state + "_Threshold") and len(aggregate_states.get(new_end_state,[])) == trigger_options.get(new_end_state + "_Threshold"): 
-      debug("UPWARD Trigger for " + new_transition + "_Threshold")
-      trigger_record = {'_time': record.get('_time'), 'systemStateChange': new_end_state, 'crossing': 'increasing'}
-      output_results.append(trigger_record)
-
-    # count is decreasing for prev_end_state
-    # for previous end states we only care about points of downward crossing, that's < for going DOWN, so really just == VALUE for threshold minus 1
-    if prev_end_state and trigger_options.has_key(prev_end_state + "_Threshold") and len(aggregate_states.get(prev_end_state,[])) == trigger_options.get(prev_end_state + "_Threshold") - 1: 
-      debug("DOWNWARD Trigger for " + prev_end_state + "_Threshold")
-      trigger_record = {'_time': record.get('_time'), 'systemStateChange': prev_end_state, 'crossing': 'decreasing'}
-      output_results.append(trigger_record)
-
-def add_trigger_transition(record, previous_transition, new_transition, reverse_transition): 
-  global trigger_options, node_transitions, output_results
-  # if we 
-  # 1) added a new record and 
-  # 2) have trigger thresholds for eventtypes and
-  # 3) and our record's current or previous state transition matches one of the keys
-  # then we can talk transition:
-  if len(trigger_options) and ((new_transition and trigger_options.has_key(new_transition + "_Threshold")) or (previous_transition and trigger_options.has_key(previous_transition + "_Threshold"))):
-    debug("We have what we need to add trigger")
-    # get the aggregate dict for node transitions
-    # basically from node => transition -to- transition => [nodem ... noden]
-    aggregate_transitions = aggregate_dict(node_transitions)
-    debug("Aggregate transitions")
-    debug(aggregate_transitions)
-    # count is increasing for new_transition and decreasing for previous transition
-    # for new transition we only care about points of upward crossing, that's >= for going UP, so really just == VALUE for threshold
-    if new_transition and trigger_options.has_key(new_transition + "_Threshold") and len(aggregate_transitions.get(new_transition,[])) == trigger_options.get(new_transition + "_Threshold"): 
-      debug("UPWARD Trigger for " + new_transition + "_Threshold")
-      trigger_record = {'_time': record.get('_time'), 'systemStateChange': new_transition, 'crossing': 'increasing'}
-      output_results.append(trigger_record)
-
-    # count is decreasing for previous_transition
-    # for previous transitions we only care about points of downward crossing, that's < for going DOWN, so really just == VALUE for threshold minus 1
-    if previous_transition and trigger_options.has_key(previous_transition + "_Threshold") and len(aggregate_transitions.get(previous_transition,[])) == trigger_options.get(previous_transition + "_Threshold") - 1: 
-      debug("DOWNWARD Trigger for " + previous_transition + "_Threshold")
-      trigger_record = {'_time': record.get('_time'), 'systemStateChange': previous_transition, 'crossing': 'decreasing'}
-      output_results.append(trigger_record)
-
-def all_nodes_in_state(state):
+##################################################################
+def nodeStateList(record):
   global node_states
-  nodes_by_state = aggregate_dict(node_states)
-  return nodes_by_state.get(state, [])
+  # make a list of nodes in each state
+  stateList = {}
+  for node in node_states:
+    if stateList.get(node_states[node]) == None:
+      stateList[node_states[node]] = []
+    stateList[node_states[node]].append(node)
 
-# swap from node => state to state => [node0...noden]
-# or any dict from node => transition to transition => [node ... noden]
-def aggregate_dict(adict):
-  new_hash = {}
-  # now add to the aggregate event by looping through our node_states
-  for k,v in adict.iteritems():
-    new_v = new_hash.get(v, [])
-    new_v.append(k)
-    new_hash[v] = new_v
+  # make new record
+  new = {'_time': record.get('_time')}
+  for state in stateList:
+    new["StateName_"+state] = hostlist.collect_hostlist(stateList[state])
 
-  return new_hash
+  output_results.append(new)
 
-def build_aggregate_event(r):
-  global node_states, output_results
-  debug2("Building Aggregate Event")
-  aggregate_event = {'_time': r['_time'], 'eventtype': 'nodeStateList'}
-  new_hash = aggregate_dict(node_states)
-  debug2(new_hash)
 
-  # put in proper form
-  final_hash = {}
-  for k,v in new_hash.iteritems():
-    final_hash['StateName_'+k] = hostlist.collect_hostlist(v)
-
-  aggregate_event.update(final_hash)
-  debug2(aggregate_event);
-  output_results.append(aggregate_event)
-  
-
+##################################################################
 def main():
   global output_results
   try:
-    global results, options, node_states
+    global results, options, node_states, thresholds, trigger_options
     results, dummyresults, settings = splunk.Intersplunk.getOrganizedResults()
 
-    # flag to filter or not filter non-stated events
-    # filter defaults to True
+    # process arguments
     if len(sys.argv) > 1:
       new_options = ast.literal_eval(sys.argv[1])
       options.update(new_options)
       for k in filter(lambda x: re.match(".*_Threshold$", x), options.keys()):
         trigger_options[k] = options[k]
 
+    # setup thresholds
+    r = re.compile('(.+)_Threshold')
+    for key in trigger_options:
+      m = r.match(key)
+      if not m == None:
+        state = m.group(1)
+        thresholds[state] = trigger_options[key]
+
     debug2("OPTIONS: " + str(options))
     
     i=0
     if len(results) and results[0].has_key('_time'):
       if results[0].get('_time') > results[-1].get('_time'):
-        results = results[::-1]
+        results = results[::-1]                     # ensure chronological order
       debug2("Starting on " + str(len(results)) + " events")
-      i=i+1
-      p = re.compile(".*eventtype=nodeStateList.*")
       last_record = None
       for r in results:
-        if i==1 and p.match(r['_raw']): # only check first record
+        i=i+1
+        if i==1 and "StateName_" in r['_raw']: # does first record contain StateName?
           debug("Setting initial node states")
           p  = re.compile("(StateName_\w+)=")
           ps = re.compile("StateName_(\w+)")
-          for a_node_state in p.findall(r['_raw']):
-            mobj = ps.match(a_node_state)
-            if (mobj != None):
-              stateName = mobj.group(1)
-            else:
-              stateName = None #a_state_name
-            for a_node in hostlist.expand_hostlist(r.get(a_node_state)):
-              store_current_state(a_node, stateName)
+          for stateName in p.findall(r['_raw']):
+            mobj = ps.match(stateName)
+            if not mobj == None:
+              state = mobj.group(1)
+              for node in hostlist.expand_hostlist(r.get(stateName)):
+                node_states[node] = state			# save state
+                if counts.get(state) == None:
+                  counts[state] = 0					# seed counts
+                counts[state] = counts[state] + 1	# increment counts
         else:
           # now update our record
-          update_states(r)
+          parseRecord(r)
           last_record = r
       if last_record!=None and options.get('addAggregate'):
         # need the last record for '_time' entry
         debug("AGGREGATE: Building aggregate event");
-        build_aggregate_event(last_record)
+        nodeStateList(last_record)
 
   except:
     import traceback
@@ -315,57 +184,7 @@ def main():
   splunk.Intersplunk.outputResults( output_results )
 
 
+##################################################################
 debug2("Starting")
 main()
 debug2("Finished")
-
-# Here is how this stateChange script fits into the RAS Metrics implementation:
-# 1. Node state logic is encoded as eventtypes, formatted as FROM-TO where
-#    FROM and TO are arbitrary state names.  For example, events matching
-#    etype=nodedown could have eventtype=USR-ERR.  All such eventtypes must
-#    have priority=1 (appear first in the eventtype field), and be grouped via
-#    tag=state.
-# 2. this script processes such events which include a node field (events without
-#    a node field are ignored), and outputs:
-#   a. one event per actual node state change, including:
-#        _time node=NODE nodeStateChange=FROM-TO 
-#   b. one event per system state change, including:
-#        _time systemStateChange=FROM-TO 
-#      this should only occur if an argument FROM-TO_Threshold is given,
-#      for example USR-ERR_Threshold=10 would result in an event like
-#        _time systemStateChange=USR-ERR
-#      when the total number of nodes in an ERR state become >= 10, and 
-#        _time systemStateChange=USR-ERR
-#      when the running count of nodes in ERR becomes <10.  "Becomes" means
-#      that events should only be output when the threshold is crossed
-#      (eg, not all nodeStateChange events cause a threshold crossing).
-#   c. just before exiting, an event including:
-#        _time eventtype=nodeStateList XXX=hostlist YYY=hostlist ZZZ=hostlist
-#      where _time is the time of the last seen event (regardless of whether it
-#      resulted in a nodeStateChange), XXX, YYY, and ZZZ are state names and
-#      hostlist is a compressed list of the nodes in each state.  For example:
-#        _time eventtype=nodeStateList USR=[1-50,71-90] ERR=[51-60,91-92] SYS=[61-70,93-100]
-#      indicates 71 nodes in USR, 12 nodes in ERR, and 18 in SYS.
-#   NOTE - output events should be a copy of the triggering event, with the
-#      above fields added in as appropriate.
-# 3. the output events of this script are saved to a summary index, for example:
-#        tag=state | stateChange | collect index=summary
-#     would store state changes into the summary index, using no initial
-#     state information, such that the earliest event for each node results in a
-#     nodeStateChange.  In contrast, tracking of state across invocations of
-#     this script is accomplished by using the latest nodeStateList in the
-#     summary index, for example:
-#        [search index=summary eventtype=nodeStateList | head 1 | eval query="(index=summary eventtype=nodeStateList) OR (tag=state earliest="._time.")" | fields + query] | stateChange | collect index=summary
-#     will result in this script setting the initial state of nodes via the
-#     nodeStateList event it receives as input (eg, the one from the last time
-#     this script ran), and then it will process in the normal way the other
-#     input events (eg, all the tag=state events events since the last time
-#     this script ran).  This latter example will be periodically run as a
-#     scheduled saved search.
-#
-# At this point, various per-node and system metrics are possible, for example:
-# MTTI is the mean time a node (or system) stays in a  USR state, and 
-# MTTR is the mean time a node (or system) stays in an ERR state.
-# These will be accomplished via saved searches and macros which process
-# nodeStateChange and systemStateChange events from the summary index.
-
