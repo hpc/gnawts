@@ -29,36 +29,29 @@ def debug2(msg):
   return
 
 ##################################################################
-def nodeStateChange(record, node, start_state, end_state):
-    global counts
-    node_states[node] = end_state
-    new = {'_time': record.get('_time'),
-           options.get('nodeField'): node,
-           'nodeStateChange': start_state + "-" + end_state}
-    for state in counts:
-      new[state] = counts[state]
-    output_results.append(new)
+def nodeStateChange(record, node, from_state, to_state):
+  global counts
 
-##################################################################
-def updateCounts(record, state, delta):
-  global thresholds, counts
+  new = {            '_time'      : record.get('_time'),
+         options.get('nodeField') : node}
 
-  if counts.get(state) == None: # first time this state is seen
-    counts[state] = 0
-  before = counts[state]
+  # deal with from_state
+  if from_state == None:                    # first time this node is seen
+    from_state = "UNK"
+  else:                                     # not first time
+    new['from'] = from_state                     # note from state
+    counts[from_state] = counts[from_state] - 1  # decrement count
 
-  if delta > 0 or counts[state] > 0:
-    counts[state] = counts[state] + delta
+  # deal with to_state
+  if counts.get(to_state) == None:          # first time this state is seen
+    counts[to_state] = 0                         # initialize
+  counts[to_state] = counts[to_state] + 1        # increment
+  node_states[node] = to_state                   # set state
+  new['to'] = to_state                           # always note to state
 
-  if not thresholds.get(state) == None:
-    new = {'_time': record.get('_time'),
-           'systemStateChange': state}
-    if   before < counts[state] and counts[state] == thresholds[state]:
-      new['direction'] = "increasing"
-      output_results.append(new)
-    elif before > counts[state] and before        == thresholds[state]:
-      new['direction'] = "decreasing"
-      output_results.append(new)
+  for state in counts:
+    new[state] = counts[state]              # note all state counts
+  output_results.append(new)                # output new record
 
 ##################################################################
 def stateChangeLogic(record, nodes, start_state, end_state):
@@ -71,13 +64,8 @@ def stateChangeLogic(record, nodes, start_state, end_state):
 
   for node in node_list:
     current_state = node_states.get(node)
-    if not current_state:                                                        # first seen
-      updateCounts(record, end_state, 1)                           # increment
-      nodeStateChange(record, node, "UNK", end_state)              # change
-    elif current_state=="UNK" or start_state=="*" or current_state==start_state: # match
-      updateCounts(record, current_state, -1)                      # decrement
-      updateCounts(record, end_state, 1)                           # increment
-      nodeStateChange(record, node, current_state, end_state)      # change
+    if current_state == None or current_state=="UNK" or start_state=="*" or current_state==start_state:
+      nodeStateChange(record, node, current_state, end_state)
 
 ##################################################################
 # derive state for given node and eventtype
@@ -100,10 +88,9 @@ def parseRecord(record, additional_details={}): #, last_eventtype):
   # we will depend on the first to be statechange relevant (set via eventtype priority)
   eventtypes = eventtype.split(" ")
   # now get our start and end states
-  if not eventtypes:
-    return
-  start_state, end_state = eventtypes[0].split("-")
-  stateChangeLogic(record, node, start_state, end_state)
+  if eventtypes:
+    start_state, end_state = eventtypes[0].split("-")
+    stateChangeLogic(record, node, start_state, end_state)
 
 
 ##################################################################
@@ -171,6 +158,8 @@ def main():
                 counts[state] = counts[state] + 1	# increment counts
         else:
           # now update our record
+          if i%1000 == 0:
+            debug2("record " + str(i) + " of " + str(len(results)))
           parseRecord(r)
           last_record = r
       if last_record!=None and options.get('addAggregate'):
@@ -192,4 +181,4 @@ def main():
 ##################################################################
 debug2("Starting")
 main()
-debug2("Finished")
+debug2("Finished\n\n")

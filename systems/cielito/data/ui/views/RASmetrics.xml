@@ -3,8 +3,8 @@
   <label>RAS metrics</label>
   <row>
     <chart>
-      <searchName>nodeStateCounts</searchName>
-      <title>System State Percentages</title>
+      <searchName>systemStateHours</searchName>
+      <title>Hours per Day</title>
       <option name="drilldown">all</option>
     </chart>
     <chart>

@@ -13,7 +13,7 @@ endDate = "02/11/2011"
 
 startDate = "01/01/2011"
 startTime = "00:00:00"
-endDate = "04/11/2011"
+endDate = "03/16/2011"
 endTime = "00:00:00"
 
 intervalInMins = 1440
@@ -70,7 +70,7 @@ while (startDate < finishLineDate):
 #  startTime = startDate.strftime("%s")
 #  DayNote = endDate.strftime("%Y-%m-%d")
   endTime = endDate.strftime("%s")
-  searchCmd = "`systemUptimeYesterday("+endTime+")` | collect index=summary"
+  searchCmd = "`systemHoursYesterday("+endTime+")` | collect index=summary"
 
   # run it!
   if (bool(useDispatch)):
