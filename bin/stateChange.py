@@ -144,7 +144,7 @@ def main():
       for r in results:
         i=i+1
         if i==1 and "StateName_" in r['_raw']: # does first record contain StateName?
-          debug("Setting initial node states")
+          debug2("Setting initial node states")
           p  = re.compile("(StateName_\w+)=")
           ps = re.compile("StateName_(\w+)")
           for stateName in p.findall(r['_raw']):
