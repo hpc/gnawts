@@ -26,12 +26,17 @@
             <saved name="joblog: name vs JobState" />
             <saved name="joblog: name vs user" />
             <saved name="joblog: user vs JobState" />
+            <saved name="killedJobs" />
         </collection>
         <collection label="RAS Metrics">
             <saved name="JMTTI" />
             <saved name="SMTTI" />
             <saved name="EL" />
+            <saved name="systemStateHours" />
             <saved name="nodeStateCounts" />
+            <divider />
+            <saved name="StateChange" />
+            <saved name="systemHoursYesterday" />
         </collection>
         <collection label="Other">
             <saved name="Reservations:Names" />
@@ -42,8 +47,6 @@
             <saved name="Chatty host (by hour)" />
             <saved name="SilentHosts" />
             <saved name="LoudHosts" />
-            <saved name="SystemUptime" />
-            <saved name="StateChange" />
         </collection>
         <divider />
         <saved source="unclassified" />

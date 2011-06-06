@@ -11,7 +11,7 @@ import os,time,datetime
 startDate = "02/01/2011"
 endDate = "02/11/2011"
 
-startDate = "01/01/2011"
+startDate = "01/10/2011"
 startTime = "00:00:00"
 endDate = "03/16/2011"
 endTime = "00:00:00"
