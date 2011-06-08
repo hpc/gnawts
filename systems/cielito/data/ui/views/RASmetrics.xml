@@ -6,6 +6,7 @@
       <searchName>systemStateHours</searchName>
       <title>Hours per Day</title>
       <option name="drilldown">all</option>
+      <option name="charting.seriesColors">[0x55a16a,0xe6ae00,0xd85d34]</option>
     </chart>
     <chart>
       <searchName>SMTTI</searchName>
