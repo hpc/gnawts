@@ -27,6 +27,11 @@
             <saved name="joblog: name vs user" />
             <saved name="joblog: user vs JobState" />
             <saved name="killedJobs" />
+            <divider />
+            <saved name="updateJobsLookup" />
+            <saved name="updateJobeLookup" />
+            <saved name="resetJobsLookup" />
+            <saved name="resetJobeLookup" />
         </collection>
         <collection label="RAS Metrics">
             <saved name="JMTTI" />
@@ -38,15 +43,20 @@
             <saved name="StateChange" />
             <saved name="systemHoursYesterday" />
         </collection>
-        <collection label="Other">
-            <saved name="Reservations:Names" />
-            <saved name="node up/down" />
-            <saved name="read-only file system" />
-            <saved name="Disk failures during last 24 hours" />
+        <collection label="Volume">
             <saved name="Chatty host (by day)" />
             <saved name="Chatty host (by hour)" />
             <saved name="SilentHosts" />
             <saved name="LoudHosts" />
+            <saved name="QuietHosts" />
+            <saved name="hourlyCountByHost" />
+            <saved name="dailyCountByHost" />
+        </collection>
+        <collection label="Miscellaneous">
+            <saved name="Reservations:Names" />
+            <saved name="node up/down" />
+            <saved name="read-only file system" />
+            <saved name="Disk failures during last 24 hours" />
         </collection>
         <divider />
         <saved source="unclassified" />
