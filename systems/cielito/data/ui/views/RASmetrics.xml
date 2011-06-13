@@ -10,19 +10,19 @@
     </chart>
     <chart>
       <searchName>SMTTI</searchName>
-      <title>System Mean Time to Interrupt (9.12.2)</title>
+      <title>System Mean Time to Interrupt (9.12.2); "must be > 200 hrs"</title>
       <option name="drilldown">all</option>
     </chart>
   </row>
   <row>
     <chart>
       <searchName>EL</searchName>
-      <title>System Effectiveness Level (9.12.3)</title>
+      <title>System Effectiveness Level (9.12.3); "must be > 90%"</title>
       <option name="drilldown">all</option>
     </chart>
     <chart>
       <searchName>JMTTI</searchName>
-      <title>Job Mean Time To Interrupt (9.12.1)</title>
+      <title>Job Mean Time To Interrupt (9.12.1); "must be > 25 hrs"</title>
       <option name="drilldown">all</option>
     </chart>
   </row>
