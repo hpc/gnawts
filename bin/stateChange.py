@@ -6,18 +6,12 @@ logging.basicConfig(filename=LOG_FILENAME,level=logging.DEBUG)
 # use double quotes to protect options when giving in search, eg:
 #  tag=state | statechange "{'nodeField':'node', 'USR_Threshold':500}"
 options = {'filter': True, 'nodeField':'nids', 'addAggregate': True}
-trigger_options = {}
-# USR and SYS should be integer(0.9*N) # where N is total system nodes
-# ERR should be integer(0.01*N)+1      # "more than 1% of nodes"
-# below is for cielito, where N=70
-trigger_options = {'USR_Threshold':63, 'ERR_Threshold':8, 'SYS_Threshold':63}
 results = []
 output_results = []
 node_states = {}
 node_transitions = {}
 known_states = []
 counts = {}
-thresholds = {}
 
 # easy way to log data to LOG_FILENAME
 def debug(msg):
@@ -55,7 +49,7 @@ def nodeStateChange(record, node, from_state, to_state):
 
 ##################################################################
 def stateChangeLogic(record, nodes, start_state, end_state):
-  global output_results, trigger_options, options, known_states, node_states
+  global output_results, options, known_states, node_states
   if "-" in nodes or "[" in nodes:
     node_list = hostlist.expand_hostlist(nodes)
   else:
@@ -115,23 +109,13 @@ def nodeStateList(record):
 def main():
   global output_results
   try:
-    global results, options, node_states, thresholds, trigger_options
+    global results, options, node_states
     results, dummyresults, settings = splunk.Intersplunk.getOrganizedResults()
 
     # process arguments
     if len(sys.argv) > 1:
       new_options = ast.literal_eval(sys.argv[1])
       options.update(new_options)
-      for k in filter(lambda x: re.match(".*_Threshold$", x), options.keys()):
-        trigger_options[k] = options[k]
-
-    # setup thresholds
-    r = re.compile('(.+)_Threshold')
-    for key in trigger_options:
-      m = r.match(key)
-      if not m == None:
-        state = m.group(1)
-        thresholds[state] = trigger_options[key]
 
     debug2("OPTIONS: " + str(options))
     
