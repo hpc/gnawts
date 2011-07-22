@@ -6,8 +6,10 @@ SETUP
 
 RAS Metrics Stuff:
 1. seed the summary index with statechanges by doing this search OVER ALL TIME:
-   tag=state | reverse | statechange "{'USR-ERR_Threshold':7, 'USR-SYS_Threshold':7}" | collect index=summary
+   tag=state | lookup nodes node OUTPUT nid | tail 50000 | statechange | collect
 2. if the number of events processed above is greter than 50k, run (over all time):
+    [search index=summary StateName | head 1 | eval query="(_time="._time." index=summary StateName) OR (_time>"._time." tag=state)" | fields + query] | tail 50000 | lookup nodes node OUTPUT nid | statechange
+
     [search index=summary nodeStateList | head 1 | eval query="(_time="._time." index=summary nodeStateList) OR (_time>"._time." tag=state)" | fields + query] | reverse | statechange "{'USR-ERR_Threshold':7, 'USR-SYS_Threshold':7}" 
    and run it repeatedly until the number of events is less than 50k.
 2. backfill the summary index with system uptime records by running 

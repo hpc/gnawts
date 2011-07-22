@@ -1,0 +1,17 @@
+<?xml version='1.0' encoding='utf-8'?>
+<dashboard>
+  <label>Down Nodes</label>
+  <row>
+    <table>
+      <searchName>DownNodeStats</searchName>
+      <title>30 day Stats</title>
+      <option name="drilldown">row</option>
+    </table>
+  </row>
+  <row>
+    <event>
+      <searchName>DownNodes</searchName>
+      <title>Currently down nodes (nodes down for more than 30 days are omitted)</title>
+    </event>
+  </row>
+</dashboard>

@@ -27,6 +27,7 @@ def nodeStateChange(record, node, from_state, to_state):
   global counts
 
   new = {            '_time'      : record.get('_time'),
+                     'utime'      : record.get('_time'), # an extra copy
          options.get('nodeField') : node}
 
   # deal with from_state
@@ -45,6 +46,8 @@ def nodeStateChange(record, node, from_state, to_state):
 
   for state in counts:
     new[state] = counts[state]              # note all state counts
+
+  new['msg'] = record['_raw']               # include original message in output
   output_results.append(new)                # output new record
 
 ##################################################################
@@ -55,6 +58,9 @@ def stateChangeLogic(record, nodes, start_state, end_state):
   else:
     node_list = nodes.split(",")
   debug("---- Working on: " + str(record))
+
+  if len(nodes) > 100:  # omit long node lists
+      record['_raw'] = record['_raw'].replace(nodes,'(LONG_NODE_LIST)')
 
   for node in node_list:
     current_state = node_states.get(node)
@@ -70,6 +76,8 @@ def stateChangeLogic(record, nodes, start_state, end_state):
 def parseRecord(record, additional_details={}): #, last_eventtype):
   global output_results, options
   node = record.get(options.get('nodeField'))
+  if not node:
+    node = record.get('nid')  # another default to check for
   eventtype = record.get('eventtype')
   # if we don't have node or eventtype then skip
   if not eventtype or not node:

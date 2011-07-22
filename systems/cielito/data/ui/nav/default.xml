@@ -4,6 +4,7 @@
         <view name="Volume" />
         <view name="jobmonitor" />
         <view name="RASmetrics" />
+        <view name="downNodeView" />
         <divider />
         <view source="unclassified" />
 	    <a href="javascript:Splunk.Globals.Viewmaster.openDashCreateForm();">Create dashboard...</a>
@@ -40,6 +41,8 @@
             <saved name="DailySummary" />
             <saved name="systemStateHours" />
             <saved name="nodeStateCounts" />
+            <saved name="DownNodes" />
+            <saved name="DownNodeStats" />
             <divider />
             <saved name="StateChange" />
             <saved name="systemHoursYesterday" />
