@@ -1,18 +1,16 @@
 <nav>
     <view name="flashtimeline" default='true' />
+    <view name="RASmetrics" />
+    <view name="NodeDownStats" />
     <collection label="Views">
         <view name="Volume" />
         <view name="jobmonitor" />
-        <view name="RASmetrics" />
-        <view name="downNodeView" />
         <divider />
         <view source="unclassified" />
 	    <a href="javascript:Splunk.Globals.Viewmaster.openDashCreateForm();">Create dashboard...</a>
     </collection>
+
     <collection label="Searches &amp; Reports">
-        <collection label="Reports">
-            <saved source="unclassified" match="report" />
-        </collection>
         <collection label="Job-Centric">
             <saved name="Alerts by host/type/user piechart" />
             <saved name="Alerts: by type,user,job" />
@@ -41,8 +39,8 @@
             <saved name="DailySummary" />
             <saved name="systemStateHours" />
             <saved name="nodeStateCounts" />
-            <saved name="DownNodes" />
-            <saved name="DownNodeStats" />
+            <saved name="NodeDownsPerNode" />
+            <saved name="NodeDownsPerDay" />
             <divider />
             <saved name="StateChange" />
             <saved name="systemHoursYesterday" />
@@ -61,6 +59,11 @@
             <saved name="node up/down" />
             <saved name="read-only file system" />
             <saved name="Disk failures during last 24 hours" />
+        </collection>
+        <collection label="In testing">
+            <saved name="DownNodes" />
+            <saved name="NodeDown2WK" />
+            <saved name="NodeDown2WKCharlie" />
         </collection>
         <divider />
         <saved source="unclassified" />

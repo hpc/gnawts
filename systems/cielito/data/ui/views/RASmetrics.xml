@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
 <dashboard>
-  <label>RAS metrics</label>
+  <label>RAS Metrics</label>
   <row>
     <chart>
       <searchName>systemStateHours</searchName>
