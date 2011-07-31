@@ -74,3 +74,11 @@ version = 4.2.2
 [views/RASmetrics]
 owner = jrstear
 version = 4.2.2
+
+[savedsearches/updateJobeLookup]
+owner = jrstear
+version = 4.2.2
+
+[savedsearches/updateJobsLookup]
+owner = jrstear
+version = 4.2.2
