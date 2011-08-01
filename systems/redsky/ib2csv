@@ -1,0 +1,40 @@
+#!/usr/bin/perl
+# 
+# this script updates the ib.csv lookup.  run on admin1-man:
+#   cd /logs/splunk/etc/apps/hpc/systems/redsky
+#   ./ib2csv
+# this can't be run on monitor1 because drdecode doesn't work there,
+# but perhaps it could be changed to do so.  perhaps - a script that 
+# can unwrap routes from any src to any dest and use it as a scripted
+# lookup instead of this manual hack to update a static lookup table.
+
+$cache = "ib.csv";
+if (-f $cache) {	# load previously mapped stuff
+	open IN, $cache or die "can't open $cache: $!\n";
+	while (<IN>) {
+		($route, $host) = /^"([0-9,]+)",(\S+)$/;
+		$routes{$route} = $host;
+	}
+}
+
+$file = "/logs/ib/ibfabricverify.log";
+open IN, $file or die "can't open $f: $!\n";
+while (<IN>) {
+	next unless /_do_madrpc failed; dport \(DR path slid/;
+	($lid) = /dlid \d; ([0-9,]+)\)/;
+	next if (exists $routes{$lid}); # no need to lookup
+	$lids{$lid}++;
+}
+close IN;
+
+exit unless (scalar %lids); # nothing new, so quit
+
+open OUT, ">>$cache" or die "can't open $cache for writing: $!\n";
+for $lid (keys %lids) {
+	$host = `drdecode -m rs -s b -c b -d $lid`;
+	if ($host) { # print if we got one
+		print OUT "\"$lid\",$host";
+	}
+	# $route{$lid} = $host;
+}
+close OUT
