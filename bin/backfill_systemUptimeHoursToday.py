@@ -7,9 +7,13 @@ import os,time,datetime
 
 #---------- change these variables ----------
 
-startDate = "01/01/2011"
+# a handy range for testing
+startDate = "02/01/2011"
+endDate = "02/11/2011"
+
+startDate = "01/10/2011"
 startTime = "00:00:00"
-endDate = "04/11/2011"
+endDate = "03/16/2011"
 endTime = "00:00:00"
 
 intervalInMins = 1440
@@ -57,36 +61,22 @@ finishLineDate = datetime.datetime(endYear,endMonth,endDay,endHour,endMin,endSec
 
 i = 0
 
-
 while (startDate < finishLineDate):
 
   # if near the finish line, set endDate = finishLineDate
   if (endDate >= finishLineDate):
     endDate = datetime.datetime(endYear,endMonth,endDay,endHour,endMin,endSec)
 
-  # convert date/time format to MM/DD/YYYY:HH:mm:ss
-  startTime = startDate.strftime("%m/%d/%Y:%H:%M:%S")
-  endTime = endDate.strftime("%m/%d/%Y:%H:%M:%S")
-
-  # Events
-  WindowStart    = "index=summary systemStateChange=*   latest=\"" + startTime + "\" | head 1 | eval Time=strptime(\"" + startTime + "\",\"%m/%d/%Y:%H:%M:%S\") | eval Fake=1"
-  WindowEnd      = "index=summary systemStateChange=*   latest=\"" + endTime   + "\" | head 1 | eval Time=strptime(\"" + endTime   + "\",\"%m/%d/%Y:%H:%M:%S\") | eval Fake=1"
-  EventsInWindow = "index=summary systemStateChange=* earliest=\"" + startTime + "\" latest=\"" + endTime + "\" | eval Time=_time"
-  Events                = WindowStart + " | append [ search " + EventsInWindow + "] | append [ search " + WindowEnd + "] "
-
-  # Processing
-  Hours        = "sort Time | delta Time AS durationSeconds | eval systemUptimeHours=if(systemStateChange=\"USR-ERR\" AND ((crossing=\"increasing\" AND NOT Fake=1) OR (crossing=\"decreasing\" AND Fake=1)),round(durationSeconds/3600,2),0) "
-  ERRs         = "eval systemERR=if(systemStateChange=\"USR-ERR\" AND crossing=\"increasing\" AND NOT Fake=1,1,0) "
-  dayAggregate = "stats sum(systemUptimeHours) AS systemUptimeHoursToday, sum(systemERR) as systemERRCountToday "
-  Processing   = Hours + " | " + ERRs + " | " + dayAggregate
-  # one massive hairy search!
-  searchCmd = Events + " | " + Processing + " | addinfo | collect index=summary"
+#  startTime = startDate.strftime("%s")
+#  DayNote = endDate.strftime("%Y-%m-%d")
+  endTime = endDate.strftime("%s")
+  searchCmd = "`systemHoursYesterday("+endTime+")` | collect index=summary"
 
   # run it!
   if (bool(useDispatch)):
-    searchCLI = "splunk dispatch \'" + searchCmd + "\' -maxout " + str(maxOut)
+    searchCLI = "splunk dispatch \'" + searchCmd + "\' -maxout " + str(maxOut) + " -app hpc"
   else:
-    searchCLI = "splunk search \"" + searchCmd + "\" -maxresults " + str(maxResults)
+    searchCLI = "splunk search \"" + searchCmd + "\" -maxresults " + str(maxResults) + " -app hpc"
   print "\n\nExecuting [" + searchCLI + "]"
   result = str.split(os.popen(searchCLI).read())
   print result

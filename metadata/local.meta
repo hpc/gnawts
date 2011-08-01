@@ -1,195 +1,84 @@
-[viewstates/flashtimeline%3Agkzr4d4f]
-access = read : [ * ]
-export = system
-owner = admin
-
-[viewstates/%2A%3Agl00t0kr]
-access = read : [ * ]
-export = system
-owner = jrstear
-
-[viewstates/%2A%3Agl00v7z8]
-access = read : [ * ]
-export = system
-owner = jrstear
-
-[savedsearches/Chatty%20host%20%28by%20day%29]
-access = read : [ * ]
-export = system
-owner = jrstear
-
-[savedsearches/Chatty%20host%20%28by%20hour%29]
-access = read : [ * ]
-export = system
-owner = jrstear
-
-[viewstates/flashtimeline%3Agl2mzxki]
-access = read : [ * ]
-export = system
-owner = jrstear
-
-[viewstates/flashtimeline%3Agl2nfy5a]
-access = read : [ * ]
-export = system
-owner = jrstear
-
-[views/Volume]
-access = read : [ * ]
-export = none
-owner = jrstear
-
-[savedsearches/LoudHosts]
-access = read : [ * ]
-export = system
-owner = jrstear
-
-[savedsearches/SilentHosts]
-access = read : [ * ]
-export = system
-owner = jrstear
-
-[viewstates/flashtimeline%3Agl2oj1qi]
-access = read : [ * ]
-export = system
-owner = jrstear
-
-[savedsearches/QuietHosts]
-access = read : [ * ]
-export = none
-owner = jrstear
-
-[viewstates/flashtimeline%3Agl3zlbxo]
-access = read : [ * ]
-export = system
-owner = jrstear
-
-[viewstates/%2A%3Agll5sxqb]
-access = read : [ * ]
+[savedsearches/resetJobeLookup]
+access = read : [ admin ]
 owner = nobody
 version = 4.2
 
-[savedsearches/smtti]
-access = read : [ * ]
-export = none
-owner = admin
-version = 4.2
-
-[macros/smtti%281%29]
-access = read : [ * ]
-export = none
-owner = admin
-version = 4.2
-
-[macros/systemStateTransitions%281%29]
-access = read : [ * ]
-export = none
-owner = admin
-version = 4.2
-
-[macros/systemStateTransitions]
-access = read : [ * ]
-export = none
-owner = admin
-version = 4.2
-
-[macros/smtti]
-access = read : [ * ]
-export = none
-owner = admin
-version = 4.2
-
-[macros/jmtti]
-access = read : [ * ]
-export = none
-owner = admin
-version = 4.2
-
-[macros/jmtti%281%29]
-access = read : [ * ]
-export = none
-owner = admin
-version = 4.2
-
-[macros/el%281%29]
-access = read : [ * ]
-export = none
-owner = admin
-version = 4.2
-
-[macros/el]
-access = read : [ * ]
-export = none
-owner = admin
-version = 4.2
-
-[viewstates/%2A%3Agllf7frb]
-access = read : [ * ]
+[savedsearches/resetJobsLookup]
+access = read : [ admin ]
 owner = nobody
 version = 4.2
 
-[savedsearches/el]
-owner = admin
+[nav/default]
+access = read : [ * ]
+owner = jrstear
 version = 4.2
 
-[viewstates/%2A%3Agllf8nkq]
+[workflow_actions/nodewin]
 access = read : [ * ]
+export = none
+owner = jrstear
+version = 4.2
+
+[viewstates/flashtimeline%3Agqdw4015]
+access = read : [ * ]
+export = system
 owner = nobody
-version = 4.2
+version = 4.2.2
 
-[savedsearches/jmtti]
-owner = admin
-version = 4.2
+[viewstates/flashtimeline%3Agqdy8ngt]
+access = read : [ * ]
+export = system
+owner = nobody
+version = 4.2.2
 
-[eventtypes/ERR-USR]
+[viewstates/flashtimeline%3Agqdy9han]
+access = read : [ * ]
+export = system
+owner = nobody
+version = 4.2.2
+
+[savedsearches/DownNodes]
+owner = jrstear
+version = 4.2.2
+
+[viewstates/flashtimeline%3Agqo8g6o6]
+access = read : [ * ]
+export = system
+owner = nobody
+version = 4.2.2
+
+[views/NodeDownStats]
 access = read : [ * ]
 export = none
-owner = admin
-version = 4.2
+owner = jrstear
+version = 4.2.2
 
-[tags/eventtype%3DERR-USR]
+[savedsearches/NodeDownsPerNode]
 access = read : [ * ]
 export = none
-owner = admin
-version = 4.2
+owner = jrstear
+version = 4.2.2
 
-[eventtypes/SYS-USR]
+[savedsearches/NodeDownsPerDay]
 access = read : [ * ]
 export = none
-owner = admin
-version = 4.2
+owner = jrstear
+version = 4.2.2
 
-[tags/eventtype%3DSYS-USR]
+[macros/NodeDownsPerNode%281%29]
 access = read : [ * ]
 export = none
-owner = admin
-version = 4.2
+owner = jrstear
+version = 4.2.2
 
-[eventtypes/USR-ERR]
-access = read : [ * ]
-export = none
-owner = admin
-version = 4.2
+[views/RASmetrics]
+owner = jrstear
+version = 4.2.2
 
-[tags/eventtype%3DUSR-ERR]
-access = read : [ * ]
-export = none
-owner = admin
-version = 4.2
+[savedsearches/updateJobeLookup]
+owner = jrstear
+version = 4.2.2
 
-[eventtypes/USR-SYS]
-access = read : [ * ]
-export = none
-owner = admin
-version = 4.2
-
-[tags/eventtype%3DUSR-SYS]
-access = read : [ * ]
-export = none
-owner = admin
-version = 4.2
-
-[views/cieloRASmetrics]
-access = read : [ * ]
-export = none
-owner = admin
-version = 4.2
+[savedsearches/updateJobsLookup]
+owner = jrstear
+version = 4.2.2
