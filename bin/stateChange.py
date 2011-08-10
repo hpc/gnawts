@@ -5,7 +5,7 @@ logging.basicConfig(filename=LOG_FILENAME,level=logging.DEBUG)
 
 # use double quotes to protect options when giving in search, eg:
 #  tag=state | statechange "{'nodeField':'node', 'USR_Threshold':500}"
-options = {'filter': True, 'nodeField':'nids', 'addAggregate': True}
+options = {'filter': True, 'nodeField':'nid', 'addAggregate': True}
 results = []
 output_results = []
 node_states = {}
@@ -77,7 +77,7 @@ def parseRecord(record, additional_details={}): #, last_eventtype):
   global output_results, options
   node = record.get(options.get('nodeField'))
   if not node:
-    node = record.get('nid')  # another default to check for
+    node = record.get('nids')  # another default to check for
   eventtype = record.get('eventtype')
   # if we don't have node or eventtype then skip
   if not eventtype or not node:
