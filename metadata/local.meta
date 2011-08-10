@@ -89,4 +89,13 @@ version = 4.2
 
 [viewstates/%2A%3A56zx1ic3]
 owner = djbrown
+
+[viewstates/%2A%3Aprr4qzrl]
+access = read : [ * ]
+export = system
+owner = nobody
+version = 4.2
+
+[savedsearches/NodeDown2WKCharlie]
+owner = admin
 version = 4.2
