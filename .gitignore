@@ -1,2 +1,3 @@
 *.csv
 local
+*.csv.gz
