@@ -42,4 +42,70 @@
       </module>
     </module>
   </module>
+    <module name="HiddenSavedSearch" layoutPanel="panel_row1_col2" autoRun="True" group="Unusually loud">
+    <param name="savedSearch">LoudHosts</param>
+    <module name="StaticContentSample">
+       <param name="text">Hosts that have said more in the last 24 hours than their two-week median.</param>
+    </module>
+    <module name="Paginator">
+      <param name="count">10</param>
+      <param name="maxPages">10</param>
+      <param name="entityName">results</param>
+      <module name="SimpleResultsTable">
+        <param name="displayRowNumbers">False</param>
+        <param name="drilldown">row</param>
+        <param name="entityName">results</param>
+        <module name="HiddenSearch">
+          <param name="search">sourcetype=syslog</param>
+          <param name="earliest">-24h</param>
+             <module name="ConvertToIntention">
+               <param name="intention">
+                 <param name="name">addterm</param>
+                 <param name="arg">
+                   <param name="host">$click.value$</param>
+                 </param>
+               </param>
+               <module name="ViewRedirector">
+                 <param name="viewTarget">flashtimeline</param>
+                 <param name="popup">True</param>
+               </module>
+             </module>
+        </module>
+      </module>
+    </module>
+  </module>
+
+  <module name="HiddenSavedSearch" layoutPanel="panel_row2_col1" autoRun="True" group="Unusually silent">
+    <param name="savedSearch">QuietHosts</param>
+    <module name="StaticContentSample">
+       <param name="text">Hosts that have been silent for 1 to 7 days.</param>
+    </module>
+    <module name="Paginator">
+      <param name="count">10</param>
+      <param name="entityName">results</param>
+      <param name="maxPages">10</param>
+      <module name="SimpleResultsTable">
+        <param name="displayRowNumbers">False</param>
+        <param name="drilldown">row</param>
+        <param name="entityName">results</param>
+        <module name="HiddenSearch">
+          <param name="search">sourcetype=syslog</param>
+          <param name="earliest">-7d</param>
+             <module name="ConvertToIntention">
+               <param name="intention">
+                 <param name="name">addterm</param>
+                 <param name="arg">
+                   <param name="host">$click.value$</param>
+                 </param>
+               </param>
+               <module name="ViewRedirector">
+                 <param name="viewTarget">flashtimeline</param>
+                 <param name="popup">True</param>
+               </module>
+             </module>
+        </module>
+      </module>
+    </module>
+  </module>
+
 </view>
