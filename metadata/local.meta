@@ -82,3 +82,11 @@ version = 4.2.2
 [savedsearches/updateJobsLookup]
 owner = jrstear
 version = 4.2.2
+
+[views/DonnaDashBoard]
+owner = jrstear
+version = 4.2
+
+[viewstates/%2A%3A56zx1ic3]
+owner = djbrown
+version = 4.2
