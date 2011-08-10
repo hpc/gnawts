@@ -2,6 +2,7 @@
     <view name="flashtimeline" default='true' />
     <collection label="Views">
         <view name="Volume" />
+        <view name="Donna DashBoard" />
         <view name="jobmonitor" />
         <view source="unclassified" />
         <divider />
