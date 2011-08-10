@@ -1,0 +1,45 @@
+<view template="dashboard.html">
+
+  <!--  chrome and nav  -->
+  <label>Donna Dashboard</label>
+  <module name="AccountBar" layoutPanel="appHeader"/>
+  <module name="AppBar" layoutPanel="navigationHeader"/>
+  <module name="Message" layoutPanel="messaging">
+    <param name="filter">*</param>
+    <param name="clearOnJobDispatch">False</param>
+    <param name="maxSize">1</param>
+  </module>
+
+  <module name="HiddenSavedSearch" layoutPanel="panel_row1_col1" autoRun="True" group="Host Message Count (last 24 hours)">
+    <param name="savedSearch">donna_message_count</param>
+    <module name="StaticContentSample">
+       <param name="text">CapViz syslog message count by hosts in the last 24 hours.</param>
+    </module>
+    <module name="Paginator">
+      <param name="count">10</param>
+      <param name="maxPages">10</param>
+      <param name="entityName">results</param>
+      <module name="SimpleResultsTable">
+        <param name="displayRowNumbers">False</param>
+        <param name="drilldown">row</param>
+        <param name="entityName">results</param>
+        <module name="HiddenSearch">
+	  <param name="search">sourcetype=syslog eventtype=donna-report</param>
+          <param name="earliest">-24h</param>
+             <module name="ConvertToIntention">
+               <param name="intention">
+                 <param name="name">addterm</param>
+                 <param name="arg">
+                   <param name="host">$click.value$</param>
+                 </param>
+               </param>
+               <module name="ViewRedirector">
+                 <param name="viewTarget">flashtimeline</param>
+                 <param name="popup">True</param>
+               </module>
+             </module>
+        </module>
+      </module>
+    </module>
+  </module>
+</view>

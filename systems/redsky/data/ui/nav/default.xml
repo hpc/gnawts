@@ -2,6 +2,7 @@
     <view name="flashtimeline" default='true' />
     <collection label="Views">
         <view name="Volume" />
+        <view name="Donna DashBoard" />
         <view name="jobmonitor" />
         <view source="unclassified" />
         <divider />
@@ -18,6 +19,7 @@
             <saved name="Alerts: type/user: jobcount piechart" />
             <saved name="Alerts: type/user: nodecount piechart" />
             <saved name="alerts: host vs user" />
+            <saved name="alerts: host vs type" />
             <saved name="alerts: host/type/user" />
             <saved name="alerts: node/type" />
             <saved name="alerts: user vs type" />
@@ -28,10 +30,8 @@
         <collection label="Network">
             <saved name="badroute" />
             <saved name="IB: SymbolErrors (Active, Host, 24hr)" />
-            <saved name="Infiniband: Route changes per minute" />
             <saved name="Infiniband: SymbolErrors hostport vs state ctable" />
             <saved name="Infiniband: SymbolErrors on all ports (24hr sum per state)" />
-            <saved name="Infiniband: route changes plot" />
         </collection>
         <collection label="Physical">
             <saved name="Fans:Inlet:SlowTen" />
@@ -53,7 +53,25 @@
             <saved name="EL" />
         </collection>
         <collection label="Other">
-            <saved source="unclassified" />
+            <saved name="Reservations:Names" />
+            <saved name="node up/down" />
+            <saved name="read-only file system" />
+            <saved name="Disk failures during last 24 hours" />
+            <saved name="Chatty host (by day)" />
+            <saved name="Chatty host (by hour)" />
+            <saved name="SilentHosts" />
+            <saved name="LoudHosts" />
+            <saved name="QuietHosts" />
+            <saved name="resetJobsLookup" />
+            <saved name="updateJobsLookup" />
+            <saved name="hourlyCountByHost" />
+            <saved name="dailyCountByHost" />
         </collection>
+        <collection label="Depricated">
+            <saved name="Infiniband: route changes plot" />
+            <saved name="Infiniband: Route changes per minute" />
+        </collection>
+        <divider />
+        <saved source="unclassified" />
     </collection>
 </nav>
