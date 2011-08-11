@@ -1,0 +1,31 @@
+# This is a node state diagram for XE6, visualize via
+#   dot -Tpdf -o xe6.pdf xe6.dot 
+
+digraph state_transitions {
+    subgraph stack {
+# 		based on the count of nodes in each state, the system is counted 
+# 		as being in one of the below colored states
+        rank=same
+		USR [color=green  fontcolor=green];
+		SYS [color=yellow fontcolor=yellow];
+		ERR [color=red    fontcolor=red];
+    }
+    SUS [color=grey fontcolor=grey];
+    UNK [color=grey fontcolor=grey];
+
+	ERR -> USR [color=green];
+	SUS -> USR [color=green];
+	UNK -> USR [color=green];
+
+	USR -> SYS [color=yellow];
+	ERR -> SYS [color=yellow];
+	SUS -> SYS [color=yellow];
+	UNK -> SYS [color=yellow];
+
+	USR -> ERR [color=red];
+	UNK -> ERR [color=red];
+	SUS -> ERR [color=red];
+
+	SYS -> UNK [color=grey];
+	USR -> SUS [color=grey];
+}
