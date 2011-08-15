@@ -1,0 +1,16 @@
+<?xml version='1.0' encoding='utf-8'?>
+<dashboard>
+  <label>IB Network</label>
+  <row>
+    <table>
+      <searchName>Infiniband: SymbolErrors on all ports (24hr sum per state)</searchName>
+      <title>Symbol Errors on all Ports (last 24 hours)</title>
+      <option name="drilldown">row</option>
+    </table>
+    <table>
+      <searchName>Infiniband: PortRcvErrors on all ports (24hr sum per state)</searchName>
+      <title>PortRcvErrors on all Ports (last 24 hours)</title>
+      <option name="drilldown">row</option>
+    </table>
+  </row>
+</dashboard>
