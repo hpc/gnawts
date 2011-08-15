@@ -32,6 +32,7 @@
             <saved name="IB: SymbolErrors (Active, Host, 24hr)" />
             <saved name="Infiniband: SymbolErrors hostport vs state ctable" />
             <saved name="Infiniband: SymbolErrors on all ports (24hr sum per state)" />
+            <saved name="Infiniband: PortRcvErrors on all ports (24hr sum per state)" />
         </collection>
         <collection label="Physical">
             <saved name="Fans:Inlet:SlowTen" />
