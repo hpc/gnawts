@@ -84,6 +84,7 @@ owner = jrstear
 version = 4.2.2
 
 [views/DonnaDashBoard]
+access = read : [ * ], write : [ * ]
 owner = jrstear
 version = 4.2
 
@@ -98,4 +99,66 @@ version = 4.2
 
 [savedsearches/NodeDown2WKCharlie]
 owner = admin
+version = 4.2
+
+[viewstates/%2A%3Agu4z7xpm]
+owner = djbrown
+version = 4.2
+
+[viewstates/%2A%3Am3jkub09]
+access = read : [ * ]
+export = system
+owner = nobody
+version = 4.2
+
+[savedsearches/donna_message_count]
+access = read : [ * ], write : [ * ]
+owner = cjsnide
+version = 4.2
+
+[viewstates/flashtimeline%3Agr9mzll5]
+access = read : [ * ]
+export = system
+owner = nobody
+version = 4.2
+
+[views/ib_network]
+access = read : [ * ], write : [ * ]
+owner = cjsnide
+version = 4.2
+
+[savedsearches/IB%20Network]
+access = read : [ * ]
+export = none
+owner = cjsnide
+version = 4.2
+
+[viewstates/flashtimeline%3Agr9n2u6n]
+access = read : [ * ]
+export = system
+owner = nobody
+version = 4.2
+
+[viewstates/flashtimeline%3Agr9n4gru]
+access = read : [ * ]
+export = system
+owner = nobody
+version = 4.2
+
+[viewstates/flashtimeline%3Agr9nhff1]
+access = read : [ * ]
+export = system
+owner = nobody
+version = 4.2
+
+[viewstates/flashtimeline%3Agr9ni4pk]
+access = read : [ * ]
+export = system
+owner = nobody
+version = 4.2
+
+[viewstates/flashtimeline%3Agr9nossk]
+access = read : [ * ]
+export = system
+owner = nobody
 version = 4.2
