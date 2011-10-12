@@ -1,0 +1,68 @@
+<!-- Copyright (C) 2010-2011 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" isVisible="true" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
+  <label>Multi-System Job Search</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+  
+  <module name="Message" layoutPanel="messaging">
+    <param name="filter">*</param>
+    <param name="maxSize">2</param>
+    <param name="clearOnJobDispatch">False</param>
+  </module>
+
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>HPC Dashboard</h1>
+    ]]></param>
+  </module>
+
+  <module name="Search" layoutPanel="panel_row1_col1" group="See all logs in a given job" autoRun="True">
+    <!-- Offer a list of systems -->
+    <param name="search">| eventcount summarize=false | search index=hpc_* | eval system=ltrim(index,"hpc_") | fields system</param>
+    <module name="Pulldown">
+      <param name="name">selectedSystem</param>
+      <param name="label">System:</param>
+      <param name="searchFieldsToDisplay">
+        <list>
+          <param name="label">system</param>
+          <param name="value">system</param>
+        </list>
+      </param>
+      <!-- Enter a job number -->
+      <module name="TextField" autoRun="True">  <!-- I don't know what autoRun here does, I was shooting for eliminating the below click... -->
+        <param name="name">job</param>
+        <param name="label">Job:</param>
+    
+        <module name="Search">
+          <param name="search">index=hpc_$selectedSystem$ `job($job$)`</param>
+          <param name="earliest">-30d</param>
+          <param name="latest">now</param>
+        
+        <!-- This is for eduation, and could be removed. -->
+        <module name="HTML">
+          <param name="html"><![CDATA[
+            The search to execute is: <b>$search$</b>
+          ]]></param>
+        </module>
+        <module name="HTML">
+          <param name="html"><![CDATA[
+             <h3>TO DO:</h3>
+               <ol class="notesList">
+                 <li>The user has to enter a number, hit return, and click the below.  Can the click be eliminated? Eg invoke search upon return?</li>
+                 <li>I would like to make this more compact, eg everything on a single row...</li>
+			   </ol>
+          ]]></param>
+        </module>
+        
+        <!-- View search results in a new window -->
+        <module name="ViewRedirectorLink" autoRun="True">
+          <param name="viewTarget">flashtimeline</param>
+          <param name="popup">True</param>
+        </module>
+        
+       </module>
+     </module>
+    </module>
+  </module>
+</view>
