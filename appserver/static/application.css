@@ -3,6 +3,11 @@
 }
 
 ul.fields, em.time {
+  font-size: 9px;
+  line-height: 0em;
+}
+
+em.time {
   display:none;
 }
 
