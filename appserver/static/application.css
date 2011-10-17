@@ -3,7 +3,7 @@
 }
 
 ul.fields, em.time {
-  font-size: 9px;
+  font-size: 8px;
   line-height: 0em;
 }
 
@@ -24,5 +24,23 @@ em.time {
 }
 
 .EventsViewer .default td {
-  padding: 0px;
+  padding: 1px; /* padding between workflow action pulldown and event display */
+}	
+
+
+/* .Events is the Sideview-Utils endless scrolling events viewer */
+.Events .default .actions { /* what does this affect? */
+  -moz-border-radius: 1px;
+  border: 0px;
+  background-color: #fff;
+  background-position: -3px -323px;
+  padding: 2px;
+}
+
+.Events .default .col2, .EventsViewer .default .col1 { /* what does this affect? */
+  padding-top: 0px;
+}
+
+.Events .default td {
+  padding: 1px; /* padding between workflow action pulldown and event display */
 }	
