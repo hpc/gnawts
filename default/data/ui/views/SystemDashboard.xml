@@ -1,5 +1,5 @@
 <view autoCancelInterval="90" isVisible="true" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
-  <label>Multi-System Job Search</label>
+  <label>System Dashboard</label>
   <module name="AccountBar" layoutPanel="appHeader" />
   <module name="AppBar" layoutPanel="appHeader" />
   <module name="SideviewUtils" layoutPanel="appHeader" />
@@ -10,11 +10,11 @@
     <param name="clearOnJobDispatch">False</param>
   </module>
 
-  <module name="Search" layoutPanel="panel_row1_col1" group="JobLogs Launcher" autoRun="True">
+  <module name="Search" layoutPanel="panel_row1_col1" group="Launch a search for all logs in a job" autoRun="True">
 
    <module name="HTML">
      <param name="html"><![CDATA[
-	   To see all logs in a job: enter a job number, hit return, come back and select a system name if needed.
+	   Enter a job number, hit return, come back and select a system name if needed.
 	   ]]></param>
    </module>
 
