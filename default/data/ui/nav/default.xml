@@ -3,15 +3,15 @@
         <view name="flashtimeline" default='true'/>
         <view source="unclassified" match="flashtimeline"/>
     </collection>
-    <collection label="MessageRate">
+    <collection label="Message Rate">
         <view name="MessageRate" />
         <divider />
         <saved source="unclassified" match="MessageRate: " />
     </collection>
-    <collection label="Jobs">
-        <view name="jobmonitor" />
+    <collection label="Messages Of Interest">
+        <view name="MOI-jobs_hosts" />
         <divider />
-        <saved source="unclassified" match="Jobs: " />
+        <saved source="unclassified" match="MOI: " />
     </collection>
     <collection label="Moab">
         <saved source="unclassified" match="Moab: " />
@@ -22,7 +22,7 @@
     <collection label="RAS Metrics">
         <saved source="unclassified" match="RAS: " />
     </collection>
-    <collection label="Misc">
+    <collection label="Miscellaneous">
         <view source="unclassified"/>
 	    <a href="javascript:Splunk.Globals.Viewmaster.openDashCreateForm();">Create dashboard...</a>
         <divider />
