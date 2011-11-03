@@ -1,7 +1,7 @@
 <view template="dashboard.html">
 
   <!--  chrome and nav  -->
-  <label>Volume</label>
+  <label>MessageRate</label>
   <module name="AccountBar" layoutPanel="appHeader"/>
   <module name="AppBar" layoutPanel="navigationHeader"/>
   <module name="Message" layoutPanel="messaging">
@@ -11,7 +11,7 @@
   </module>
 
   <module name="HiddenSavedSearch" layoutPanel="panel_row1_col1" autoRun="True" group="Unusually loud">
-    <param name="savedSearch">LoudHosts</param>
+    <param name="savedSearch">MessageRate: LoudHosts</param>
     <module name="StaticContentSample">
        <param name="text">Hosts that have said more in the last 24 hours than their two-week median.</param>
     </module>
@@ -44,7 +44,7 @@
   </module>
 
   <module name="HiddenSavedSearch" layoutPanel="panel_row1_col2" autoRun="True" group="Unusually silent">
-    <param name="savedSearch">QuietHosts</param>
+    <param name="savedSearch">MessageRate: QuietHosts</param>
     <module name="StaticContentSample">
        <param name="text">Hosts that have been silent for 1 to 7 days.</param>
     </module>
@@ -77,7 +77,7 @@
   </module>
 
   <module name="HiddenSavedSearch" layoutPanel="panel_row2_col1" autoRun="True" group="Loudest overall">
-    <param name="savedSearch">Chatty host (by hour)</param>
+    <param name="savedSearch">MessageRate: Chatty host (by hour)</param>
     <module name="StaticContentSample">
        <param name="text">The loudest hosts in the last 24 hours.</param>
     </module>

@@ -1,0 +1,65 @@
+<view autoCancelInterval="90" isVisible="true" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
+  <label>System Dashboard</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+  
+  <module name="Message" layoutPanel="messaging">
+    <param name="filter">*</param>
+    <param name="maxSize">2</param>
+    <param name="clearOnJobDispatch">False</param>
+  </module>
+
+  <module name="Search" layoutPanel="panel_row1_col1" group="Launch a search for all logs in a job" autoRun="True">
+
+   <module name="HTML">
+     <param name="html"><![CDATA[
+	   Enter a job number, hit return, come back and select a system name if needed.
+	   ]]></param>
+   </module>
+
+   <!-- Get a list of systems based on what hpc_* indexes exist -->
+   <param name="search">| eventcount summarize=false | search index=hpc_* | eval system=ltrim(index,"hpc_") | fields system</param>
+
+   <!-- How to render all the below on a single line? -->
+   <!-- Enter a job number -->
+   <module name="TextField">
+    <param name="name">job</param>
+    <param name="label">Job:</param>
+    <param name="width">7em</param>
+
+    <!-- Offer a list of systems -->
+    <module name="Pulldown">
+      <param name="name">selectedSystem</param>
+      <param name="label">System:</param>
+      <param name="searchFieldsToDisplay">
+        <list>
+          <param name="label">system</param>
+          <param name="value">system</param>
+        </list>
+      </param>
+    
+		<!-- Kick off a search -->
+        <module name="Search">
+          <param name="search">`job($job$,hpc_$selectedSystem$)`</param>
+          <param name="earliest">-30d</param>
+          <param name="latest">now</param>
+        
+        <!-- Popup a new window containing the search results -->
+        <module name="ViewRedirector">
+          <param name="viewTarget">flashtimeline</param>
+          <param name="popup">True</param>
+        </module>
+        
+        <!-- The below is for user education only -->
+        <module name="HTML">
+          <param name="html"><![CDATA[
+            The search to execute is: <b>$search$</b>
+          ]]></param>
+        </module>
+        
+       </module>
+     </module>
+    </module>
+  </module>
+</view>
