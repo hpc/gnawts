@@ -44,3 +44,7 @@ em.time {
 .Events .default td {
   padding: 1px; /* padding between workflow action pulldown and event display */
 }	
+
+ol li {
+  margin-bottom: 0px;
+}
