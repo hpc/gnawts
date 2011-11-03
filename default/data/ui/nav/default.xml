@@ -1,52 +1,34 @@
 <nav>
-    <view name="flashtimeline" default='true' />
-    <collection label="Views">
-        <view name="Volume" />
-        <view name="jobmonitor" />
-        <view source="unclassified" />
-        <divider />
-	    <a href="javascript:Splunk.Globals.Viewmaster.openDashCreateForm();">Create dashboard...</a>
+    <collection label="Search">
+        <view name="flashtimeline" default='true'/>
+        <view source="unclassified" match="flashtimeline"/>
     </collection>
-    <collection label="Searches &amp; Reports">
-        <collection label="Reports">
-            <saved source="unclassified" match="report" />
-        </collection>
-        <collection label="Job-Centric">
-            <saved name="Alerts by host/type/user piechart" />
-            <saved name="Alerts: by type,user,job" />
-            <saved name="Alerts: by type/user: piechart" />
-            <saved name="Alerts: type/user: jobcount piechart" />
-            <saved name="Alerts: type/user: nodecount piechart" />
-            <saved name="alerts: host vs user" />
-            <saved name="alerts: host vs type" />
-            <saved name="alerts: host/type/user" />
-            <saved name="alerts: node/type" />
-            <saved name="alerts: user vs type" />
-            <saved name="joblog: name vs JobState" />
-            <saved name="joblog: name vs user" />
-            <saved name="joblog: user vs JobState" />
-        </collection>
-        <collection label="RAS Metrics">
-            <saved name="JMTTI" />
-            <saved name="SMTTI" />
-            <saved name="EL" />
-        </collection>
-        <collection label="Other">
-            <saved name="Reservations:Names" />
-            <saved name="node up/down" />
-            <saved name="read-only file system" />
-            <saved name="Disk failures during last 24 hours" />
-            <saved name="Chatty host (by day)" />
-            <saved name="Chatty host (by hour)" />
-            <saved name="SilentHosts" />
-            <saved name="LoudHosts" />
-            <saved name="QuietHosts" />
-            <saved name="resetJobsLookup" />
-            <saved name="updateJobsLookup" />
-            <saved name="hourlyCountByHost" />
-            <saved name="dailyCountByHost" />
-        </collection>
+    <collection label="Message Rate">
+        <view name="MessageRate" />
         <divider />
-        <saved source="unclassified" />
+        <saved source="unclassified" match="MessageRate: " />
+    </collection>
+    <collection label="Messages Of Interest">
+        <view name="MOI-jobs_hosts" />
+        <divider />
+        <saved source="unclassified" match="MOI: " />
+    </collection>
+    <collection label="Moab">
+        <saved source="unclassified" match="Moab: " />
+    </collection>
+    <collection label="Slurm">
+        <saved source="unclassified" match="Slurm: " />
+    </collection>
+    <collection label="RAS Metrics">
+        <saved source="unclassified" match="RAS: " />
+    </collection>
+    <collection label="Miscellaneous">
+        <view source="unclassified"/>
+	    <a href="javascript:Splunk.Globals.Viewmaster.openDashCreateForm();">Create dashboard...</a>
+        <divider />
+        <saved source="unclassified"/>
+    </collection>
+    <collection label="Administrative">
+        <saved source="unclassified" match="Admin: " />
     </collection>
 </nav>
