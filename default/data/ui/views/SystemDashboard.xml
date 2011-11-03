@@ -62,4 +62,55 @@
      </module>
     </module>
   </module>
+  
+  <module name="Search" layoutPanel="panel_row2_col1" group="Table of MessagesOfInterest per host" autoRun="True">
+   <module name="HTML">
+     <param name="html"><![CDATA[
+	   Narrow search results to specific systems via click (single), command-click (multiple), or shift-click (range):
+	   ]]></param>
+   </module>
+   
+   <!-- Get a list of systems based on what hpc_* indexes exist -->
+   <param name="search">| eventcount summarize=false | search index=hpc_* | eval system=ltrim(index,"hpc_") | fields system</param>
+    
+    <!-- Offer a list of systems -->
+    <module name="Pulldown">
+      <param name="name">selectedSystems</param>
+      <param name="label">System:</param>
+      <param name="size">4</param>
+      <param name="template">index=hpc_$value$</param>
+      <param name="separator">+OR+</param>
+      <param name="outerTemplate">( $value$ )</param>
+      <param name="staticFieldsToDisplay"></param>
+      <param name="searchFieldsToDisplay">
+        <list>
+          <param name="label">system</param>
+          <param name="value">system</param>
+        </list>
+      </param>
+
+      <module name="Search">
+        <param name="search">$selectedSystems$ tag=moi | ctable host eventtype </param>
+        <param name="earliest">-1h</param>
+        <param name="latest">now</param>
+        
+        <module name="Pager">
+          <param name="entityName">results</param>
+          <module name="SimpleResultsTable">
+            <param name="displayRowNumbers">False</param>
+            <param name="entityName">results</param>
+          </module>
+        </module>
+        
+        <!-- this HTML module here is just to show you the token values and the search -->
+        <!-- feel free to delete it -->
+        <module name="HTML">
+          <param name="html"><![CDATA[
+            Search executed is: <b>$search$</b>
+          ]]></param>
+        </module>
+      </module>
+    </module>
+  </module>
+  
 </view>
