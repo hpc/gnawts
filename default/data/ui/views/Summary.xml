@@ -1,5 +1,5 @@
 <view autoCancelInterval="90" isVisible="true" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
-  <label>System Dashboard</label>
+  <label>Summary</label>
   <module name="AccountBar" layoutPanel="appHeader" />
   <module name="AppBar" layoutPanel="appHeader" />
   <module name="SideviewUtils" layoutPanel="appHeader" />
@@ -27,8 +27,9 @@
         </module>
   </module>
     
-  <module name="Search" layoutPanel="panel_row1_col1" group="Number of messages in the last hour" autoRun="True">
-    <param name="search">earliest=-1h index=hpc_* | ctable sourcetype index</param>
+  <module name="Search" layoutPanel="panel_row1_col1" group="Summary of the last 60 minutes" autoRun="True">
+   <param name="search">index=_internal source=*metrics.log group=per_index_thruput series=hpc_* | eval system=ltrim(series,"hpc_")  | chart sum(ev) AS MessageCount sum(kb) AS KB by system | eval TotalMB=KB/1024 | fields + system MessageCount TotalMB | sort -MessageCount</param>
+   <param name="earliest">-1h</param>
    <module name="Pager">
     <param name="entityName">results</param>
     <module name="SimpleResultsTable">
@@ -110,6 +111,7 @@
         <param name="default">now</param>
         <param name="width">4em</param>
 
+	  <!-- would like to make this smaller, maybe replace earliest/lastest with a time picker -->
       <module name="Search">
         <param name="search">tag=moi earliest=$earliest$ latest=$latest$ $selectedSystems$ | ctable host eventtype </param>
         <param name="earliest">-1d</param>
