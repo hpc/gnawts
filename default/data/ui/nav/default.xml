@@ -1,6 +1,6 @@
 <nav>
+    <view name="Summary" default='true'/>
     <collection label="Search">
-        <view name="flashtimeline" default='true'/>
         <view source="unclassified" match="flashtimeline"/>
     </collection>
     <collection label="Message Rate">
