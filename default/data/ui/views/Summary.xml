@@ -49,7 +49,7 @@
    <!-- Enter a job number -->
    <module name="TextField">
     <param name="name">job</param>
-    <param name="label">Show logs for the latest job numbered:</param>
+    <param name="label">Show logs for the latest job having Moab ID:</param>
     <param name="width">7em</param>
 
     <!-- Offer a list of systems -->
