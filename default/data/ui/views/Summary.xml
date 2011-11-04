@@ -42,6 +42,7 @@
   <module name="Search" layoutPanel="panel_row1_col2" group="Logs in a job" autoRun="True">
 
    <!-- Get a list of systems based on what hpc_* indexes exist -->
+   <!-- SLIGHT EFFICIENCY OPPORTUNITY - DO THIS ONCE AND REUSE IN THE BOTTOM PANE TOO -->
    <param name="search">| eventcount summarize=false | search index=hpc_* | eval system=ltrim(index,"hpc_") | fields system</param>
 
    <!-- How to render all the below on a single line? -->
@@ -99,30 +100,13 @@
           <param name="value">system</param>
         </list>
       </param>
-      
-      <module name="TextField">
-        <param name="name">earliest</param>
-        <param name="label">earliest:</param>
-        <param name="default">-24h</param>
-        <param name="width">4em</param>
-       <module name="TextField">
-        <param name="name">latest</param>
-        <param name="label">latest:</param>
-        <param name="default">now</param>
-        <param name="width">4em</param>
-
-	  <!-- would like to make this smaller, maybe replace earliest/lastest with a time picker -->
+      <!-- would like to position this to the right of the pulldown, to waste less screen space -->
+      <module name="TimeRangePicker">
+        <param name="default">Last 60 minutes</param>
+        <param name="searchWhenChanged">True</param>
+	  
       <module name="Search">
-        <param name="search">tag=moi earliest=$earliest$ latest=$latest$ $selectedSystems$ | ctable host eventtype </param>
-        <param name="earliest">-1d</param>
-        <param name="latest">now</param>
-           
-        <!-- User education -->
-        <module name="HTML">
-          <param name="html"><![CDATA[
-            Below table generated via: <b>$search$</b>
-            ]]></param>
-        </module>
+        <param name="search">tag=moi $selectedSystems$ | ctable host eventtype </param>
         
         <module name="Pager">
           <param name="entityName">results</param>
@@ -145,7 +129,6 @@
           </module>
         </module>
   
-        </module>
   
         </module>
   
