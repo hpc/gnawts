@@ -16,7 +16,7 @@
         <param name="useTypeahead">true</param>
         <param name="useOwnSubmitButton">False</param>
         <module name="TimeRangePicker">
-            <param name="selected">All time</param>
+            <param name="selected">Last 24 hours</param>
             <param name="searchWhenChanged">False</param>
             <module name="SubmitButton">
                 <param name="allowSoftSubmit">True</param>
