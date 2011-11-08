@@ -19,9 +19,6 @@
     <collection label="Slurm">
         <saved source="unclassified" match="Slurm: " />
     </collection>
-    <collection label="RAS Metrics">
-        <saved source="unclassified" match="RAS: " />
-    </collection>
     <collection label="Administrative">
         <saved source="unclassified" match="Admin: " />
     </collection>
