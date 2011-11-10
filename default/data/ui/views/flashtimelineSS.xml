@@ -1,6 +1,6 @@
 <view onunloadCancelJobs="False" autoCancelInterval="100">
   <!--  autoCancelInterval is set here to 100  -->
-  <label>Search: Scrolling,Simple</label>
+  <label>Endless Scrolling, No field picker</label>
   <module name="SideviewUtils" layoutPanel="appHeader" />
   <module name="AccountBar" layoutPanel="appHeader" />
   <module name="AppBar" layoutPanel="appHeader" />
@@ -15,6 +15,15 @@
     <param name="clearOnJobDispatch">True</param>
   </module>
 
+ <module name="HTML" layoutPanel="messaging">
+  <param name="html"><![CDATA[
+   <h3>This provides "endless scrolling" (instead of a pesky pager), but has issues:</h3>
+    <ol class="notesList">
+      <li>clicking on the timeline doesn't subset the events accordingly for `job` macro
+      </li>
+       </ol>
+   ]]></param>
+  </module>
   
   <module name="URLLoader" layoutPanel="navigationHeader">
     <param name="keepURLUpdated">True</param>
@@ -126,7 +135,7 @@
                           </param>
 
                           <module name="Events" layoutPanel="resultsAreaLeft">
-                            <param name="fields">host sourcetype source</param>
+                            <param name="fields">jobid</param>
                           </module>
 
                         </module>
