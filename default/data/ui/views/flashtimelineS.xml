@@ -15,6 +15,20 @@
     <param name="clearOnJobDispatch">True</param>
   </module>
 
+
+ <module name="HTML" layoutPanel="messaging">
+  <param name="html"><![CDATA[
+   <h3>This provides "endless scrolling" (instead of a pesky pager), but has issues:</h3>
+    <ol class="notesList">
+      <li>resize browser window for events to use full window size
+      </li>
+      <li>clicking on the timeline doesn't subset the events accordingly
+      </li>
+      <li>some events are hard to read
+      </li>
+       </ol>
+   ]]></param>
+  </module>
   
   <module name="URLLoader" layoutPanel="navigationHeader">
     <param name="keepURLUpdated">True</param>
