@@ -1,6 +1,6 @@
 <view onunloadCancelJobs="False" autoCancelInterval="100">
   <!--  autoCancelInterval is set here to 100  -->
-  <label>Sideview Search</label>
+  <label>Endless Scrolling</label>
   <module name="SideviewUtils" layoutPanel="appHeader" />
   <module name="AccountBar" layoutPanel="appHeader" />
   <module name="AppBar" layoutPanel="appHeader" />
@@ -22,9 +22,9 @@
     <ol class="notesList">
       <li>resize browser window for events to use full window size
       </li>
-      <li>clicking on the timeline doesn't subset the events accordingly
+      <li>clicking on the timeline doesn't subset the events accordingly for `job` macro
       </li>
-      <li>some events are hard to read
+      <li>occasionally, some events are rendered badly (smeared)
       </li>
        </ol>
    ]]></param>
