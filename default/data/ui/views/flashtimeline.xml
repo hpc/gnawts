@@ -15,7 +15,7 @@
     <param name="useOwnSubmitButton">False</param>
     <param name="useAutoFocus">True</param>
     <module name="TimeRangePicker">
-      <param name="selected">All time</param>
+      <param name="selected">Last 24 hours</param>
       <param name="searchWhenChanged">True</param>
       <module name="SubmitButton">
         <param name="allowSoftSubmit">True</param>
