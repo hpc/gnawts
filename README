@@ -9,3 +9,9 @@ See inputs.conf in the above local dir to see if you need a symlink to test data
 
 The system directories contain both local conf and lookup files, so lookups is
 a symlink to local (splunk expects both local and lookups dirs).
+
+
+Setup notes for splunk-hpc.sandia.gov:
+added rules for splunk ports (8000,8001,8089) to /etc/sysconfig/iptables.
+copied /etc/yum.repos.d/ from redsky-monitor1, moved centos stuff to tmp, then ran the below to get git:
+ yum install  --disablerepo=*rhel-x86* --enablerepo=epel --nogpgcheck git
