@@ -8,11 +8,6 @@
         <divider />
         <saved source="unclassified" match="MOI: " />
     </collection>
-    <collection label="Message Rate">
-        <view name="MessageRate" />
-        <divider />
-        <saved source="unclassified" match="MessageRate: " />
-    </collection>
     <collection label="Moab">
         <saved source="unclassified" match="Moab: " />
     </collection>
