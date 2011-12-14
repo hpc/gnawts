@@ -1,0 +1,11 @@
+Hello,
+
+This is a notice to simply tell you that the following jobs have encountered an OOM:
+
+<% @details.each do |job, hosts| %>
+Job: <%= job %> on the following hosts: <%= hosts.uniq.join(", ") %>
+<% end %>
+
+Thank you,
+
+Splunk Admin
