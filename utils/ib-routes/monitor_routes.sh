@@ -1,4 +1,5 @@
 #!/bin/bash
+# run this on the subnet manager host, eg admin2-man on redsky
 export routes="opensm-lfts.dump"
 export splunkdir="/admin/splunk/infiniband"
 while [ 1 ] ; do			# indefinitely monitor for new routes

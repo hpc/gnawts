@@ -1,11 +1,21 @@
 #!/usr/bin/perl
+use IO::Zlib;
 
-# make this a CLI arg instead
 &setup_lookups();
 
-&read_routes();
-&read_topology();
-&print_routes_for_all_host_permutations();
+if ($#ARGV == 0) {
+	$out = $lst = $dump = $ARGV[0];
+	$lst =~ s/(dump)/lst/;
+	$out =~ s/(dump)/routes/;
+}
+else {
+	$dump = "/var/log/opensm-lfts.dump";
+	$lst  = "/var/log/opensm-subnet.lst";
+}
+
+&read_routes($dump);
+&read_topology($lst);
+&print_routes_for_all_host_permutations($out);
 
 exit;
 
@@ -33,9 +43,10 @@ sub setup_lookups() {
 }
 
 sub read_routes() { # port is in decimal
-  $routesfile = &findfile("routes.raw");
-  open ROUTES, $routesfile or die "can't open $routesfile: !$\n";
-  while (<ROUTES>) {
+  $f = shift @_;
+  $fd = new IO::Zlib;
+  $fd->open($f, "r") or die "can't open $f: !$\n";
+  while (<$fd>) {
 	next if /^#/; # eat comments
 	if (/^Unicast lids/) { # a new switch
 		($switch) = /'(\S+)'/;
@@ -52,13 +63,14 @@ sub read_routes() { # port is in decimal
 		$route{$switch}{$dest} = sprintf "%d", $port;
 	}
   }
-  close ROUTES;
+  $fd->close;
 }
 
 sub read_topology() { # port is in hex
-  $topologyfile = &findfile("/var/log/opensm-subnet.lst");
-  open LINKS, $topologyfile or die "can't open $topologyfile: $!\n";
-  while (<LINKS>) {
+  $f = shift @_;
+  $fl = new IO::Zlib;
+  $fl->open($f, "r") or die "can't open $f: !$\n";
+  while (<$fl>) {
 	next unless /^\{ SW/; # skip host-first entries (redundant)
 	# link has two ends: a and b.  a is always a switch due to the above
 	if (%name) { # use guid lookups
@@ -72,8 +84,13 @@ sub read_topology() { # port is in hex
 	if (/\{ CA/) {
 		# when we add hostlist as CLI arg, expand into %hostlist and uncomment the below
 		# next if (%hostlist and exists %hostlist{$bname}); # don't care or already have it
-		push @hosts, $bname;
-		$b = $bname;
+		if ($bname=~/\w/) {
+			push @hosts, $bname;
+			$b = $bname;
+		}
+		else {
+			print STDERR "No known name for guid $bguid:\n$_";
+		}
 	}
 	else {
 		$b = sprintf "%d:%s", hex($bport), $bname;
@@ -82,11 +99,14 @@ sub read_topology() { # port is in hex
 	$link{$a} = $b; 
 	$link{$b} = $a; # do both ends of the cable (relates to above "redundant" comments)
   }
-  close LINKS;
+  $fl->close;
   @hosts = sort @hosts; # enables efficient detection of route changes
 }
 
 sub print_routes_for_all_host_permutations() {
+  $f = shift @_;
+  $fr = new IO::Zlib;
+  $fr->open($f, "w") or die "can't open $f: !$\n";
   foreach $from (@hosts) {
 	foreach $to (@hosts) {
 		next if ($from eq $to);
@@ -99,10 +119,11 @@ sub print_routes_for_all_host_permutations() {
 			$a = $outport . ":" . $hop;
 			push @hops, $link{$a};
 		}
-		print join " ", @hops;
-		print "\n";
+		print $fr join " ", @hops;
+		print $fr "\n";
 	}
   }
+  $fr->close;
 }
 
 sub findfile() {
