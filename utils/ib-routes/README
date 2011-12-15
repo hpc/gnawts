@@ -1,0 +1,13 @@
+This directory has utilities for groking ib routes.
+
+
+MISC NOTES:
+guid2lid from /var/cache
+opensm* from /var/log, resulting from -d 0x43
+utils in /usr/local/ofed/prod2/
+/usr/local/ofed/prod2/etc/opensm/ib-node-name-map - man ibnetdiscover
+GUID - Globally Unique Identifier
+LID - Local Identifier
+
+opensm-lfts.dump - routes file
+GUID.yml - maps guid to hostname, from /admin/etc
