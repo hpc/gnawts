@@ -7,6 +7,7 @@ if ($#ARGV == 0) {
 	$out = $lst = $dump = $ARGV[0];
 	$lst =~ s/(dump)/lst/;
 	$out =~ s/(dump)/routes/;
+	$out =~ s/(.gz)//; # don't gzip, for easier routemerge script
 }
 else {
 	$dump = "/var/log/opensm-lfts.dump";
@@ -100,7 +101,7 @@ sub read_topology() { # port is in hex
 	$link{$b} = $a; # do both ends of the cable (relates to above "redundant" comments)
   }
   $fl->close;
-  @hosts = sort @hosts; # enables efficient detection of route changes
+  @hosts = sort @hosts; # enables efficient detection of route changes via diff
 }
 
 sub print_routes_for_all_host_permutations() {
