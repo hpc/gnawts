@@ -112,7 +112,7 @@ sub print_routes_for_all_host_permutations() {
 	foreach $to (@hosts) {
 		next if ($from eq $to);
 		# walk the route
-		@hops = ($from, $link{$from});
+		@hops = ($from, $to, $link{$from});
 		while ($hops[-1]=~/\S+:(\S+)$/) {
 			$hop = $1;
 			$outport = $route{$hop}{$to};
@@ -120,6 +120,7 @@ sub print_routes_for_all_host_permutations() {
 			$a = $outport . ":" . $hop;
 			push @hops, $link{$a};
 		}
+		pop @hops; # take off the destination host (yes, could have modified the above while loop instead)
 		print $fr join " ", @hops;
 		print $fr "\n";
 	}
