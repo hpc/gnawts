@@ -106,8 +106,7 @@ sub read_topology() { # port is in hex
 
 sub print_routes_for_all_host_permutations() {
   $f = shift @_;
-  $fr = new IO::Zlib;
-  $fr->open($f, "w") or die "can't open $f: !$\n";
+  open(FR, ">$f") or die "can't open $f: !$\n";
   foreach $from (@hosts) {
 	foreach $to (@hosts) {
 		next if ($from eq $to);
@@ -121,11 +120,11 @@ sub print_routes_for_all_host_permutations() {
 			push @hops, $link{$a};
 		}
 		pop @hops; # take off the destination host (yes, could have modified the above while loop instead)
-		print $fr join " ", @hops;
-		print $fr "\n";
+		print FR join " ", @hops;
+		print FR "\n";
 	}
   }
-  $fr->close;
+  close FR;
 }
 
 sub findfile() {
