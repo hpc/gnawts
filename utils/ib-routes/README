@@ -6,8 +6,8 @@ SAMPLE USAGE:
   time ./dumps2routes ~/data/1324317770.dump.gz
   time ./dumps2routes ~/data/1324317742.dump.gz
  Determine the difference between them:
-  time ./diffroute.sh 1324317742.routes 1324317770.routes
- Import 1324317742-1324317770.diff into splunk.
+  time ./diffroute.sh ~/data/1324317742.routes ~/data/1324317770.routes
+ Import ~/data/1324317742-1324317770.diff into splunk.
 
 
 TODO:
