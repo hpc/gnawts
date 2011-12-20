@@ -1,5 +1,21 @@
 This directory has utilities for groking ib routes.
 
+SAMPLE USAGE:
+ Use copy_routes.sh to snapshot routes on admin2-man.
+ Output routes for two of the above dumps:
+  time ./dumps2routes ~/data/1324317770.dump.gz
+  time ./dumps2routes ~/data/1324317742.dump.gz
+ Determine the difference between them:
+  time ./diffroute.sh 1324317742.routes 1324317770.routes
+ Import 1324317742-1324317770.diff into splunk.
+
+
+TODO:
+1. import into splunk
+2. form the queries in splunk
+3. decide which diffs to import into splunk (all, only some?)
+
+
 
 MISC NOTES:
 guid2lid from /var/cache
