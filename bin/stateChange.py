@@ -128,13 +128,12 @@ def main():
             debug2("record " + str(i) + " of " + str(len(results)))
 
           # make sure we have needed fields
-          node = r.get(options.get('nodeField'))
-          if not node:
-            node = r.get('nids')  # another default to check for
+          node = r.get(options.get('nodeField')) or r.get('nids') or r.get('hosts')
           eventtype = r.get('eventtype')
           if eventtype and node:
             match = cosre.search(r['eventtype'])
             if match != None:
+              # we do, so proceed
               start_state, end_state = match.groups()
               stateChangeLogic(r, node, start_state, end_state)
           last_record = r
@@ -146,7 +145,7 @@ def main():
 
   except:
     import traceback
-    debug2("GTO HERE BAD")
+    debug2("SHOULD NOT GET HERE!!!")
     stack =  traceback.format_exc()
     debug2(str(stack))
     results = splunk.Intersplunk.generateErrorResults("Error : Traceback: " + str(stack))
