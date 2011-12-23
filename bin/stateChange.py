@@ -5,7 +5,7 @@ logging.basicConfig(filename=LOG_FILENAME,level=logging.DEBUG)
 
 # use double quotes to protect options when giving in search, eg:
 #  tag=state | statechange "{'nodeField':'node', 'USR_Threshold':500}"
-options = {'filter': True, 'nodeField':'nid', 'addAggregate': True}
+options = {'filter': True, 'nodeField':'node', 'addAggregate': True}
 results = []
 output_results = []
 node_states = {}
@@ -67,33 +67,6 @@ def stateChangeLogic(record, nodes, start_state, end_state):
     if current_state == None or current_state=="UNK" or start_state=="*" or current_state==start_state:
       nodeStateChange(record, node, current_state, end_state)
 
-##################################################################
-# derive state for given node and eventtype
-# node can come in as a single node or list of nodes 
-# the list of nodes can be in short (1-3) or long (1,2,3) form
-# each node can have a different state or NOT a state at all
-# only return the nodes that have a new state applied
-def parseRecord(record, additional_details={}): #, last_eventtype):
-  global output_results, options
-  node = record.get(options.get('nodeField'))
-  if not node:
-    node = record.get('nids')  # another default to check for
-  eventtype = record.get('eventtype')
-  # if we don't have node or eventtype then skip
-  if not eventtype or not node:
-    return
-  debug("Getting state node and event type ##########################")
-  debug("Node: " + node)
-  debug("Eventtype: " + eventtype)
-
-  # eventtypes can come in with multiple values, i.e., "USR-ERR donna-ignore"
-  # we will depend on the first to be statechange relevant (set via eventtype priority)
-  eventtypes = eventtype.split(" ")
-  # now get our start and end states
-  if eventtypes:
-    start_state, end_state = eventtypes[0].split("-")
-    stateChangeLogic(record, node, start_state, end_state)
-
 
 ##################################################################
 def nodeStateList(record):
@@ -126,6 +99,7 @@ def main():
       options.update(new_options)
 
     debug2("OPTIONS: " + str(options))
+    cosre  = re.compile("cos_(\w+)-(\w+)")
     
     i=0
     if len(results) and results[0].has_key('_time'):
@@ -152,8 +126,19 @@ def main():
           # now update our record
           if i%1000 == 0:
             debug2("record " + str(i) + " of " + str(len(results)))
-          parseRecord(r)
+
+          # make sure we have needed fields
+          node = r.get(options.get('nodeField'))
+          if not node:
+            node = r.get('nids')  # another default to check for
+          eventtype = r.get('eventtype')
+          if eventtype and node:
+            match = cosre.search(r['eventtype'])
+            if match != None:
+              start_state, end_state = match.groups()
+              stateChangeLogic(r, node, start_state, end_state)
           last_record = r
+
       if last_record!=None and options.get('addAggregate'):
         # need the last record for '_time' entry
         debug("AGGREGATE: Building aggregate event");
