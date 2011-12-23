@@ -1,6 +1,6 @@
 import sys,os,splunk.Intersplunk,hostlist,logging,ast,re,math
 
-LOG_FILENAME = '/tmp/output_from_splunk_2.txt'
+LOG_FILENAME = '/tmp/splunk_stateChange_debug_log.txt'
 logging.basicConfig(filename=LOG_FILENAME,level=logging.DEBUG)
 
 # use double quotes to protect options when giving in search, eg:
@@ -22,13 +22,15 @@ def debug2(msg):
   logging.debug(msg)
   return
 
+
 ##################################################################
 def nodeStateChange(record, node, from_state, to_state):
   global counts
 
   new = {            '_time'      : record.get('_time'),
                      'utime'      : record.get('_time'), # an extra copy
-         options.get('nodeField') : node}
+                     'orig_index' : record.get('index'),
+                     'host'       : node}
 
   # deal with from_state
   if from_state == None:                    # first time this node is seen
@@ -49,6 +51,7 @@ def nodeStateChange(record, node, from_state, to_state):
 
   new['msg'] = record['_raw']               # include original message in output
   output_results.append(new)                # output new record
+
 
 ##################################################################
 def stateChangeLogic(record, nodes, start_state, end_state):
