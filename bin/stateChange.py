@@ -24,7 +24,7 @@ def debug2(msg):
 
 
 ##################################################################
-def nodeStateChange(record, node, from_state, to_state):
+def nodeStateChange(record, node, fromState, newState):
   global counts
 
   new = {            '_time'      : record.get('_time'),
@@ -32,22 +32,22 @@ def nodeStateChange(record, node, from_state, to_state):
                      'orig_index' : record.get('index'),
                      'host'       : node}
 
-  # deal with from_state
-  if from_state == None:                    # first time this node is seen
-    from_state = "UNK"
+  # deal with fromState
+  if fromState == None:                    # first time this node is seen
+    fromState = "UNK"
   else:                                     # not first time
-    new['from'] = from_state                     # note from state
-    counts[from_state] = counts[from_state] - 1  # decrement count
+    new['oldState'] = fromState                     # note from state
+    counts[fromState] = counts[fromState] - 1  # decrement count
 
-  # deal with to_state
-  if counts.get(to_state) == None:          # first time this state is seen
-    counts[to_state] = 0                         # initialize
-  counts[to_state] = counts[to_state] + 1        # increment
-  node_states[node] = to_state                   # set state
-  new['to'] = to_state                           # always note to state
+  # deal with newState
+  if counts.get(newState) == None:          # first time this state is seen
+    counts[newState] = 0                         # initialize
+  counts[newState] = counts[newState] + 1        # increment
+  node_states[node] = newState                   # set state
+  new['newState'] = newState                           # always note to state
 
   for state in counts:
-    new[state] = counts[state]              # note all state counts
+    new[state+"Count"] = counts[state]              # note all state counts
 
   new['msg'] = record['_raw']               # include original message in output
   output_results.append(new)                # output new record
