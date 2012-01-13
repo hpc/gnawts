@@ -8,6 +8,9 @@
         <divider />
         <saved source="unclassified" match="MOI: " />
     </collection>
+    <collection label="ComponentOperationsStatus">
+        <saved source="unclassified" match="COS: " />
+    </collection>
     <collection label="Moab">
         <saved source="unclassified" match="Moab: " />
     </collection>
