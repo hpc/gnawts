@@ -49,7 +49,7 @@ def nodeStateChange(record, node, fromState, newState):
   for state in counts:
     new[state+"Count"] = counts[state]              # note all state counts
 
-  new['msg'] = record['_raw']               # include original message in output
+  new['orig_raw'] = record['_raw']               # include original message in output
   output_results.append(new)                # output new record
 
 
