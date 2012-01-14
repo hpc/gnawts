@@ -28,7 +28,6 @@ def nodeStateChange(record, node, fromState, newState):
   global counts
 
   new = {            '_time'      : record.get('_time'),
-                     'utime'      : record.get('_time'), # an extra copy
                      'orig_index' : record.get('index'),
                      'host'       : node}
 
@@ -49,7 +48,7 @@ def nodeStateChange(record, node, fromState, newState):
   for state in counts:
     new[state+"Count"] = counts[state]              # note all state counts
 
-  new['orig_raw'] = record['_raw']               # include original message in output
+  new['orig_event'] = record['_raw']               # include original message in output
   output_results.append(new)                # output new record
 
 
