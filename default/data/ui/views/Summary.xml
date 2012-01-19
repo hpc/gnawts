@@ -49,7 +49,7 @@
       </param>
 	  
       <module name="Search">
-        <param name="search"> | savedsearch "COS: DownHosts" | search $selectedSystems$ | eval WentDownAt=strftime(_time, "%Y-%m-%d %H:%M:%S") | eval HrsBeenDown=round((now()-_time)/3600,2) | table WentDownAt host HrsBeenDown </param>
+        <param name="search"> | savedsearch "COS: DownHosts" | search $selectedSystems$ | rename orig_host AS host | eval WentDownAt=strftime(_time, "%Y-%m-%d %H:%M:%S") | eval HrsBeenDown=round((now()-_time)/3600,2) | table WentDownAt host HrsBeenDown </param>
         
         <module name="Pager">
           <param name="entityName">results</param>
@@ -59,7 +59,7 @@
             <param name="drilldown">row</param>
             
            <module name="Search">
-            <param name="search">`hostdown($click.fields.host$)`</param>
+            <param name="search">`hostdownwin($click.fields.host$,600,1)`</param>
             <param name="earliest">-7d</param>
             <param name="latest">now</param>
         
