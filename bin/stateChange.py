@@ -1,4 +1,4 @@
-import sys,os,splunk.Intersplunk,hostlist,logging,ast,re,math
+import sys,os,splunk.Intersplunk,hostlist,logging,ast,re,math,time
 
 LOG_FILENAME = '/tmp/splunk_stateChange_debug_log.txt'
 logging.basicConfig(filename=LOG_FILENAME,level=logging.DEBUG)
@@ -91,6 +91,7 @@ def nodeStateList(record):
 ##################################################################
 def main():
   global output_results
+  nowtime = time.strftime("%s")
   try:
     global results, options, node_states
     results, dummyresults, settings = splunk.Intersplunk.getOrganizedResults()
@@ -112,6 +113,9 @@ def main():
       for r in results:
         i=i+1
         if i==1 and "StateName_" in r['_raw']: # does first record contain StateName?
+          if len(results)==1: # only record is StateName, update and output
+            r['_time'] = nowtime # this doesn't seem to take effect
+            output_results.append(r)
           debug2("Setting initial node states")
           p  = re.compile("(StateName_\w+)=")
           ps = re.compile("StateName_(\w+)")
