@@ -50,6 +50,7 @@
 	  
       <module name="Search">
         <param name="search"> | savedsearch "COS: DownHosts" | search $selectedSystems$ | rename orig_host AS host | eval WentDownAt=strftime(_time, "%Y-%m-%d %H:%M:%S") | eval HrsBeenDown=round((now()-_time)/3600,2) | table WentDownAt host HrsBeenDown </param>
+        <param name="earliest">-7d</param>
         
         <module name="Pager">
           <param name="entityName">results</param>
