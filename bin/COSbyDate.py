@@ -40,6 +40,7 @@ def main():
 
       pstate = re.compile(system+"_(\w+)-(\w+)")
       DayBins = {} # create a dict
+      Counts  = {} # create a dict
       for r in results:
         rtime = int(r['_time'])
         if r['orig_index']==index and rtime <= LastTime: # only one system, and omit today
@@ -51,12 +52,21 @@ def main():
             while seconds > 0: # every second counts
               date = time.strftime("%F", time.localtime(LastTime))
               endDate = time.strftime("%F", time.localtime(LastTime-seconds))
+
+              # initialize
               if not date in DayBins:
                 DayBins[date] = {} # create a dict
               if not state in DayBins[date]:
                 DayBins[date][state] = 0 # create an int, ugh Python
+              if not date in Counts:
+                Counts[date] = {} # create a dict
+              if not state in Counts[date]:
+                Counts[date][state] = 0 # create an int, ugh Python
+
+              # count the number of seconds in each state per day
               if endDate == date: # does not cross a date boundary
                 DayBins[date][state] += seconds
+                Counts[date][state] += 1 # count the number of state transitions per day
 #                debug("ADDED "+str(seconds)+" to "+date+" "+state);
                 seconds = 0
               else: # does cross a date boundary
@@ -84,7 +94,8 @@ def main():
   for date in dates:
     new = { 'date'   : date }
     for state in DayBins[date]:
-      new[state] = round(float(DayBins[date][state])/3600,2)
+      new[state+"_hrs"] = round(float(DayBins[date][state])/3600,2)
+      new[state+"_count"] = Counts[date][state]
     output_results.append(new)
     
   debug("Outputting " + str(len(output_results)) + " events")
