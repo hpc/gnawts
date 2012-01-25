@@ -41,6 +41,7 @@ def main():
       pstate = re.compile(system+"_(\w+)-(\w+)")
       DayBins = {} # create a dict
       Counts  = {} # create a dict
+      DateSecs = {} # create a dict
       for r in results:
         rtime = int(r['_time'])
         if r['orig_index']==index and rtime <= LastTime: # only one system, and omit today
@@ -52,6 +53,10 @@ def main():
             while seconds > 0: # every second counts
               date = time.strftime("%F", time.localtime(LastTime))
               endDate = time.strftime("%F", time.localtime(LastTime-seconds))
+
+              # note the second beginning each day, for Splunk timeline rendering
+              dateS = time.strptime(date+" 00:00:00", "%Y-%m-%d %H:%M:%S")
+              DateSecs[date] = int(time.strftime("%s", dateS))
 
               # initialize
               if not date in DayBins:
@@ -96,6 +101,7 @@ def main():
     for state in DayBins[date]:
       new[state+"_hrs"] = round(float(DayBins[date][state])/3600,2)
       new[state+"_count"] = Counts[date][state]
+      new['_time'] = DateSecs[date]
     output_results.append(new)
     
   debug("Outputting " + str(len(output_results)) + " events")
