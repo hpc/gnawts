@@ -60,7 +60,7 @@
             <param name="drilldown">row</param>
             
            <module name="Search">
-            <param name="search">`hostdownwin($click.fields.host$,600,1)`</param>
+            <param name="search">`hostdownwin($click.fields.host$,-5m,+1m)`</param>
             <param name="earliest">-7d</param>
             <param name="latest">now</param>
         
