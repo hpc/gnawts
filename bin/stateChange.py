@@ -56,10 +56,17 @@ def nodeStateChange(record, node, fromState, newState):
 def stateChangeLogic(record, nodes, start_state, end_state):
   global output_results, options, known_states, node_states
   if "-" in nodes or "[" in nodes:
-    node_list = hostlist.expand_hostlist(nodes)
+    try:
+      node_list = hostlist.expand_hostlist(nodes)
+    except: # try to deal with BadHostlist exceptions
+      debug2("---- Trying to fix hostlist: " + str(record))
+      # guess it is missing a left bracket, and truncate at last comma
+      m=re.match("(^.*)\[(.*),(.*)", nodes)
+      if not m == None:
+        nodes = m.group(1) +"["+ m.group(2) +"]"
+      node_list = hostlist.expand_hostlist(nodes) # do or die
   else:
     node_list = nodes.split(",")
-  debug("---- Working on: " + str(record))
 
   if len(nodes) > 100:  # omit long node lists
       record['_raw'] = record['_raw'].replace(nodes,'(LONG_NODE_LIST)')
