@@ -68,7 +68,7 @@
     </module>
   </module>
 
-  <module name="Search" layoutPanel="panel_row2_col1" group="Currently Down Hosts" autoRun="True">
+  <module name="Search" layoutPanel="panel_row2_col1" group="Hosts Of Interest" autoRun="True">
         
    <!-- Get a list of systems based on what hpc_* indexes exist -->
    <param name="search">| eventcount summarize=false | search index=hpc_* | eval system=ltrim(index,"hpc_") | fields system</param>
@@ -90,7 +90,7 @@
       </param>
 	  
       <module name="Search">
-        <param name="search"> | savedsearch "COS: HostsOfInterest" </param>
+        <param name="search"> | savedsearch "COS: HostsOfInterest" | search $selectedSystems$ | table ChangedStateAt node jobid slurmstate reason COS orig_event </param>
         
         <module name="Pager">
           <param name="entityName">results</param>
