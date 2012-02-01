@@ -59,11 +59,12 @@ def stateChangeLogic(record, nodes, start_state, end_state):
     try:
       node_list = hostlist.expand_hostlist(nodes)
     except: # try to deal with BadHostlist exceptions
-      debug2("---- Trying to fix hostlist: " + str(record))
+      debug2("---- Modifying time=" + str(record['_time']) +" nodes="+nodes)
       # guess it is missing a left bracket, and truncate at last comma
       m=re.match("(^.*)\[(.*),(.*)", nodes)
       if not m == None:
         nodes = m.group(1) +"["+ m.group(2) +"]"
+      debug2("---- To: time=" + str(record['_time']) +" nodes="+nodes)
       node_list = hostlist.expand_hostlist(nodes) # do or die
   else:
     node_list = nodes.split(",")
@@ -141,14 +142,21 @@ def main():
             debug2("record " + str(i) + " of " + str(len(results)))
 
           # make sure we have needed fields
-          node = r.get(options.get('nodeField')) or r.get('nids') or r.get('hosts')
-          eventtype = r.get('eventtype')
-          if eventtype and node:
-            match = cosre.search(r['eventtype'])
-            if match != None:
-              # we do, so proceed
-              start_state, end_state = match.groups()
-              stateChangeLogic(r, node, start_state, end_state)
+          node = r.get(options.get('nodeField')) or r.get('nodes') or r.get('nids') or r.get('hosts')
+          if node:
+            eventtype = r.get('eventtype')
+            if eventtype:
+              type_list =  eventtype.split(" ")
+              for type in type_list:
+                match = cosre.search(type)
+                if match != None:
+                  # we do, so proceed
+                  start_state, end_state = match.groups()
+                  stateChangeLogic(r, node, start_state, end_state)
+            else:
+              debug2("--- Failed to find eventtype: "+ str(r))
+          else:
+            debug2("--- Failed to find node/nodes/hosts: "+ str(r))
           last_record = r
 
       if last_record!=None and options.get('addAggregate'):
@@ -168,6 +176,6 @@ def main():
 
 
 ##################################################################
-debug2("Starting")
+debug2("Starting at " + time.asctime())
 main()
-debug2("Finished\n\n")
+debug2("Finished at " + time.asctime() + "\n\n")
