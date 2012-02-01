@@ -27,59 +27,7 @@
         </module>
   </module>
   
-  <module name="Search" layoutPanel="panel_row1_col1" group="Currently Down Hosts" autoRun="True">
-        
-   <!-- Get a list of systems based on what hpc_* indexes exist -->
-   <param name="search">| eventcount summarize=false | search index=hpc_* | eval system=ltrim(index,"hpc_") | fields system</param>
-    
-    <!-- Offer a list of systems -->
-    <module name="Pulldown">
-      <param name="name">selectedSystems</param>
-      <param name="label">Systems to include:</param>
-      <param name="size">4</param>
-      <param name="template">orig_index=hpc_$value$</param>
-      <param name="separator">+OR+</param>
-      <param name="outerTemplate">($value$)</param>
-      <param name="staticFieldsToDisplay"></param>
-      <param name="searchFieldsToDisplay">
-        <list>
-          <param name="label">system</param>
-          <param name="value">system</param>
-        </list>
-      </param>
-	  
-      <module name="Search">
-        <param name="search"> | savedsearch "COS: DownHosts" | search $selectedSystems$ | rename orig_host AS host | eval WentDownAt=strftime(_time, "%Y-%m-%d %H:%M:%S") | eval HrsBeenDown=round((now()-_time)/3600,2) | table WentDownAt host HrsBeenDown </param>
-        <param name="earliest">-7d</param>
-        
-        <module name="Pager">
-          <param name="entityName">results</param>
-          <module name="SimpleResultsTable">
-            <param name="displayRowNumbers">False</param>
-            <param name="entityName">results</param>
-            <param name="drilldown">row</param>
-            
-           <module name="Search">
-            <param name="search">`hostdownwin($click.fields.host$,-5m,+1m)`</param>
-            <param name="earliest">-7d</param>
-            <param name="latest">now</param>
-        
-            <!-- Popup a new window containing the search results -->
-            <module name="ViewRedirector">
-              <param name="viewTarget">flashtimeline</param>
-              <param name="popup">True</param>
-            </module>
-           </module>
-          </module>
-        </module>
-  
-  
-        </module>
-  
-    </module>
-  </module>    
-    
-  <module name="Search" layoutPanel="panel_row1_col2" group="Logs in a job" autoRun="True">
+  <module name="Search" layoutPanel="panel_row1_col1" group="Logs in a job" autoRun="True">
 
    <!-- Get a list of systems based on what hpc_* indexes exist -->
    <!-- SLIGHT EFFICIENCY OPPORTUNITY - DO THIS ONCE AND REUSE IN THE BOTTOM PANE TOO -->
@@ -119,8 +67,58 @@
      </module>
     </module>
   </module>
+
+  <module name="Search" layoutPanel="panel_row2_col1" group="Currently Down Hosts" autoRun="True">
+        
+   <!-- Get a list of systems based on what hpc_* indexes exist -->
+   <param name="search">| eventcount summarize=false | search index=hpc_* | eval system=ltrim(index,"hpc_") | fields system</param>
+    
+    <!-- Offer a list of systems -->
+    <module name="Pulldown">
+      <param name="name">selectedSystems</param>
+      <param name="label">Systems to include:</param>
+      <param name="size">4</param>
+      <param name="template">orig_index=hpc_$value$</param>
+      <param name="separator">+OR+</param>
+      <param name="outerTemplate">($value$)</param>
+      <param name="staticFieldsToDisplay"></param>
+      <param name="searchFieldsToDisplay">
+        <list>
+          <param name="label">system</param>
+          <param name="value">system</param>
+        </list>
+      </param>
+	  
+      <module name="Search">
+        <param name="search"> | savedsearch "COS: HostsOfInterest" </param>
+        
+        <module name="Pager">
+          <param name="entityName">results</param>
+          <module name="SimpleResultsTable">
+            <param name="displayRowNumbers">False</param>
+            <param name="entityName">results</param>
+            <param name="drilldown">row</param>
+            
+           <module name="Search">
+            <param name="search">`hostdownwin($click.fields.node$,-5m,+1m)`</param>
+        
+            <!-- Popup a new window containing the search results -->
+            <module name="ViewRedirector">
+              <param name="viewTarget">flashtimeline</param>
+              <param name="popup">True</param>
+            </module>
+           </module>
+          </module>
+        </module>
   
-  <module name="Search" layoutPanel="panel_row2_col1" group="Messages Of Interest" autoRun="True">
+  
+        </module>
+  
+    </module>
+  </module>    
+    
+  
+  <module name="Search" layoutPanel="panel_row3_col1" group="Messages Of Interest" autoRun="True">
         
    <!-- Get a list of systems based on what hpc_* indexes exist -->
    <param name="search">| eventcount summarize=false | search index=hpc_* | eval system=ltrim(index,"hpc_") | fields system</param>
