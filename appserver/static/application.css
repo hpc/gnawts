@@ -12,23 +12,22 @@ em.time {
 }
 
 .EventsViewer .default .actions {
-  border: 0px;
-#  background-position: -3px -323px;
-  padding: 2px;
+  height: 10px;
+  line-height: 12px;
+}
+
+.EventsViewer a.actions > .splButtonIcon {
+  margin-top: 0px; /* margin to top of event row */
+  height: 10px;
+  width: 10px;
 }
 
 .EventsViewer .default .col2, .EventsViewer .default .col1 {
   padding-top: 0px;
 }
 
-.EventsViewer .default td {
-  padding: 1px; /* padding between workflow action pulldown and event display */
-}	
-
-
 /* .Events is the Sideview-Utils endless scrolling events viewer */
 .Events .default .actions { /* what does this affect? */
-  -moz-border-radius: 1px;
   border: 0px;
   background-color: #fff;
   background-position: -3px -323px;
