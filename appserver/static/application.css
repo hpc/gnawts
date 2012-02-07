@@ -12,10 +12,8 @@ em.time {
 }
 
 .EventsViewer .default .actions {
-  -moz-border-radius: 1px;
   border: 0px;
-  background-color: #fff;
-  background-position: -3px -323px;
+#  background-position: -3px -323px;
   padding: 2px;
 }
 
