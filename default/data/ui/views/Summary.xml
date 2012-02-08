@@ -89,8 +89,13 @@
         </list>
       </param>
 	  
-      <module name="Search">
-        <param name="search"> | savedsearch "COS: HostsOfInterest" | search $selectedSystems$ | table ChangedStateAt node jobid slurmstate reason COS orig_event </param>
+      <module name="Checkbox" autoRun="True">
+        <param name="name">nullJobid</param>
+        <param name="label">Include hosts which are currently running a job</param>
+        <param name="offValue"> where isnull(jobid) | </param>
+
+       <module name="Search">
+        <param name="search"> | savedsearch "COS: HostsOfInterest" | search $selectedSystems$ | $nullJobid$ table ChangedStateAt node jobid slurmstate reason COS orig_event </param>
         
         <module name="Pager">
           <param name="entityName">results</param>
@@ -109,11 +114,9 @@
             </module>
            </module>
           </module>
+         </module>
         </module>
-  
-  
-        </module>
-  
+      </module>
     </module>
   </module>    
     
