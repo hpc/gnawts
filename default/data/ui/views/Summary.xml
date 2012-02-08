@@ -106,6 +106,7 @@
             
            <module name="Search">
             <param name="search">`hostdownwin($click.fields.node$,-5m,+1m)`</param>
+            <param name="earliest">-30d</param>
         
             <!-- Popup a new window containing the search results -->
             <module name="ViewRedirector">
