@@ -35,58 +35,61 @@
         </list>
       </param>
 
+	  <module name="TextField" autoRun="True">
+	    <param name="name">days</param>
+	    <param name="float">left</param>
+	    <param name="template">earliest=-$value$d</param>
+	    <param name="label">Number of days in report range:</param>
+	    <param name="default">7</param>
+	    <param name="width">3em</param>
 
-  <module name="TextField" autoRun="True">
-    <param name="name">days</param>
-    <param name="float">left</param>
-    <param name="template">earliest=-$value$d</param>
-    <param name="label">Number of days in report range:</param>
-    <param name="default">7</param>
-    <param name="width">3em</param>
-    
-    
-    
-  <module name="TextField" autoRun="True">
-    <param name="name">jobsize</param>
-    <param name="float">left</param>
-    <param name="template">nprocs&lt;$value$</param>
-    <param name="label">Job size less than (processes):</param>
-    <param name="default">256</param>   
-    <param name="width">5em</param>
+		  <module name="TextField" autoRun="True">
+		    <param name="name">jobsize</param>
+		    <param name="float">left</param>
+		    <param name="template">nprocs&lt;$value$</param>
+		    <param name="label">Job size less than (processes):</param>
+		    <param name="default">256</param>   
+		    <param name="width">5em</param>
 
-    
-  <module name="TextField" autoRun="True">
-    <param name="name">hrs</param>
-    <param name="float">left</param>
-    <param name="template">hrs&lt;$value$</param>
-    <param name="label">Job length less than (hours):</param>
-    <param name="default">12</param>   
-    <param name="width">5em</param>
+			  <module name="TextField" autoRun="True">
+			    <param name="name">hrs</param>
+			    <param name="float">left</param>
+			    <param name="template">hrs&lt;$value$</param>
+			    <param name="label">Job length less than (hours):</param>
+			    <param name="default">12</param>   
+			    <param name="width">5em</param>
             
-		
-<module name="Search" layoutPanel="panel_row2_col1" group="Job Size Distribution (nprocs)">
-          <param name="search"> $days$ $SelectedSystem$ sourcetype=moabstats etype=jobend $jobsize$ | dedup jobid | bucket nprocs bins=100 | chart count by nprocs </param>
-          <module name="HiddenChartFormatter">
-        	<module name="FlashChart">
-          		<param name="height">300px</param>
-        	</module>
-          </module>
-        </module>
+            
+	            <module name="Search">
+				    <param name="search"> $days$ $SelectedSystem$ sourcetype=moabstats etype=jobend $jobsize$ | dedup jobid | eval hrs=round((end-start)/3600,2) | where $hrs$</param>
+			  
+				    <module name="PostProcess" layoutPanel="panel_row2_col1" group="Job Size Distribution (nprocs)">
+						  <param name="search"> bucket nprocs bins=100 | chart count by nprocs </param>
+						  <module name="HiddenChartFormatter">
+						     <module name="FlashChart">
+					         	<param name="height">300px</param>
+				 	         </module>
+						  </module>
+				    </module>
 
-		<module name="Search" layoutPanel="panel_row2_col2" group="Job Length Distribution (Hrs)">
-          <param name="search"> $days$ $SelectedSystem$ sourcetype=moabstats etype=jobend $jobsize$ | dedup jobid | eval hrs=round((end-start)/3600,2) | where $hrs$ | bucket hrs bins=100 | chart count by hrs </param>
-          <module name="HiddenChartFormatter">
-        	<module name="FlashChart">
-          		<param name="height">300px</param>
-        	</module>
-          </module>
-        </module>
-       </module>
-
+					<module name="PostProcess" layoutPanel="panel_row2_col2" group="Job Length Distribution (hrs)">
+						  <param name="search"> bucket hrs bins=100 | chart count by hrs </param>
+						  <module name="HiddenChartFormatter">
+						     <module name="FlashChart">
+					         	<param name="height">300px</param>
+				 	         </module>
+						  </module>
+				    </module>
+				    
+				</module>
+				
+				
+         	</module>     
+		</module>
       </module>
 
-     </module>
     </module>
-  </module>
+   </module>
+
 
 </view>
