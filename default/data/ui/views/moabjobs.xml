@@ -82,24 +82,19 @@
 					         	<param name="height">300px</param>
 				 	         </module>
 						  </module>
-				    </module>
+				    </module>				
 
-					<module name="PostProcess" layoutPanel="panel_row3_col1" group="Job count per user">
-						  <param name="search"> bucket user bins=10 | chart count by user </param>
-						  <module name="HiddenChartFormatter">
-						     <module name="FlashChart">
-					         	<param name="height">300px</param>
-				 	         </module>
-						  </module>
-				    </module>					
-
-						<module name="PostProcess" layoutPanel="panel_row3_col2" group="ProcessorHours per user">
-						  <param name="search"> eval ProcessorHours=hrs*nprocs | chart sum(ProcessorHours) by user </param>
-						  <module name="HiddenChartFormatter">
-						     <module name="FlashChart">
-					         	<param name="height">300px</param>
-				 	         </module>
-						  </module>
+						<module name="PostProcess" layoutPanel="panel_row3_col1" group="Total usage per user">
+						  <param name="search"> eval phrs=hrs*nprocs | stats count AS TotalJobCount sum(phrs) AS TotalProcessorHours values(nprocs) AS JobSizes by user | eval JobSizes=mvjoin(JobSizes, ",") | sort -TotalProcessorHours | table user TotalJobCount TotalProcessorHours JobSizes</param>
+						  
+						  <module name="Pager">
+					        <param name="entityName">results</param>
+					        <module name="SimpleResultsTable">
+					          <param name="displayRowNumbers">False</param>
+					          <param name="entityName">results</param>
+					        </module>
+					      </module>
+      
 				    </module>					
 				    				    
 				  </module>				
