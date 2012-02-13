@@ -12,6 +12,8 @@
         <saved source="unclassified" match="COS: " />
     </collection>
     <collection label="Moab">
+        <view name="moabjobs" />
+        <divider />
         <saved source="unclassified" match="Moab: " />
     </collection>
     <collection label="Slurm">
