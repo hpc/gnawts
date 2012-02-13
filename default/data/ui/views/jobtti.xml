@@ -1,0 +1,92 @@
+  <!-- Copyright (C) 2010-2011 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" isVisible="true" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
+  <label>jobtti</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+  
+  <module name="Message" layoutPanel="messaging">
+    <param name="filter">*</param>
+    <param name="maxSize">2</param>
+    <param name="clearOnJobDispatch">False</param>
+  </module>
+  
+
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>Job Time To Interrupt (TTI)</h1>
+    ]]></param>
+  </module>
+  
+
+
+  <module name="Search" layoutPanel="panel_row1_col1" autoRun="True" group="Job Filters">
+    <param name="search">| eventcount summarize=false | search index=hpc_* | eval system=ltrim(index,"hpc_") | fields system</param>
+    
+    <module name="Pulldown">
+      <param name="name">SelectedSystem</param>
+      <param name="label">system</param>
+      <param name="template">index=hpc_$value$</param>
+      <param name="float">left</param>
+      <param name="searchFieldsToDisplay">
+        <list>
+          <param name="label">system</param>
+          <param name="value">system</param>
+        </list>
+      </param>
+
+
+  <module name="TextField" autoRun="True">
+    <param name="name">days</param>
+    <param name="float">left</param>
+    <param name="template">earliest=-$value$d</param>
+    <param name="label">Number of days in report range:</param>
+    <param name="default">7</param>
+    <param name="width">3em</param>
+    
+    
+    
+  <module name="TextField" autoRun="True">
+    <param name="name">jobsize</param>
+    <param name="float">left</param>
+    <param name="template">nprocs&lt;$value$</param>
+    <param name="label">Job size less than (processes):</param>
+    <param name="default">256</param>   
+    <param name="width">5em</param>
+
+    
+  <module name="TextField" autoRun="True">
+    <param name="name">hrs</param>
+    <param name="float">left</param>
+    <param name="template">hrs&lt;$value$</param>
+    <param name="label">Job length less than (hours):</param>
+    <param name="default">12</param>   
+    <param name="width">5em</param>
+            
+		
+<module name="Search" layoutPanel="panel_row2_col1" group="Job Size Distribution (nprocs)">
+          <param name="search"> $days$ $SelectedSystem$ sourcetype=moabstats etype=jobend $jobsize$ | dedup jobid | bucket nprocs bins=100 | chart count by nprocs </param>
+          <module name="HiddenChartFormatter">
+        	<module name="FlashChart">
+          		<param name="height">300px</param>
+        	</module>
+          </module>
+        </module>
+
+		<module name="Search" layoutPanel="panel_row2_col2" group="Job Length Distribution (Hrs)">
+          <param name="search"> $days$ $SelectedSystem$ sourcetype=moabstats etype=jobend $jobsize$ | dedup jobid | eval hrs=round((end-start)/3600,2) | where $hrs$ | bucket hrs bins=100 | chart count by hrs </param>
+          <module name="HiddenChartFormatter">
+        	<module name="FlashChart">
+          		<param name="height">300px</param>
+        	</module>
+          </module>
+        </module>
+       </module>
+
+      </module>
+
+     </module>
+    </module>
+  </module>
+
+</view>
