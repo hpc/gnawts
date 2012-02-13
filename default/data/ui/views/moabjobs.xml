@@ -64,7 +64,7 @@
 				  <param name="width">15em</param>
             
 	              <module name="Search">
-				    <param name="search"> $days$ $SelectedSystem$ sourcetype=moabstats etype=jobend $jobsize$ $xtra$| dedup jobid | eval hrs=round((end-start)/3600,2) | where $hrs$</param>
+				    <param name="search"> $days$ $SelectedSystem$ sourcetype=moabstats etype=jobend $jobsize$ $xtra$| dedup jobid | eval hrs=round((end-start)/3600,1) | where $hrs$</param>
 			  
 				    <module name="PostProcess" layoutPanel="panel_row2_col1" group="Job Size (nprocs)">
 						  <param name="search"> bucket count bins=10 | chart count by nprocs </param>
@@ -85,7 +85,7 @@
 				    </module>				
 
 						<module name="PostProcess" layoutPanel="panel_row3_col1" group="Total usage per user">
-						  <param name="search"> eval phrs=hrs*nprocs | stats count AS TotalJobCount sum(phrs) AS TotalProcessorHours values(nprocs) AS JobSizes by user | eval JobSizes=mvjoin(JobSizes, ",") | sort -TotalProcessorHours | table user TotalJobCount TotalProcessorHours JobSizes</param>
+						  <param name="search"> eval phrs=hrs*nprocs | stats count AS TotalJobCount sum(phrs) AS TotalProcessorHours values(nprocs) AS JobSizeNprocs values(hrs) AS JobDurationHrs by user | eval JobSizeNprocs=mvjoin(JobSizeNprocs, ",") | eval JobDurationHrs=mvjoin(JobDurationHrs, ",") | sort -TotalProcessorHours | table user TotalJobCount TotalProcessorHours JobSizeNprocs JobDurationHrs</param>
 						  
 						  <module name="Pager">
 					        <param name="entityName">results</param>
