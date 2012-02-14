@@ -1,6 +1,6 @@
   <!-- Copyright (C) 2010-2011 Sideview LLC.  All Rights Reserved. -->
 <view autoCancelInterval="90" isVisible="true" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
-  <label>COS: System RAS Metrics</label>
+  <label>System RAS Metrics</label>
   <module name="AccountBar" layoutPanel="appHeader" />
   <module name="AppBar" layoutPanel="appHeader" />
   <module name="SideviewUtils" layoutPanel="appHeader" />
@@ -61,7 +61,7 @@
 						  </module>
 				    </module>
 
-					<module name="PostProcess" layoutPanel="panel_row2_col2" group="SMTTI = ProductionUptime hours / Count of UnscheduledDowntimeTransitions">
+					<module name="PostProcess" layoutPanel="panel_row2_col2" group="SMTTI = ProductionUptime hours / Count of UnscheduledDowntimeStarts">
 						  <param name="search"> streamstats sum(USR_hrs) AS USRhoursInWindow window=$windays$ | streamstats sum(ERR_count) AS ERRCountInWindow window=$windays$ | eval SMTTi=round(USRhoursInWindow/ERRCountInWindow,2) | streamstats count(_time) as ndays window=$windays$ | where ndays=$windays$ | eval SMTTI=if(isnull(SMTTi),USRhoursInWindow,SMTTi) | timechart span=1d max(SMTTI) AS SMTTI</param>
 						  <module name="HiddenChartFormatter">
 						  	 <param name="charting.chart">line</param>
@@ -92,7 +92,7 @@
 				    </module>
 				    				    
 					<module name="PostProcess" layoutPanel="panel_row4_col1" group="Table of daily values">
-						  <param name="search"> reverse | rename USR_hrs AS ProductionUptimeHrs | rename SYS_hrs AS ScheduledDowntimeHrs | rename ERR_hrs AS UnscheduledDowntimeHrs | rename USR_count AS ProductionUptimeTransitions | rename ERR_count AS UnscheduledDowntimeTransitions | table date ProductionUptimeHrs ScheduledDowntimeHrs UnscheduledDowntimeHrs ProductionUptimeTransitions UnscheduledDowntimeTransitions</param>
+						  <param name="search"> reverse | rename USR_hrs AS ProductionUptimeHrs | rename SYS_hrs AS ScheduledDowntimeHrs | rename ERR_hrs AS UnscheduledDowntimeHrs | rename ERR_count AS UnscheduledDowntimeStarts | table date ProductionUptimeHrs ScheduledDowntimeHrs UnscheduledDowntimeHrs UnscheduledDowntimeStarts</param>
 						  <module name="Pager">
 					        <param name="entityName">results</param>
 					        <module name="SimpleResultsTable">

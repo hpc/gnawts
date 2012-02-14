@@ -1,6 +1,6 @@
   <!-- Copyright (C) 2010-2011 Sideview LLC.  All Rights Reserved. -->
 <view autoCancelInterval="90" isVisible="true" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
-  <label>COS: Time Between Interrupt of Any Host</label>
+  <label>Time Between Interrupts</label>
   <module name="AccountBar" layoutPanel="appHeader" />
   <module name="AppBar" layoutPanel="appHeader" />
   <module name="SideviewUtils" layoutPanel="appHeader" />
@@ -15,6 +15,7 @@
     <param name="html"><![CDATA[
     <h1>Time Between Interrupt of Any Host</h1>
     Time Between Interrupt (TBI) is measured as the time between ANY HOST entering UnscheduledDowntime.  
+    To be meaningful, a SINGLE system should be selected below.
     Zero-length TBI's (when multiple hosts go down at the same second) are omitted from results by default.
     Extra search parameters can be used to narrow the report range, such as "search hrs<10" to look only at short TBI's.  
     ]]></param>
@@ -25,7 +26,7 @@
     
     <module name="Pulldown">
       <param name="name">SelectedSystem</param>
-      <param name="label">system</param>
+      <param name="label">System:</param>
       <param name="template">orig_index=hpc_$value$</param>
       <param name="float">left</param>
       <param name="searchFieldsToDisplay">
@@ -46,7 +47,7 @@
 		  <module name="TextField" autoRun="True">
 		    <param name="name">windays</param>
 		    <param name="float">left</param>
-		    <param name="label">Number of days used to calculate sliding averages:</param>
+		    <param name="label">Number of days used to calculate MTBI:</param>
 		    <param name="default">7</param>
 		    <param name="width">3em</param>
 
@@ -65,28 +66,7 @@
 	             <module name="Search">
 				    <param name="search"> index=summary $days$ $SelectedSystem$ newState=ERR | $dedup$ streamstats global=false window=2 first(_time) AS first last(_time) AS last | eval hrs=(first-last)/3600 | $xtra$ </param>
 				  				    				    
-					<module name="PostProcess" layoutPanel="panel_row2_col1" group="TBI Distribution">
-						  <param name="search"> bucket hrs bins=20 | chart count by hrs</param>
-						  <module name="HiddenChartFormatter">
-						  <param name="charting.chart">column</param>
-						     <module name="FlashChart">
-					         	<param name="height">300px</param>
-				 	         </module>
-						  </module>
-				    </module>
-	
-					<module name="PostProcess" layoutPanel="panel_row3_col1" group="MTBI Trend">
-                          <!-- could nest the below in the above postprocess for greater efficiency -->
-						  <param name="search"> streamstats global=false window=$windays$ mean(hrs) AS MTBI | timechart span=1d max(MTBI) AS MTBI</param>
-						  <module name="HiddenChartFormatter">
-						  	 <param name="charting.chart">line</param>
-						     <module name="FlashChart">
-					         	<param name="height">300px</param>
-				 	         </module>
-						  </module>
-				    </module>
-
-					<module name="PostProcess" layoutPanel="panel_row4_col1" group="TBI Statistics">
+					<module name="PostProcess" layoutPanel="panel_row2_col1" group="TBI Statistics">
 						  <param name="search"> stats count mean(hrs) min(hrs) perc25(hrs) median(hrs) perc75(hrs) max(hrs) </param>
 						  <module name="Pager">
 					        <param name="entityName">results</param>
@@ -97,6 +77,27 @@
 					      </module>
 				    </module>					
 	
+					<module name="PostProcess" layoutPanel="panel_row3_col1" group="TBI Distribution">
+						  <param name="search"> bucket hrs bins=20 | chart count by hrs</param>
+						  <module name="HiddenChartFormatter">
+						  <param name="charting.chart">column</param>
+						     <module name="FlashChart">
+					         	<param name="height">300px</param>
+				 	         </module>
+						  </module>
+				    </module>
+	
+					<module name="PostProcess" layoutPanel="panel_row4_col1" group="MTBI Trend - N-day sliding average (see parameter setting for sliding window size)">
+                          <!-- could nest the below in the above postprocess for greater efficiency -->
+						  <param name="search"> streamstats global=false window=$windays$ mean(hrs) AS MTBI | timechart span=1d max(MTBI) AS MTBI</param>
+						  <module name="HiddenChartFormatter">
+						  	 <param name="charting.chart">line</param>
+						     <module name="FlashChart">
+					         	<param name="height">300px</param>
+				 	         </module>
+						  </module>
+				    </module>
+
 				 </module>
               </module>
 
