@@ -1,6 +1,6 @@
   <!-- Copyright (C) 2010-2011 Sideview LLC.  All Rights Reserved. -->
 <view autoCancelInterval="90" isVisible="true" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
-  <label>COS: Per-Host Time to Interrupt</label>
+  <label>Host Time to Interrupt</label>
   <module name="AccountBar" layoutPanel="appHeader" />
   <module name="AppBar" layoutPanel="appHeader" />
   <module name="SideviewUtils" layoutPanel="appHeader" />
@@ -23,7 +23,7 @@
     
     <module name="Pulldown">
       <param name="name">SelectedSystem</param>
-      <param name="label">system</param>
+      <param name="label">System:</param>
       <param name="template">orig_index=hpc_$value$</param>
       <param name="float">left</param>
       <param name="searchFieldsToDisplay">
@@ -44,7 +44,7 @@
 		  <module name="TextField" autoRun="True">
 		    <param name="name">windays</param>
 		    <param name="float">left</param>
-		    <param name="label">Number of days used to calculate sliding averages:</param>
+		    <param name="label">Number of days used to calculate MTTI:</param>
 		    <param name="default">7</param>
 		    <param name="width">3em</param>
 
@@ -58,27 +58,7 @@
 	             <module name="Search">
 				    <param name="search"> index=summary $days$ $SelectedSystem$ newState=USR OR newState=ERR | transaction orig_host startswith="newState=USR" endswith="newState=ERR" | eval hrs=duration/3600 | $xtra$ </param>
 
-				    <module name="PostProcess" layoutPanel="panel_row2_col1" group="TTI Distribution">
-						  <param name="search"> bucket hrs bins=20 | chart count by hrs </param>
-						  <module name="HiddenChartFormatter">
-						  <param name="charting.chart">column</param>
-						     <module name="FlashChart">
-					         	<param name="height">300px</param>
-				 	         </module>
-						  </module>
-				    </module>				
-
-					<module name="PostProcess" layoutPanel="panel_row3_col1" group="MTTI Trend">
-						  <param name="search"> streamstats mean(hrs) AS MTTI global=false window=$windays$ | timechart span=1d max(MTTI) AS MTTI</param>
-						  <module name="HiddenChartFormatter">
-						  	 <param name="charting.chart">line</param>
-						     <module name="FlashChart">
-					         	<param name="height">300px</param>
-				 	         </module>
-						  </module>
-				    </module>
-
-					<module name="PostProcess" layoutPanel="panel_row4_col1" group="TTI Statistics">
+					<module name="PostProcess" layoutPanel="panel_row2_col1" group="TTI Statistics">
 						  <param name="search"> stats count mean(hrs) min(hrs) perc25(hrs) median(hrs) perc75(hrs) max(hrs) </param>
 						  <module name="Pager">
 					        <param name="entityName">results</param>
@@ -89,8 +69,28 @@
 					      </module>
 				    </module>					
 	
+				    <module name="PostProcess" layoutPanel="panel_row3_col1" group="TTI Distribution">
+						  <param name="search"> bucket hrs bins=20 | chart count by hrs </param>
+						  <module name="HiddenChartFormatter">
+						  <param name="charting.chart">column</param>
+						     <module name="FlashChart">
+					         	<param name="height">300px</param>
+				 	         </module>
+						  </module>
+				    </module>				
+
+					<module name="PostProcess" layoutPanel="panel_row4_col1" group="MTTI Trend - N-day sliding average (see parameter setting for sliding window size)">
+						  <param name="search"> streamstats mean(hrs) AS MTTI global=false window=$windays$ | timechart span=1d max(MTTI) AS MTTI</param>
+						  <module name="HiddenChartFormatter">
+						  	 <param name="charting.chart">line</param>
+						     <module name="FlashChart">
+					         	<param name="height">300px</param>
+				 	         </module>
+						  </module>
+				    </module>
+
 					<module name="PostProcess" layoutPanel="panel_row5_col1" group="Per-host Statistics">
-						  <param name="search"> rename orig_host AS host | eval hrs=round(hrs,2) | stats count mean(hrs) values(hrs) AS hrs by host | eval hrs=mvjoin(hrs,", ") | sort -count</param>
+						  <param name="search"> rename orig_host AS host | eval hrs=round(hrs,2) | stats count sum(hrs) mean(hrs) values(hrs) AS hrs by host | eval hrs=mvjoin(hrs,", ") | sort -count</param>
 						  <module name="Pager">
 					        <param name="entityName">results</param>
 					        <module name="SimpleResultsTable">
