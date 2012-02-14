@@ -10,6 +10,7 @@
     </collection>
     <collection label="Component Operations Status">
         <view name="RASmetrics" />
+        <view name="hostTTI" />
         <divider />
         <saved source="unclassified" match="COS: " />
     </collection>
