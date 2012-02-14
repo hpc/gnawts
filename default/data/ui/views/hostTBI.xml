@@ -1,6 +1,6 @@
   <!-- Copyright (C) 2010-2011 Sideview LLC.  All Rights Reserved. -->
 <view autoCancelInterval="90" isVisible="true" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
-  <label>COS: Per-Host Time to Interrupt</label>
+  <label>COS: Time Between Interrupt of Any Host</label>
   <module name="AccountBar" layoutPanel="appHeader" />
   <module name="AppBar" layoutPanel="appHeader" />
   <module name="SideviewUtils" layoutPanel="appHeader" />
@@ -13,8 +13,10 @@
   
   <module name="HTML" layoutPanel="viewHeader">
     <param name="html"><![CDATA[
-    <h1>Per-Host Time To Interrupt</h1>
-    Time to Interrupt (TTI) is measured as how long EACH host had been in ProductionUptime when it transitioned to UnscheduledDowntime.  Extra search parameters can be used to narrow the report range, such as "search hrs<2" to look at short TTIs, or "search rs100 OR rs101" to look at a only those hosts.
+    <h1>Time Between Interrupt of Any Host</h1>
+    Time Between Interrupt (TBI) is measured as the time between ANY HOST entering UnscheduledDowntime.  
+    Zero-length TBI's (when multiple hosts go down at the same second) are omitted from results by default.
+    Extra search parameters can be used to narrow the report range, such as "search hrs<10" to look only at short TBI's.  
     ]]></param>
   </module>
   
@@ -55,21 +57,27 @@
 		    <param name="default">search *</param>
 		    <param name="width">20em</param>
 		    
-	             <module name="Search">
-				    <param name="search"> index=summary $days$ $SelectedSystem$ newState=USR OR newState=ERR | transaction orig_host startswith="newState=USR" endswith="newState=ERR" | eval hrs=duration/3600 | $xtra$ </param>
+              <module name="Checkbox" autoRun="True">
+                <param name="name">dedup</param>
+                <param name="label">Include zero-length TBI's</param>
+                <param name="offValue"> dedup _time | </param>
 
-				    <module name="PostProcess" layoutPanel="panel_row2_col1" group="TTI Distribution">
-						  <param name="search"> bucket hrs bins=20 | chart count by hrs </param>
+	             <module name="Search">
+				    <param name="search"> index=summary $days$ $SelectedSystem$ newState=ERR | $dedup$ streamstats global=false window=2 first(_time) AS first last(_time) AS last | eval hrs=(first-last)/3600 | $xtra$ </param>
+				  				    				    
+					<module name="PostProcess" layoutPanel="panel_row2_col1" group="TBI Distribution">
+						  <param name="search"> bucket hrs bins=20 | chart count by hrs</param>
 						  <module name="HiddenChartFormatter">
 						  <param name="charting.chart">column</param>
 						     <module name="FlashChart">
 					         	<param name="height">300px</param>
 				 	         </module>
 						  </module>
-				    </module>				
-
-					<module name="PostProcess" layoutPanel="panel_row3_col1" group="MTTI Trend">
-						  <param name="search"> streamstats mean(hrs) AS MTTI global=false window=$windays$ | timechart span=1d max(MTTI) AS MTTI</param>
+				    </module>
+	
+					<module name="PostProcess" layoutPanel="panel_row3_col1" group="MTBI Trend">
+                          <!-- could nest the below in the above postprocess for greater efficiency -->
+						  <param name="search"> streamstats global=false window=$windays$ mean(hrs) AS MTBI | timechart span=1d max(MTBI) AS MTBI</param>
 						  <module name="HiddenChartFormatter">
 						  	 <param name="charting.chart">line</param>
 						     <module name="FlashChart">
@@ -78,7 +86,7 @@
 						  </module>
 				    </module>
 
-					<module name="PostProcess" layoutPanel="panel_row4_col1" group="TTI Statistics">
+					<module name="PostProcess" layoutPanel="panel_row4_col1" group="TBI Statistics">
 						  <param name="search"> stats count mean(hrs) min(hrs) perc25(hrs) median(hrs) perc75(hrs) max(hrs) </param>
 						  <module name="Pager">
 					        <param name="entityName">results</param>
@@ -89,17 +97,8 @@
 					      </module>
 				    </module>					
 	
-					<module name="PostProcess" layoutPanel="panel_row5_col1" group="Per-host Statistics">
-						  <param name="search"> rename orig_host AS host | eval hrs=round(hrs,2) | stats count mean(hrs) values(hrs) AS hrs by host | eval hrs=mvjoin(hrs,", ") | sort -count</param>
-						  <module name="Pager">
-					        <param name="entityName">results</param>
-					        <module name="SimpleResultsTable">
-					          <param name="displayRowNumbers">False</param>
-					          <param name="entityName">results</param>
-					        </module>
-					      </module>
-				    </module>					
 				 </module>
+              </module>
 
 			</module>				
 		</module>
