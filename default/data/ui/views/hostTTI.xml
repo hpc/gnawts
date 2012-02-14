@@ -38,14 +38,14 @@
 	    <param name="float">left</param>
 	    <param name="label">Total number of days in report:</param>
 	    <param name="template">earliest=-$value$d</param>
-	    <param name="default">90</param>
+	    <param name="default">30</param>
 	    <param name="width">3em</param>
 
 		  <module name="TextField" autoRun="True">
 		    <param name="name">windays</param>
 		    <param name="float">left</param>
 		    <param name="label">Number of days used to calculate sliding averages:</param>
-		    <param name="default">30</param>
+		    <param name="default">7</param>
 		    <param name="width">3em</param>
 
 		   <module name="TextField" autoRun="True">
@@ -57,9 +57,9 @@
 		    
 	             <module name="Search">
 				    <param name="search"> index=summary $days$ $SelectedSystem$ newState=USR OR newState=ERR | transaction orig_host startswith="newState=USR" endswith="newState=ERR" | eval hrs=duration/3600 | $xtra$ </param>
-				    
+
 				    <module name="PostProcess" layoutPanel="panel_row2_col1" group="TTI Distribution">
-						  <param name="search"> bucket hrs bins=100 | chart count by hrs </param>
+						  <param name="search"> bucket hrs bins=20 | chart count by hrs </param>
 						  <module name="HiddenChartFormatter">
 						  <param name="charting.chart">column</param>
 						     <module name="FlashChart">
@@ -77,18 +77,8 @@
 				 	         </module>
 						  </module>
 				    </module>
-				    				    
-					<module name="PostProcess" layoutPanel="panel_row3_col2" group="MTBI Trend - Mean Time Between any host entering UnscheduledDowntime.">
-						  <param name="search"> streamstats global=false window=2 first(hrs) AS first last(hrs) AS last | eval hrs=first-last | streamstats global=false window=$windays$ mean(hrs) AS MTBI | timechart span=1d max(MTBI) AS MTBI</param>
-						  <module name="HiddenChartFormatter">
-						  	 <param name="charting.chart">line</param>
-						     <module name="FlashChart">
-					         	<param name="height">300px</param>
-				 	         </module>
-						  </module>
-				    </module>
-				          
-					<module name="PostProcess" layoutPanel="panel_row4_col1" group="Overall Statistics">
+
+					<module name="PostProcess" layoutPanel="panel_row4_col1" group="TTI Statistics">
 						  <param name="search"> stats count mean(hrs) min(hrs) perc25(hrs) median(hrs) perc75(hrs) max(hrs) </param>
 						  <module name="Pager">
 					        <param name="entityName">results</param>
@@ -109,8 +99,45 @@
 					        </module>
 					      </module>
 				    </module>					
+				 </module>
+
+	             <module name="Search">
+				    <param name="search"> index=summary $days$ $SelectedSystem$ newState=ERR | dedup _time | streamstats global=false window=2 first(_time) AS first last(_time) AS last | eval hrs=(first-last)/3600 | $xtra$ </param>
+				  				    				    
+					<module name="PostProcess" layoutPanel="panel_row2_col2" group="TBI Distribution - Time Between any host entering UnscheduledDowntime">
+						  <param name="search"> bucket hrs bins=20 | chart count by hrs</param>
+						  <module name="HiddenChartFormatter">
+						  <param name="charting.chart">column</param>
+						     <module name="FlashChart">
+					         	<param name="height">300px</param>
+				 	         </module>
+						  </module>
+				    </module>
+	
+					<module name="PostProcess" layoutPanel="panel_row3_col2" group="MTBI Trend - Mean Time Between any host entering UnscheduledDowntime.">
+                          <!-- could nest the below in the above postprocess for greater efficiency -->
+						  <param name="search"> streamstats global=false window=$windays$ mean(hrs) AS MTBI | timechart span=1d max(MTBI) AS MTBI</param>
+						  <module name="HiddenChartFormatter">
+						  	 <param name="charting.chart">line</param>
+						     <module name="FlashChart">
+					         	<param name="height">300px</param>
+				 	         </module>
+						  </module>
+				    </module>
+
+					<module name="PostProcess" layoutPanel="panel_row4_col2" group="TBI Statistics">
+						  <param name="search"> stats count mean(hrs) min(hrs) perc25(hrs) median(hrs) perc75(hrs) max(hrs) </param>
+						  <module name="Pager">
+					        <param name="entityName">results</param>
+					        <module name="SimpleResultsTable">
+					          <param name="displayRowNumbers">False</param>
+					          <param name="entityName">results</param>
+					        </module>
+					      </module>
+				    </module>					
 	
 				 </module>
+
 			</module>				
 		</module>
       </module>
