@@ -22,8 +22,7 @@
   </module>
   
   <module name="Search" layoutPanel="panel_row1_col1" autoRun="True" group="Report Parameters">
-    <param name="search">| eventcount summarize=false | search index=hpc_* | eval system=ltrim(index,"hpc_") | fields system</param>
-    
+    <param name="search">| eventcount summarize=false index=hpc_* | where count>0 | eval system=ltrim(index,"hpc_") | fields system</param> 
     <module name="Pulldown">
       <param name="name">SelectedSystem</param>
       <param name="label">System:</param>
@@ -62,6 +61,14 @@
                 <param name="name">dedup</param>
                 <param name="label">Include zero-length TBI's</param>
                 <param name="offValue"> dedup _time | </param>
+
+	             <module name="Search">
+				  <param name="search">index=summary $days$ $SelectedSystem$ newState=ERR</param>
+                  <module name="ViewRedirectorLink" >
+                    <param name="label">View events</param>
+                    <param name="viewTarget">flashtimeline</param>
+                  </module>
+                 </module>
 
 	             <module name="Search">
 				    <param name="search"> index=summary $days$ $SelectedSystem$ newState=ERR | $dedup$ streamstats global=false window=2 first(_time) AS first last(_time) AS last | eval hrs=(first-last)/3600 | $xtra$ </param>
@@ -106,6 +113,7 @@
       </module>
 
     </module>
+
    </module>
 
 </view>

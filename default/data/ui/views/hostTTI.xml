@@ -19,8 +19,7 @@
   </module>
   
   <module name="Search" layoutPanel="panel_row1_col1" autoRun="True" group="Report Parameters">
-    <param name="search">| eventcount summarize=false | search index=hpc_* | eval system=ltrim(index,"hpc_") | fields system</param>
-    
+    <param name="search">| eventcount summarize=false index=hpc_* | where count>0 | eval system=ltrim(index,"hpc_") | fields system</param>
     <module name="Pulldown">
       <param name="name">SelectedSystem</param>
       <param name="label">System:</param>
@@ -57,6 +56,11 @@
 		    
 	             <module name="Search">
 				    <param name="search"> index=summary $days$ $SelectedSystem$ newState=USR OR newState=ERR | transaction orig_host startswith="newState=USR" endswith="newState=ERR" | eval hrs=duration/3600 | $xtra$ </param>
+
+                    <module name="ViewRedirectorLink" >
+                      <param name="label">View events</param>
+                      <param name="viewTarget">flashtimeline</param>
+                    </module>
 
 					<module name="PostProcess" layoutPanel="panel_row2_col1" group="TTI Statistics">
 						  <param name="search"> stats count mean(hrs) min(hrs) perc25(hrs) median(hrs) perc75(hrs) max(hrs) </param>

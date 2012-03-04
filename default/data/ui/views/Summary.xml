@@ -31,7 +31,7 @@
 
    <!-- Get a list of systems based on what hpc_* indexes exist -->
    <!-- SLIGHT EFFICIENCY OPPORTUNITY - DO THIS ONCE AND REUSE IN THE BOTTOM PANE TOO -->
-   <param name="search">| eventcount summarize=false | search index=hpc_* | eval system=ltrim(index,"hpc_") | fields system</param>
+   <param name="search">| eventcount summarize=false index=hpc_* | where count>0 | eval system=ltrim(index,"hpc_") | fields system</param>
 
    <!-- How to render all the below on a single line? -->
    <!-- Enter a job number -->
@@ -71,7 +71,7 @@
   <module name="Search" layoutPanel="panel_row2_col1" group="Hosts Of Interest" autoRun="True">
         
    <!-- Get a list of systems based on what hpc_* indexes exist -->
-   <param name="search">| eventcount summarize=false | search index=hpc_* | eval system=ltrim(index,"hpc_") | fields system</param>
+   <param name="search">| eventcount summarize=false index=hpc_* | where count>0 | eval system=ltrim(index,"hpc_") | fields system</param>
     
     <!-- Offer a list of systems -->
     <module name="Pulldown">
@@ -125,7 +125,7 @@
   <module name="Search" layoutPanel="panel_row3_col1" group="Messages Of Interest" autoRun="True">
         
    <!-- Get a list of systems based on what hpc_* indexes exist -->
-   <param name="search">| eventcount summarize=false | search index=hpc_* | eval system=ltrim(index,"hpc_") | fields system</param>
+   <param name="search">| eventcount summarize=false index=hpc_* | where count>0 | eval system=ltrim(index,"hpc_") | fields system</param>
     
     <!-- Offer a list of systems -->
     <module name="Pulldown">
