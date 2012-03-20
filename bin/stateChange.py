@@ -72,6 +72,8 @@ def stateChangeLogic(record, nodes, start_state, end_state):
   if len(nodes) > 100:  # omit long node lists
       record['_raw'] = record['_raw'].replace(nodes,'(LONG_NODE_LIST)')
 
+#  debug2("---- in stateChangeLogic:" + str(record['_time']) + " start="+ start_state  + " end="+ end_state + " nodes="+nodes)
+
   for node in node_list:
     current_state = node_states.get(node)
     if current_state == None or current_state=="UNK" or start_state=="*" or current_state==start_state:
@@ -110,7 +112,7 @@ def main():
       options.update(new_options)
 
     debug2("OPTIONS: " + str(options))
-    cosre  = re.compile("cos_(\w+)-(\w+)")
+    cosre  = re.compile("cos_([\*\w]+)-([\*\w]+)")
     
     i=0
     if len(results) and results[0].has_key('_time'):
@@ -153,6 +155,8 @@ def main():
                   # we do, so proceed
                   start_state, end_state = match.groups()
                   stateChangeLogic(r, node, start_state, end_state)
+                else:
+                  debug2("--- Failed to match cos states: "+ str(r))
             else:
               debug2("--- Failed to find eventtype: "+ str(r))
           else:

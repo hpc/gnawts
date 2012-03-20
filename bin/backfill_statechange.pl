@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 # This script backfills the summary index with host Component Operations Status (COS) state changes
 
-$splunkFlags = "-preview false -header false -app hpc-jon";
+$splunkFlags = "-preview false -header false -app hpc";
 $maxEventsSplunkGivesToCustomCommand = 50000;
 
 $now = time;
@@ -72,6 +72,7 @@ while ($latest = shift @Latest) {
 	$count = shift @Counts;
 	print STDERR "\n==== ($i of $iters, $count events) ====> backfilling through $latest...\n";
 	$search = '[search index=summary StateName | head 1 | eval query="(index=summary _time="._time." StateName) OR (_time>"._time." latest='.$latest.' eventtype=cos_*)" | fields + query] | tail 50000 | statechange | collect index=summary | stats count'; 
+    print STDERR "Running: $search\n";
 	if ($i++ == 1) { # first one may be special, see ARGV handling blocks
 		$lastSummary = &latestSummary();
 		unless ($lastSummary=~/\S/) {
