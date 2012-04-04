@@ -4,12 +4,12 @@
         <view source="unclassified" match="flashtimeline"/>
     </collection>
     <collection label="Messages Of Interest">
+        <view name="OOMd" />
         <view name="MOI-jobs_hosts" />
         <divider />
         <saved source="unclassified" match="MOI: " />
     </collection>
     <collection label="Component Operations Status">
-        <view name="RASmetrics" />
         <view name="hostTTI" />
         <view name="hostTBI" />
         <divider />
