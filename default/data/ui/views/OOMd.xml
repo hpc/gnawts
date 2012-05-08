@@ -42,6 +42,12 @@
 	    <param name="default">now()</param>
 	    <param name="width">10em</param>
 
+            <module name="HTML">
+    			<param name="html"><![CDATA[
+                          Earliest and Latest are standard Splunk time modifiers like -7d (seven days) or MM/DD/YYYY:HH:MM:SS.
+    			]]></param>
+	    </module>
+             
 	      <module name="Search" layoutPanel="panel_row2_col1" group="OOM'd jobs per user">
 		<param name="search"> eventtype=OOM $SelectedSystem$ $earliest$ $latest$ | lookup job host | lookup job-archive host | dedup jobid user index | stats count list(jobid) AS jobs BY user | eval jobs=mvjoin(jobs,", ") | sort -count </param>
                 <module name="Pager">
@@ -76,12 +82,12 @@
 					</module>
 				   </module>
 				</module>
-                  		<module name="HTML">
+  		</module>
+              <module name="HTML">
     			<param name="html"><![CDATA[
                                Click a row to see that user's count per day.
     			]]></param>
-  		</module>
-	       </module>
+	      </module>
              </module>                
      </module>   
     </module>

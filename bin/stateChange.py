@@ -33,10 +33,11 @@ def nodeStateChange(record, node, fromState, newState):
 
   # deal with fromState
   if fromState == None:                    # first time this node is seen
-    fromState = "UNK"
-  else:                                     # not first time
-    new['oldState'] = fromState                     # note from state
+    fromState = "Unknown"
+  else:
     counts[fromState] = counts[fromState] - 1  # decrement count
+
+  new['oldState'] = fromState                # note from state
 
   # deal with newState
   if counts.get(newState) == None:          # first time this state is seen
@@ -76,7 +77,7 @@ def stateChangeLogic(record, nodes, start_state, end_state):
 
   for node in node_list:
     current_state = node_states.get(node)
-    if current_state == None or current_state=="UNK" or start_state=="*" or current_state==start_state:
+    if current_state == None or current_state=="Unknown" or start_state=="*" or current_state==start_state:
       nodeStateChange(record, node, current_state, end_state)
 
 
