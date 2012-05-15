@@ -45,18 +45,19 @@
             <module name="HTML">
     			<param name="html"><![CDATA[
                           Earliest and Latest are standard Splunk time modifiers like -7d (seven days) or MM/DD/YYYY:HH:MM:SS.
+                          <FONT COLOR="ff0000">Max range is -14d.</FONT>
     			]]></param>
 	    </module>
              
 	      <module name="Search" layoutPanel="panel_row2_col1" group="OOM'd jobs per user">
-		<param name="search"> eventtype=OOM $SelectedSystem$ $earliest$ $latest$ | lookup job host | lookup job-archive host | dedup jobid user index | stats count list(jobid) AS jobs BY user | eval jobs=mvjoin(jobs,", ") | sort -count </param>
+		<param name="search"> eventtype=OOM $SelectedSystem$ $earliest$ $latest$ | lookup job host | dedup jobid user index | stats count list(jobid) AS jobs BY user | eval jobs=mvjoin(jobs,", ") | sort -count </param>
                 <module name="Pager">
 				<param name="entityName">results</param>
 				<module name="SimpleResultsTable">
                                    <param name="drilldown">row</param>
                                   
                                    <module name="Search" layoutPanel="panel_row3_col1" autoRun="True">
-                                     	<param name="search"> eventtype=OOM $SelectedSystem$ $earliest$ $latest$ | lookup job host | lookup job-archive host | search $click.name$=$click.value$ | dedup jobid index | timechart span=1d count </param>					                                   
+                                     	<param name="search"> eventtype=OOM $SelectedSystem$ $earliest$ $latest$ | lookup job host | search $click.name$=$click.value$ | dedup jobid index | timechart span=1d count </param>					                                   
   				   	<module name="HTML">
     						<param name="html"><![CDATA[
                                                   <h1> OOM'd jobs per day for user $click.value$ </h1>
@@ -64,7 +65,7 @@
   					</module>
 
                     			<module name="Search">
-                                            <param name="search"> eventtype=OOM $SelectedSystem$ $earliest$ $latest$ | lookup job host | lookup job-archive host | search $click.name$=$click.value$ </param>					                                   
+                                            <param name="search"> eventtype=OOM $SelectedSystem$ $earliest$ $latest$ | lookup job host | search $click.name$=$click.value$ </param>					                                   
                                             <module name="ViewRedirectorLink">
                       				<param name="label">View events</param>
                                                 <param name="popup">True</param>
