@@ -50,7 +50,7 @@
 	    </module>
              
 	      <module name="Search" layoutPanel="panel_row2_col1" group="OOM'd jobs per user">
-		<param name="search"> eventtype=OOM $SelectedSystem$ $earliest$ $latest$ | lookup job host | dedup jobid user index | stats count list(jobid) AS jobs BY user | eval jobs=mvjoin(jobs,", ") | sort -count </param>
+		<param name="search"> eventtype=OOM $SelectedSystem$ $earliest$ $latest$ | lookup jobstart host | dedup jobid user index | stats count list(jobid) AS jobs BY user | eval jobs=mvjoin(jobs,", ") | sort -count </param>
                 <module name="Pager">
 				<param name="entityName">results</param>
 				<module name="SimpleResultsTable">
