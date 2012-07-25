@@ -27,7 +27,6 @@
       <param name="name">SelectedSystem</param>
       <param name="label">System:</param>
       <param name="float">left</param>
-	  <param name="template">redsky</param>
       <param name="searchFieldsToDisplay">
         <list>
           <param name="label">system</param>
@@ -69,6 +68,7 @@
 						<param name="search"> chart sum(ProcHrs) BY user</param>
                         <module name="HiddenChartFormatter">
                             <param name="charting.chart">pie</param>
+                            <param name="charting.chart.showPercent">true</param>
                             <module name="FlashChart">
                                 <param name="height">300px</param>
                             </module>
@@ -212,7 +212,7 @@
 				 </module>
 		</module>
       </module>
-     </module>
+    </module>
     </module>
    </module>
 
