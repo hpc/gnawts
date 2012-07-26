@@ -17,6 +17,7 @@
     </collection>
     <collection label="Moab">
         <view name="ProcessorHours" />
+        <view name="WaitTime" />
         <view name="moabjobs" />
         <divider />
         <saved source="unclassified" match="Moab: " />
