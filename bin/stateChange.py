@@ -5,7 +5,7 @@ logging.basicConfig(filename=LOG_FILENAME,level=logging.DEBUG)
 
 # use double quotes to protect options when giving in search, eg:
 #  tag=state | statechange "{'nodeField':'node', 'USR_Threshold':500}"
-options = {'filter': True, 'nodeField':'node', 'addAggregate': True}
+options = {'filter': True, 'nodeField':'nid', 'addAggregate': True}
 results = []
 output_results = []
 node_states = {}
@@ -58,6 +58,10 @@ def stateChangeLogic(record, nodes, start_state, end_state):
   global output_results, options, known_states, node_states
   if "-" in nodes or "[" in nodes:
     try:
+      # MOAB JOBSTART events on Cray XE6 use node list format [1-7]*16:[10-999]*7
+      nodes = re.sub("\*\d+","", nodes) # omit *nprocs
+      nodes = re.sub(":",",", nodes)    # change : to ,
+
       node_list = hostlist.expand_hostlist(nodes)
     except: # try to deal with BadHostlist exceptions
       debug2("---- Modifying time=" + str(record['_time']) +" nodes="+nodes)
@@ -109,21 +113,22 @@ def main():
 
     # process arguments
     if len(sys.argv) > 1:
-      new_options = ast.literal_eval(sys.argv[1])
+      new_options = ast.literal_eval(sys.argv[1]) 
       options.update(new_options)
 
     debug2("OPTIONS: " + str(options))
     cosre  = re.compile("cos_([\*\w]+)-([\*\w]+)")
     
-    i=0
+    i=1
     if len(results) and results[0].has_key('_time'):
       if results[0].get('_time') > results[-1].get('_time'):
         results = results[::-1]                     # ensure chronological order
       debug2("Starting on " + str(len(results)) + " events")
       last_record = None
       for r in results:
-        i=i+1
-        if i==1 and "StateName_" in r['_raw']: # does first record contain StateName?
+#        if i==1:
+#          debug2("First seen record:" + str(r))
+        if "StateName_" in r['_raw']: # does first record contain StateName?
           if len(results)==1: # only record is StateName, update and output
             r['_time'] = nowtime # this doesn't seem to take effect
             output_results.append(r)
@@ -156,13 +161,12 @@ def main():
                   # we do, so proceed
                   start_state, end_state = match.groups()
                   stateChangeLogic(r, node, start_state, end_state)
-                else:
-                  debug2("--- Failed to match cos states: "+ str(r))
             else:
               debug2("--- Failed to find eventtype: "+ str(r))
           else:
             debug2("--- Failed to find node/nodes/hosts: "+ str(r))
           last_record = r
+        i=i+1
 
       if last_record!=None and options.get('addAggregate'):
         # need the last record for '_time' entry
