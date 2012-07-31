@@ -5,7 +5,7 @@ logging.basicConfig(filename=LOG_FILENAME,level=logging.DEBUG)
 
 # use double quotes to protect options when giving in search, eg:
 #  tag=state | statechange "{'nodeField':'node', 'USR_Threshold':500}"
-options = {'filter': True, 'nodeField':'nid', 'addAggregate': True}
+options = {'filter': True, 'nodeField':'node', 'addAggregate': True}
 results = []
 output_results = []
 node_states = {}
