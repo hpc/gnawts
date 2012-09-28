@@ -1,0 +1,94 @@
+Things I love about Splunk:
+- centralized log collection: tailing and forwarding to a central server,
+  easier and more robust than syslog-ng (content doesn't have to be in syslog,
+  multiple files can be easily tailed, keeps track of what needs to be sent if
+  there is a network or system outage)
+- access control: enables a variety of people to see the logs without root access
+  on cluster admin nodes
+- lookups: ability to associate to job id info
+- search language: enables very complex searches and associations
+- stats: 
+- macros: eg job()
+- workflow actions: eg job() and TenMinWin
+- charts and dashboards
+
+Things I don't like about Splunk:
+- although time-based lookups are a killer feature for me, their current implementation
+  could be improved.  
+  - i update the lookups from logs via a scheduled search.  i should
+	be able to associate content in a more streaming fashion.  perhaps this is
+	doable with join but it seems cumberson to always have to put that into
+	searches.
+   - lookup files can't be appended - they have to be completely rewritten.  this is a 
+     pain, and requires complete re-indexing for large lookups
+   - inputlookup goes through the whole lookup, rather than through an indexed search,
+     making it slow and inefficient
+   - alt-click doesn't work properly with auto time-based lookups (see http://splunk-base.splunk.com//answers/45543/search-with-not-a-time-based-auto-looked-up-field-value-here)
+- turning off field discovery in the GUI speeds it up, but it disables ALL extra fields.
+  config options should be added to allow one to express that some fields should always
+  be extracted (and the others are optional per the field discovery option).
+- "collect index=summary" drops extra fields eg http://splunk-base.splunk.com/answers/35267/very-large-lookup-tables-exceeding-2gb-bundle-size
+
+Things I hate about Splunk:
+- the web GUI is much slower than less.
+  - with less I can open a million line file, I can bounce on the spacebar to see
+	literally thousands of lines go by, and my eye is good enough to pick up
+	changes therein.  With Splunk, I have to click next next next with delays each time.
+	- and having the fields interleaved with the lines makes it much harder to scan for
+	  content changes.  I wish fields could be displayed in columns instead (like table
+	  view, but without having to give table command for the desired fields, and with
+	  workflow actions and other event viewer functionality.
+	- with less I can use "/foo" to search for "foo", keeping all other context.
+	  I do not know how to do the same with the Splunk GUI (eg Firefox Control-F doesn't
+	  work even on a single page, let alone the many pages of Splunk content I have to 
+	  next next next to see).
+	- Since _time is unavailable via workflow actions, it is very painful to
+	  see a time window around a given message of interest (thus, my TenMinWin
+	  workflow action)
+  - The scrolling event viewer was better than the current chunk-at-a-time one,
+	but was also slower than less.
+- The splunk search CLI is bugged:
+ - `splunk search tag=moi -output table -app hpc` shows me all fields except _raw
+   (which is arugably the most important!)
+ - `splunk search "tag=moi | table _time user jobid _raw" -output table -app hpc` 
+   shows me nothing (it hangs!).  I should be able to express my desired field list
+   (eg SPLUNK_FIELDS="_time user jobid _raw") and have it drop into less automatically.
+ - `splunk search "tag=moi" -output csv -app hpc` shows me _raw but not jobid or user
+ - `splunk search "tag=moi | table _time user jobid _raw" -output csv -app hpc` 
+   hangs!
+ - `splunk search "tag=moi | lookup job host" -app hpc | less` does not show me jobid
+ - `splunk search "tag=moi | lookup job host" -app hpc -output csv | less` hangs!
+
+- This makes me wish there was a splunk shell (eg spsh) or splunk terminal (eg sptty).
+  These would do auto-completion like the splunk GUI, but via the tab key like file
+  completion in bash.  These would also have quick access to help, maybe through a split
+  screen like vim offers.  Search results would be viewed with less.  Search content
+  would be cached so subsetting can be done without incurring Splunk's delay (eg, imagine
+  a very complex search, save it to a file in /tmp/splunk/procid, use grep to subset).
+  There would also be a way to display fields in a column-based format, similar to how
+  `top` enables one to order columns and sort by row values within columns. 
+- Frankly the slow and cumbersome interface is starting to make me hate using splunk.
+  Although the ability to do complex searches is valuable, every time I change the 
+  search I re-incurr the delay, and have to dig though the GUI.  Every step of the 
+  process is delay cumbersome delay.  Other admins have complained about this to me
+  as well and it is starting to resonate with me.  This interface issue is
+  slowing the adoption of Splunk by power UNIX admins (who absolutely fly on
+  the command line with tab-completion to do content selection (eg one file per
+  day per host) with grep and less), and if Splunk doesn't fix it, current Splunk users
+  (including me) will dump it and write something to use instead.  eg
+  http://betterthangrep.com/
+  http://www.itworld.com/software/231515/usenix-dartmouth-expanding-diff-grep-unix-tools
+
+less:
+ &foo does a `grep foo` on the current content
+ &!foo does a `grep -v foo` on the current content
+ & turns off all filtering.  would be nice to have a stack of filters!
+ might be able to do column order and row sort via lesskey and LESSOPEN/LESSCLOSE
+
+Works:
+splunk search '`job(8463219)`' -app hpc -maxout 999999 | less
+
+splunk search 'earliest=-5d tag=moi | rename _raw AS msg | fields + eventtype user jobid msg | fields - _*' -output table -app hpc -maxout 99999 |less
+splunk search 'earliest=-5d tag=moi | rename _raw AS msg | fields + eventtype user jobid msg' -output table -app hpc -maxout 99999 |less
+
+splunk search "earliest=-1d@d latest=-1h@h tag=moi | rename _raw AS raw | table eventtype user jobid raw " -app hpc -maxout 99999 | less
