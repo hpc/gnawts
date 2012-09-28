@@ -1,5 +1,5 @@
   <!-- Copyright (C) 2010-2011 Sideview LLC.  All Rights Reserved. -->
-<view autoCancelInterval="90" isVisible="true" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
+<view autoCancelInterval="90" isVisible="true" onunloadCancelJobs="true" template="dashboard.html">
   <label>System RAS Metrics</label>
   <module name="AccountBar" layoutPanel="appHeader" />
   <module name="AppBar" layoutPanel="appHeader" />
