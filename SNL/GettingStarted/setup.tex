@@ -1,6 +1,71 @@
 \section{Setup}
+
 \subsection{Getting Data In}
+\subsubsection{One Index Per System}
+One index should be setup for each system (each of which might consist of thousands of
+nodes).  The indexes should be named {\tt hpc\_SYSTEM} where {\tt SYSTEM} is a
+name (e.g. RedSky, Cielo, BlueWaters, etc).  Several dashboards assume this naming
+convention and list systems based on existing index names.
+
+\subsubsection{Sourcetypes}
+Parsing rules for several sourcetypes have been described in {\tt props.conf}.  In the 
+below list, the first word is the {\tt sourcetype} name.
+\begin{itemize}
+ \item moabstats - Arguably the most important because job lookup tables are
+ built using them, these logs are typically found in irritatingly-named files
+ such as {\tt /var/log/moab/stats/events.Mon\_Oct\_1\_2012} on the MOAB node.  They are documented
+ at \url{http://www.adaptivecomputing.com/resources/docs/mwm/16.3.3workloadtrace.php#workload}.
+ These are written at job submit, schedule, launch, signal, and completion.
+ \item moab - MOAB control daemon logs, typically found in /var/log/moab/moabd.log.
+ \item slurmctld - SLURM control daemon logs, typically found in 
+ {\tt /var/log/slurm/slurmdctld.log} on the SLURMD node.
+ \item joblog - SLURM job logs, typically found in 
+ {\tt /var/log/slurm/joblog} on the SLURMD node.  These are only written when a job ends.
+ \item cray - CRAY XT3/XE6/etc event logs, typically found in files like
+ {\tt /craylog/eventlog.301.00089} on the SMW node.  Parsing of these include
+ index-time transformations to get the time and host names right.
+\end{itemize}
+
 \subsection{Lookups}
-\subsection{Tracking Host States}
-\subsubsection{Defining your State Machine}
+The first word indicate the {\tt lookup} table in Splunk (eg {\tt | lookup job}).
+\begin{itemize}
+ \item job - the {\tt jobid} each node is running at any given time.  There is only entry
+ at job start, and one at job end, such that if no job is running on a job (at the 
+ time of the event being viewed), the {\tt jobid} field will be empty.  This is
+ updated every five minutes via the {\tt Admin: updateJobLookup} scheduled search.  
+ It is reset to a window of two weeks, every night, via the 
+ {\tt Admin: resetJobLookup} scheduled search.  
+ \item jobstart - this is the same as {\tt job} above, except only the job start
+ entries are present.  The effect is that when this lookup table is used, the
+ value of the {\tt jobid} field is the jobid which most recently started on the node
+ (relative to the event being viewed).  It updated/reset at the same time as
+ the {\tt job} lookup table, using the same scheduled searches.
+ {\bf Automatic lookups and reports use this lookup (instead of job).}
+\item nodes - this optional lookup associates extra stuff with node names.  It must
+be manually created, for which {\tt bin/genders2csv} may be useful (exposes all 
+available genders info to Splunk, so it can be looked up for reports or searches (via
+reverse lookups, which are very nifty!).  On a CRAY, {\tt bin/xtprocadmin2csv}
+serves a similar purpose.  The resulting {\tt nodes.csv} files provides a
+convenient means to report or search on physical, nid, or host name spaces (as
+well as role, X/Y/Z coordinates, etc).
+\item hostlist - this is a scripted lookup based on {\url http://www.nsc.liu.se/~kent/python-hostlist/}, providing expansion and compression of hostlist strings common among
+SLURM, pdsh, powerman, genders, and MOAB (on CRAYs).  See the {\tt job} macro for an
+example of its use, eg {\tt | lookup hostlist short AS hosts OUPUT long} would do
+hostlist expansion of the {\tt hosts} field.
+\end{itemize}
+
+\subsection{Tracking Host States (Component Operations Status, COS)}
+This {\tt app} includes an {\bf experimental} custom command {\tt statechange} to
+track host states.  See \cite{stearley-mad12} for more details.
+ The {\tt summary} index is updated via the {\tt hostStateChanges}
+saved search (scheduled every 16 minutes), which the searches in the {\tt COS}
+menu draw from in order to report on things like mean time to failure, etc.
 \subsubsection{Backfilling the Summary Index}
+The {\tt bin/backfill\_statechange.pl} script is useful for backfilling the summary index.
+To use it, historic data should be indexed into Splunk, the {\tt hostStateChanges} scheduled
+search disabled, the backfill script run, then {\tt hostStateChanges} enabled.
+\subsubsection{Defining your State Machine}
+To modify the existing, or create your own, state machine logic, simply modify/create
+eventtype's having a name format of {\tt cos\_oldState-newState} where {\tt oldState}
+the the state being transitioned from, and {\tt newState} is the state being transitioned
+to.

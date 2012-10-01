@@ -1,1 +1,22 @@
 \section{The ``Summary" Dashboard}
+This dashboard is the front page of the HPC app.  
+
+\subsection{Logs in a job}
+To see all the events in a certain {\tt jobid}, enter it into the second pane
+and hit return.  It uses the {\tt job} macro underneath (eg {\tt
+`job(jobid)`}), which searches for the most recent event with {\tt jobid}
+in {\tt sourcetype=moabstats}, identifies the start and end times, and the 
+set of hosts the job ran on, and expands it via a subsearch.  See 
+\cite{stearley-slaml10} for more details.
+
+\subsection{Hosts Of Interest}
+This pane shows hosts in an UnscheduledDowntime state.  Clicking on a row
+brings up the logs for that host, from five minutes before it went down to 
+one minute after.  It is using the {\tt hostdownwin(host,before,after)} macro
+underneath.
+
+\subsection{Messages of Interest}
+This pane shows hosts and how many of which types of events have occurred lately.
+Events reported are those having {\tt tag=moi} (messages of interest).  Click
+on a row to see those events for that host.
+
