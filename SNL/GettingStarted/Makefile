@@ -31,3 +31,5 @@ clean:
 	-$(LATEXMK) $(LATEXMKCLEAN)
 	-rm -f *~
 
+install: GettingStarted.pdf
+	cp $< ../../appserver/static/documentation.pdf
