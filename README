@@ -1,17 +1,1 @@
-Copy this whole directory structure to splunk/etc/apps/hpc/, eg
-  cd splunk/etc/apps
-  git clone ssh://software.sandia.gov/space/sandiagit/resilience/splunk/hpc
-
-Then tailor via a local symlink to a system directory, eg
-  ln -s systems/redsky local
-See inputs.conf in the above local dir to see if you need a symlink to test data, eg
-  cd splunk-hpc/logs/cielito; sudo ln -s `pwd` /cielito
-
-The system directories contain both local conf and lookup files, so lookups is
-a symlink to local (splunk expects both local and lookups dirs).
-
-
-Setup notes for splunk-hpc.sandia.gov:
-added rules for splunk ports (8000,8001,8089) to /etc/sysconfig/iptables.
-copied /etc/yum.repos.d/ from redsky-monitor1, moved centos stuff to tmp, then ran the below to get git:
- yum install  --disablerepo=*rhel-x86* --enablerepo=epel --nogpgcheck git
+This is the HPC app for Splunk, see appserver/static/documentation.pdf to get started.
