@@ -64,7 +64,7 @@
                 <param name="offValue"> dedup _time | </param>
 
 	             <module name="Search">
-				  <param name="search">index=summary $days$ $SelectedSystem$ newState=UnscheduledDowntime</param>
+				  <param name="search">index=summary $days$ $SelectedSystem$ newState=HardDown OR newState=SoftDown</param>
                   <module name="ViewRedirectorLink" >
                     <param name="label">View events</param>
                     <param name="viewTarget">flashtimeline</param>
@@ -72,7 +72,7 @@
                  </module>
 
 	             <module name="Search">
-				    <param name="search"> index=summary $days$ $SelectedSystem$ newState=UnscheduledDowntime | $dedup$ streamstats global=false window=2 first(_time) AS first last(_time) AS last | eval hrs=(first-last)/3600 | $xtra$ </param>
+				    <param name="search"> index=summary $days$ $SelectedSystem$ newState=HardDown OR newState=SoftDown | $dedup$ streamstats global=false window=2 first(_time) AS first last(_time) AS last | eval hrs=(first-last)/3600 | $xtra$ </param>
 				  				    				    
 					<module name="PostProcess" layoutPanel="panel_row2_col1" group="TBI Statistics">
 						  <param name="search"> stats count mean(hrs) min(hrs) perc25(hrs) median(hrs) perc75(hrs) max(hrs) </param>
