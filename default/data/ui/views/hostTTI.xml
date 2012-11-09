@@ -63,7 +63,7 @@
 		    <param name="width">20em</param>
 		    
 	             <module name="Search">
-				    <param name="search"> index=summary $earliest$ $latest$ $SelectedSystem$ newState=ProductionUptime OR newState=UnscheduledDowntime | transaction orig_host startswith="newState=ProductionUptime" endswith="newState=UnscheduledDowntime" | eval hrs=duration/3600 | $xtra$ </param>
+				    <param name="search"> index=summary $earliest$ $latest$ $SelectedSystem$ newState=Up OR newState=HardDown OR newState=SoftDown | transaction orig_host startswith="newState=Up" endswith="newState=HardDown OR newState=SoftDown" | eval hrs=duration/3600 | $xtra$ </param>
 
 					<module name="PostProcess">
 					   <param name="search"> sort 0 index, - _time | table _time duration orig_index orig_host </param>
