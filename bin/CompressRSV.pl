@@ -28,7 +28,9 @@ while (<>) { # for each line of stdin
     next unless /\srsv\s/; # only work on RSV events
     if (/^\d\d:\d\d:\d\d+\s(\d+)/) { # lines do not start with a date
 	@time = localtime $1;
-	$date = "$time[4]/$time[3]/$time[5]"; # yucky American format
+	$time[4]+=1; # dumb months start at 0
+	$time[5]+=1900; # dumb year starts at 1900
+	$date = "$time[5]-$time[4]-$time[3]";
 	$_ = "$date $_"; # prepend the date
     }
     if (/ALLOCNODELIST/) { # new explicit format
