@@ -128,7 +128,7 @@ def main():
       for r in results:
 #        if i==1:
 #          debug2("First seen record:" + str(r))
-        if "StateName_" in r['_raw']: # does first record contain StateName?
+        if "StateName_" in r['_raw']: # does record contain StateName?
           if len(results)==1: # only record is StateName, update and output
             r['_time'] = nowtime # this doesn't seem to take effect
             output_results.append(r)
@@ -146,7 +146,7 @@ def main():
                 counts[state] = counts[state] + 1	# increment counts
         else:
           # now update our record
-          if i%1000 == 0:
+          if i%10000 == 0:
             debug2("record " + str(i) + " of " + str(len(results)))
 
           # make sure we have needed fields
