@@ -61,15 +61,14 @@ def stateChangeLogic(record, nodes, start_state, end_state):
       # MOAB JOBSTART events on Cray XE6 use node list format [1-7]*16:[10-999]*7
       nodes = re.sub("\*\d+","", nodes) # omit *nprocs
       nodes = re.sub(":",",", nodes)    # change : to ,
-
       node_list = hostlist.expand_hostlist(nodes)
     except: # try to deal with BadHostlist exceptions
-      debug2("---- Modifying time=" + str(record['_time']) +" nodes="+nodes)
+      debug2("---- Bad hostlist: " + str(record['_time']) +" nodes="+nodes)
       # guess it is missing a left bracket, and truncate at last comma
       m=re.match("(^.*)\[(.*),(.*)", nodes)
       if not m == None:
         nodes = m.group(1) +"["+ m.group(2) +"]"
-      debug2("---- To: time=" + str(record['_time']) +" nodes="+nodes)
+      debug2("---- Changing to: nodes="+nodes)
       node_list = hostlist.expand_hostlist(nodes) # do or die
   else:
     node_list = nodes.split(",")
