@@ -73,8 +73,21 @@ def stateChangeLogic(record, nodes, start_state, end_state):
   else:
     node_list = nodes.split(",")
 
-  if len(nodes) > 100:  # omit long node lists
+  if len(nodes) > 500:  # omit long node lists
       record['_raw'] = record['_raw'].replace(nodes,'(LONG_NODE_LIST)')
+
+  # the below is a hack for cielo, because RSV lines don't include some service nodes.
+  # if RSV lines list at least 98% of all known hosts, apply it to all hosts.
+  raw = str(record['_raw'])
+  if (raw.find("RSVSTART")!=-1 or raw.find("RSVEND")!=-1):
+      these = len(node_list)
+      all = len(node_states)
+      # the hardcoded .95 may cause problems later and should be improved.
+      # eg it could be an argument and set via local/savedsearches.conf for each machine,
+      # but really it should be a percentage of the hosts in each hpc_system index...
+      if (all>these and these>0.95*all):
+          debug2("Applying RSV to all known hosts ("+ str(these) +">0.95*"+ str(all)+"): "+raw)
+          node_list = node_states.keys() 
 
 #  debug2("---- in stateChangeLogic:" + str(record['_time']) + " start="+ start_state  + " end="+ end_state + " nodes="+nodes)
 
