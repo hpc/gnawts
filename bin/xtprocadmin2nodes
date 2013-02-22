@@ -2,8 +2,9 @@
 
 # this script makes the nodes.csv lookup file on a Cray XT/XE system via:
 #   xtprocadmin -A | ./xtprocadmin2nodes > nodes.csv
+# run as a normal user on a login node, but first try to do the below...
 
-# if you successfully do the below, we'll also use that info
+# if you do the below first (eg as root on sdb), we'll also use this info
 #   echo "use XTAdmin; select * from processor;" | mysql > XTAdmin.processor
 $xtadmin = "XTAdmin.processor";
 if (-s $xtadmin) {
@@ -27,8 +28,7 @@ while (<>) {
 	$_ = lc $_; # lower case
 	@F = split; # split on whitespace
 	if (/nid/) { # first line is header
-		$F[2] = "node";
-		delete @F[10,11,12,13]; # unwanted
+        @F = splice @F, 0, $#F-4; # omit the last four (typically empty) fields
 		print join ",", @F, @{$xtadmin{"header"}};
 	}
 	else {
