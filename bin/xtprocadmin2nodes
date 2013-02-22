@@ -28,7 +28,7 @@ while (<>) {
 	$_ = lc $_; # lower case
 	@F = split; # split on whitespace
 	if (/nid/) { # first line is header
-        @F = splice @F, 0, $#F-4; # omit the last four (typically empty) fields
+        @F = splice @F, 0, $#F-3; # omit the last four (typically empty) fields
 		print join ",", @F, @{$xtadmin{"header"}};
 	}
 	else {
