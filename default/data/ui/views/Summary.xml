@@ -67,24 +67,17 @@
        </module>
      </module>
     </module>
-<!--
-  </module>
 
-  <module name="Search" layoutPanel="panel_row2_col1" group="Hosts Of Interest" autoRun="True">
--->
-        
 <!-- uncomment this HTML module block when messing with the summary index...
   <module name="HTML">
     <param name="html"><![CDATA[
     <FONT COLOR="ff0000">This is currently being worked on (do not trust it). -jon</FONT>
     ]]></param>
   </module>
-
-   <param name="search">| eventcount summarize=false index=hpc_* | where count>0 | eval system=substr(index,5) | fields system</param>
-    
 -->
-  <module name="HTML"  layoutPanel="panel_row2_col1" group="Hosts Of Interest" autoRun="True">
     <!-- Offer a list of systems -->
+<!--
+  <module name="HTML"  layoutPanel="panel_row2_col1" group="Hosts Of Interest" autoRun="True">
     <module name="Pulldown">
       <param name="name">selectedSystems</param>
       <param name="label">Systems to include:</param>
@@ -119,7 +112,6 @@
             <param name="search">`hostdownwin($click.fields.node$,-5m,+1m)`</param>
             <param name="earliest">-30d</param>
         
-            <!-- Popup a new window containing the search results -->
             <module name="ViewRedirector">
               <param name="viewTarget">flashtimeline</param>
               <param name="popup">True</param>
@@ -131,9 +123,9 @@
       </module>
     </module>
   </module>
-    
+-->
   
-  <module name="HTML" layoutPanel="panel_row3_col1" group="Messages Of Interest" autoRun="True">
+  <module name="HTML" layoutPanel="panel_row2_col1" group="Messages Of Interest" autoRun="True">
         
     <!-- Offer a list of systems -->
     <module name="Pulldown">
