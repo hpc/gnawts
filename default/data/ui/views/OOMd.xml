@@ -13,7 +13,7 @@
   </module>
   
   <module name="Search" layoutPanel="panel_row1_col1" autoRun="True" group="Report Parameters">
-   <param name="search">| eventcount summarize=false index=hpc_* | where count>0 | map [search index=$$index$$ | head 1] maxsearches=20 | eval system=substr(index,5) | fields system</param>
+    <param name="search">| eventcount summarize=false index=hpc_* | where count>0 | eval system=substr(index,5) | fields system</param>
     <module name="Pulldown">
       <param name="name">SelectedSystem</param>
       <param name="label">System:</param>
