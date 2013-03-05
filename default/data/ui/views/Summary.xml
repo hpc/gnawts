@@ -32,7 +32,7 @@
    <!-- Get a list of systems based on what hpc_* indexes exist -->
    <!-- Do this once for the page and re-use it in all panes -->
    <!-- Run it through map to subset the list according to the user's role permissions -->
-   <param name="search">| eventcount summarize=false index=hpc_* | where count>0 | map [search index=$$index$$ | head 1] maxsearches=20 | eval system=substr(index,5) | fields system</param>
+   <param name="search">| eventcount summarize=false index=hpc_* | where count>0 | eval system=substr(index,5) | fields system</param>
 
    <!-- How to render all the below on a single line? -->
    <!-- Enter a job number -->
