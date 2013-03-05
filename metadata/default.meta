@@ -1,0 +1,3 @@
+[viewstates]
+access = read : [ * ], write : [ * ]
+export = system
