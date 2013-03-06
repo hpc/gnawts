@@ -1,4 +1,4 @@
-import csv,sys,os,hostlist,logging
+import csv,sys,os,hostlist,logging,re
 #from hostlist import expand_hostlist, collect_hostlist, numerically_sorted, Bn s.split(",")]adHostlist, __version__ as library_version
 # example usage in splunk search:
 # nnodes=16 | head 1 | lookup hostListLookup hostlist | makemv delim="," new_hostlist | mvexpand new_hostlist
@@ -7,7 +7,7 @@ import csv,sys,os,hostlist,logging
 # nnodes=16 | head 1 | lookup hostListLookup short | lookup hostListLookup long OUTPUTNEW short AS new_short
 
 #LOG_FILENAME = '/tmp/output_from_splunk.txt'
-LOG_FILENAME = '/tmp/output_from_splunk_2.txt'
+LOG_FILENAME = '/tmp/hostlistLookup.log'
 logging.basicConfig(filename=LOG_FILENAME,level=logging.DEBUG)
 
 def debug(msg):
@@ -19,6 +19,10 @@ def debug(msg):
 def lookup(list):
   debug("Forward Lookup:")
   debug(list)
+  if "*" in list or ":" in list:
+    # MOAB events on Cray XE6 use node list format [1-7]*16:[10-99]*7
+    list = re.sub("\*\d+","", list) # omit *nprocs
+    list = re.sub(":",",", list)    # change : to ,
   new_list = hostlist.expand_hostlist(list)
   # this takes the list we get back and turns it into a string for splunk
   return ",".join(str(n) for n in new_list)
