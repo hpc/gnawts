@@ -69,6 +69,11 @@
 				    <module name="PostProcess" layoutPanel="panel_row2_col1" group="Job Size (nprocs)">
 						  <param name="search"> bucket count bins=10 | chart count by nprocs </param>
 						  <module name="HiddenChartFormatter">
+                            <param name="charting.axisLabelsX.majorLabelStyle.useBitmapRendering">true</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.useBitmapSmoothing">true</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.bitmapSmoothingQuality">8</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.bitmapSmoothingSharpness">5</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.rotation">90</param>
 						     <module name="FlashChart">
 					         	<param name="height">300px</param>
 				 	         </module>

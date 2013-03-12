@@ -74,6 +74,12 @@
                             <param name="chart.stackMode">stacked</param>
                             <param name="charting.axisTitleX.text"> </param>
                             <param name="charting.axisTitleY.text">NumJobs</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.useBitmapRendering">true</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.useBitmapSmoothing">true</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.bitmapSmoothingQuality">8</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.bitmapSmoothingSharpness">5</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.defaultTextFormat">{size:16}</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.rotation">90</param>
                             <module name="FlashChart">
                                 <param name="height">200px</param>
                             </module>
@@ -86,6 +92,12 @@
                             <param name="chart.stackMode">stacked</param>
                             <param name="charting.axisTitleX.text"> </param>
                             <param name="charting.axisTitleY.text">AvgWait</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.useBitmapRendering">true</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.useBitmapSmoothing">true</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.bitmapSmoothingQuality">8</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.bitmapSmoothingSharpness">5</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.defaultTextFormat">{size:16}</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.rotation">90</param>
                             <module name="FlashChart">
                                 <param name="height">200px</param>
                             </module>
@@ -102,6 +114,12 @@
                             <param name="chart.stackMode">stacked</param>
                             <param name="charting.axisTitleX.text"> </param>
                             <param name="charting.axisTitleY.text">NumJobs</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.useBitmapRendering">true</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.useBitmapSmoothing">true</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.bitmapSmoothingQuality">8</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.bitmapSmoothingSharpness">5</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.defaultTextFormat">{size:16}</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.rotation">90</param>
                             <module name="FlashChart">
                                 <param name="height">200px</param>
                             </module>
@@ -114,6 +132,12 @@
                             <param name="chart.stackMode">stacked</param>
                             <param name="charting.axisTitleX.text"> </param>
                             <param name="charting.axisTitleY.text">AvgWait</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.useBitmapRendering">true</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.useBitmapSmoothing">true</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.bitmapSmoothingQuality">8</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.bitmapSmoothingSharpness">5</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.defaultTextFormat">{size:16}</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.rotation">90</param>
                             <module name="FlashChart">
                                 <param name="height">200px</param>
                             </module>
@@ -130,6 +154,12 @@
                             <param name="chart.stackMode">stacked</param>
                             <param name="charting.axisTitleX.text"> </param>
                             <param name="charting.axisTitleY.text">NumJobs</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.useBitmapRendering">true</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.useBitmapSmoothing">true</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.bitmapSmoothingQuality">8</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.bitmapSmoothingSharpness">5</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.defaultTextFormat">{size:16}</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.rotation">90</param>
 						    <module name="FlashChart">
 					         	<param name="height">200px</param>
 				 	        </module>
@@ -142,6 +172,12 @@
                             <param name="chart.stackMode">stacked</param>
                             <param name="charting.axisTitleX.text"> </param>
                             <param name="charting.axisTitleY.text">AvgWait</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.useBitmapRendering">true</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.useBitmapSmoothing">true</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.bitmapSmoothingQuality">8</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.bitmapSmoothingSharpness">5</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.defaultTextFormat">{size:16}</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.rotation">90</param>
 						    <module name="FlashChart">
 					         	<param name="height">200px</param>
 				 	        </module>
@@ -158,6 +194,12 @@
                             <param name="chart.stackMode">stacked</param>
                             <param name="charting.axisTitleX.text"> </param>
                             <param name="charting.axisTitleY.text">NumJobs</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.useBitmapRendering">true</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.useBitmapSmoothing">true</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.bitmapSmoothingQuality">8</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.bitmapSmoothingSharpness">5</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.defaultTextFormat">{size:16}</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.rotation">90</param>
 						    <module name="FlashChart">
 					         	<param name="height">200px</param>
 				 	        </module>
@@ -170,6 +212,12 @@
                             <param name="chart.stackMode">stacked</param>
                             <param name="charting.axisTitleX.text"> </param>
                             <param name="charting.axisTitleY.text">AvgWait</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.useBitmapRendering">true</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.useBitmapSmoothing">true</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.bitmapSmoothingQuality">8</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.bitmapSmoothingSharpness">5</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.defaultTextFormat">{size:16}</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.rotation">90</param>
 						    <module name="FlashChart">
 					         	<param name="height">200px</param>
 				 	        </module>
@@ -186,6 +234,12 @@
                             <param name="chart.stackMode">stacked</param>
                             <param name="charting.axisTitleX.text"> </param>
                             <param name="charting.axisTitleY.text">NumJobs</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.useBitmapRendering">true</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.useBitmapSmoothing">true</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.bitmapSmoothingQuality">8</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.bitmapSmoothingSharpness">5</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.defaultTextFormat">{size:16}</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.rotation">90</param>
 						    <module name="FlashChart">
 					         	<param name="height">200px</param>
 				 	        </module>
@@ -198,6 +252,12 @@
                             <param name="chart.stackMode">stacked</param>
                             <param name="charting.axisTitleX.text"> </param>
                             <param name="charting.axisTitleY.text">AvgWait</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.useBitmapRendering">true</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.useBitmapSmoothing">true</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.bitmapSmoothingQuality">8</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.bitmapSmoothingSharpness">5</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.defaultTextFormat">{size:16}</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.rotation">90</param>
 						    <module name="FlashChart">
 					         	<param name="height">200px</param>
 				 	        </module>
@@ -214,6 +274,12 @@
                             <param name="chart.stackMode">stacked</param>
                             <param name="charting.axisTitleX.text"> </param>
                             <param name="charting.axisTitleY.text">NumJobs</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.useBitmapRendering">true</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.useBitmapSmoothing">true</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.bitmapSmoothingQuality">8</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.bitmapSmoothingSharpness">5</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.defaultTextFormat">{size:16}</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.rotation">90</param>
 						    <module name="FlashChart">
 					         	<param name="height">200px</param>
 				 	        </module>
@@ -226,6 +292,12 @@
                             <param name="chart.stackMode">stacked</param>
                             <param name="charting.axisTitleX.text"> </param>
                             <param name="charting.axisTitleY.text">AvgWait</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.useBitmapRendering">true</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.useBitmapSmoothing">true</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.bitmapSmoothingQuality">8</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.bitmapSmoothingSharpness">5</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.defaultTextFormat">{size:16}</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.rotation">90</param>
 						    <module name="FlashChart">
 					         	<param name="height">200px</param>
 				 	        </module>
@@ -242,6 +314,12 @@
                             <param name="chart.stackMode">stacked</param>
                             <param name="charting.axisTitleX.text"> </param>
                             <param name="charting.axisTitleY.text">NumJobs</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.useBitmapRendering">true</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.useBitmapSmoothing">true</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.bitmapSmoothingQuality">8</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.bitmapSmoothingSharpness">5</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.defaultTextFormat">{size:16}</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.rotation">90</param>
 						    <module name="FlashChart">
 					         	<param name="height">200px</param>
 				 	        </module>
@@ -254,6 +332,12 @@
                             <param name="chart.stackMode">stacked</param>
                             <param name="charting.axisTitleX.text"> </param>
                             <param name="charting.axisTitleY.text">AvgWait</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.useBitmapRendering">true</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.useBitmapSmoothing">true</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.bitmapSmoothingQuality">8</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.bitmapSmoothingSharpness">5</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.defaultTextFormat">{size:16}</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.rotation">90</param>
 						    <module name="FlashChart">
 					         	<param name="height">200px</param>
 				 	        </module>
@@ -270,6 +354,12 @@
                             <param name="chart.stackMode">stacked</param>
                             <param name="charting.axisTitleX.text"> </param>
                             <param name="charting.axisTitleY.text">NumJobs</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.useBitmapRendering">true</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.useBitmapSmoothing">true</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.bitmapSmoothingQuality">8</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.bitmapSmoothingSharpness">5</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.defaultTextFormat">{size:16}</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.rotation">90</param>
 						    <module name="FlashChart">
 					         	<param name="height">200px</param>
 				 	        </module>
@@ -282,6 +372,12 @@
                             <param name="chart.stackMode">stacked</param>
                             <param name="charting.axisTitleX.text"> </param>
                             <param name="charting.axisTitleY.text">AvgWait</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.useBitmapRendering">true</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.useBitmapSmoothing">true</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.bitmapSmoothingQuality">8</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.bitmapSmoothingSharpness">5</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.defaultTextFormat">{size:16}</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.rotation">90</param>
 						    <module name="FlashChart">
 					         	<param name="height">200px</param>
 				 	        </module>
@@ -298,6 +394,12 @@
                             <param name="chart.stackMode">stacked</param>
                             <param name="charting.axisTitleX.text"> </param>
                             <param name="charting.axisTitleY.text">NumJobs</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.useBitmapRendering">true</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.useBitmapSmoothing">true</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.bitmapSmoothingQuality">8</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.bitmapSmoothingSharpness">5</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.defaultTextFormat">{size:16}</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.rotation">90</param>
 						    <module name="FlashChart">
 					         	<param name="height">200px</param>
 				 	        </module>
@@ -310,6 +412,12 @@
                             <param name="chart.stackMode">stacked</param>
                             <param name="charting.axisTitleX.text"> </param>
                             <param name="charting.axisTitleY.text">AvgWait</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.useBitmapRendering">true</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.useBitmapSmoothing">true</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.bitmapSmoothingQuality">8</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.bitmapSmoothingSharpness">5</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.defaultTextFormat">{size:16}</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.rotation">90</param>
 						    <module name="FlashChart">
 					         	<param name="height">200px</param>
 				 	        </module>
@@ -326,6 +434,12 @@
                             <param name="chart.stackMode">stacked</param>
                             <param name="charting.axisTitleX.text"> </param>
                             <param name="charting.axisTitleY.text">NumJobs</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.useBitmapRendering">true</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.useBitmapSmoothing">true</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.bitmapSmoothingQuality">8</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.bitmapSmoothingSharpness">5</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.defaultTextFormat">{size:16}</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.rotation">90</param>
 						    <module name="FlashChart">
 					         	<param name="height">200px</param>
 				 	        </module>
@@ -338,6 +452,12 @@
                             <param name="chart.stackMode">stacked</param>
                             <param name="charting.axisTitleX.text"> </param>
                             <param name="charting.axisTitleY.text">AvgWait</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.useBitmapRendering">true</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.useBitmapSmoothing">true</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.bitmapSmoothingQuality">8</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.bitmapSmoothingSharpness">5</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.defaultTextFormat">{size:16}</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.rotation">90</param>
 						    <module name="FlashChart">
 					         	<param name="height">200px</param>
 				 	        </module>
@@ -354,6 +474,12 @@
                             <param name="chart.stackMode">stacked</param>
                             <param name="charting.axisTitleX.text"> </param>
                             <param name="charting.axisTitleY.text">NumJobs</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.useBitmapRendering">true</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.useBitmapSmoothing">true</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.bitmapSmoothingQuality">8</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.bitmapSmoothingSharpness">5</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.defaultTextFormat">{size:16}</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.rotation">90</param>
 						    <module name="FlashChart">
 					         	<param name="height">200px</param>
 				 	        </module>
@@ -366,6 +492,12 @@
                             <param name="chart.stackMode">stacked</param>
                             <param name="charting.axisTitleX.text"> </param>
                             <param name="charting.axisTitleY.text">AvgWait</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.useBitmapRendering">true</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.useBitmapSmoothing">true</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.bitmapSmoothingQuality">8</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.bitmapSmoothingSharpness">5</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.defaultTextFormat">{size:16}</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.rotation">90</param>
 						    <module name="FlashChart">
 					         	<param name="height">200px</param>
 				 	        </module>
@@ -382,6 +514,12 @@
                             <param name="chart.stackMode">stacked</param>
                             <param name="charting.axisTitleX.text"> </param>
                             <param name="charting.axisTitleY.text">NumJobs</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.useBitmapRendering">true</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.useBitmapSmoothing">true</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.bitmapSmoothingQuality">8</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.bitmapSmoothingSharpness">5</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.defaultTextFormat">{size:16}</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.rotation">90</param>
 						    <module name="FlashChart">
 					         	<param name="height">200px</param>
 				 	        </module>
@@ -394,6 +532,12 @@
                             <param name="chart.stackMode">stacked</param>
                             <param name="charting.axisTitleX.text"> </param>
                             <param name="charting.axisTitleY.text">AvgWait</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.useBitmapRendering">true</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.useBitmapSmoothing">true</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.bitmapSmoothingQuality">8</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.bitmapSmoothingSharpness">5</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.defaultTextFormat">{size:16}</param>
+                            <param name="charting.axisLabelsX.majorLabelStyle.rotation">90</param>
 						    <module name="FlashChart">
 					         	<param name="height">200px</param>
 				 	        </module>
