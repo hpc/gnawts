@@ -2,13 +2,14 @@
 
 # this script makes the nodes.csv lookup file on a Cray XT/XE system via:
 #   xtprocadmin -A | ./xtprocadmin2nodes > nodes.csv
+# run as a normal user on a login node, but first try to do the below...
 
 if ($ARGV[0]=~/^--index/) {
 	shift @ARGV; # toss
 	$index= shift @ARGV; # save
 }
 
-# if you successfully do the below, we'll also use that info
+# if you do the below first (eg as root on sdb), we'll also use this info
 #   echo "use XTAdmin; select * from processor;" | mysql > XTAdmin.processor
 $xtadmin = "XTAdmin.processor";
 if (-s $xtadmin) {

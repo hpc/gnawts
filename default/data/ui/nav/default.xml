@@ -1,19 +1,11 @@
 <nav>
     <view name="Summary" default='true'/>
-    <collection label="Search">
-        <view source="unclassified" match="flashtimeline"/>
-    </collection>
+    <view name="flashtimeline"/>
     <collection label="Messages Of Interest">
         <view name="OOMd" />
         <view name="MOI-jobs_hosts" />
         <divider />
         <saved source="unclassified" match="MOI: " />
-    </collection>
-    <collection label="Component Operations Status">
-        <view name="hostTTI" />
-        <view name="hostTBI" />
-        <divider />
-        <saved source="unclassified" match="COS: " />
     </collection>
     <collection label="Moab">
         <view name="ProcessorHours" />

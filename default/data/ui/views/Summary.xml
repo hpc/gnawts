@@ -27,10 +27,11 @@
         </module>
   </module>
   
-  <module name="Search" layoutPanel="panel_row1_col1" group="Logs in a job" autoRun="True">
+ <module name="Search" layoutPanel="panel_row1_col1" group="Logs in a job" autoRun="True">
 
    <!-- Get a list of systems based on what hpc_* indexes exist -->
-   <!-- SLIGHT EFFICIENCY OPPORTUNITY - DO THIS ONCE AND REUSE IN THE BOTTOM PANE TOO -->
+   <!-- Do this once for the page and re-use it in all panes -->
+   <!-- Run it through map to subset the list according to the user's role permissions -->
    <param name="search">| eventcount summarize=false index=hpc_* | where count>0 | eval system=substr(index,5) | fields system</param>
 
    <!-- How to render all the below on a single line? -->
@@ -66,10 +67,7 @@
        </module>
      </module>
     </module>
-  </module>
 
-  <module name="Search" layoutPanel="panel_row2_col1" group="Hosts Of Interest" autoRun="True">
-        
 <!-- uncomment this HTML module block when messing with the summary index...
   <module name="HTML">
     <param name="html"><![CDATA[
@@ -77,11 +75,9 @@
     ]]></param>
   </module>
 -->
-
-   <!-- Get a list of systems based on what hpc_* indexes exist -->
-   <param name="search">| eventcount summarize=false index=hpc_* | where count>0 | eval system=substr(index,5) | fields system</param>
-    
     <!-- Offer a list of systems -->
+<!--
+  <module name="HTML"  layoutPanel="panel_row2_col1" group="Hosts Of Interest" autoRun="True">
     <module name="Pulldown">
       <param name="name">selectedSystems</param>
       <param name="label">Systems to include:</param>
@@ -116,7 +112,6 @@
             <param name="search">`hostdownwin($click.fields.node$,-5m,+1m)`</param>
             <param name="earliest">-30d</param>
         
-            <!-- Popup a new window containing the search results -->
             <module name="ViewRedirector">
               <param name="viewTarget">flashtimeline</param>
               <param name="popup">True</param>
@@ -127,14 +122,11 @@
         </module>
       </module>
     </module>
-  </module>    
-    
+  </module>
+-->
   
-  <module name="Search" layoutPanel="panel_row3_col1" group="Messages Of Interest" autoRun="True">
+  <module name="HTML" layoutPanel="panel_row2_col1" group="Messages Of Interest" autoRun="True">
         
-   <!-- Get a list of systems based on what hpc_* indexes exist -->
-   <param name="search">| eventcount summarize=false index=hpc_* | where count>0 | eval system=substr(index,5) | fields system</param>
-    
     <!-- Offer a list of systems -->
     <module name="Pulldown">
       <param name="name">selectedSystems</param>
@@ -185,5 +177,6 @@
       </module>
     </module>
   </module>
+ </module>
   
 </view>
