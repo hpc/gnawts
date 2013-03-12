@@ -3,6 +3,11 @@
 # this script makes the nodes.csv lookup file on a Cray XT/XE system via:
 #   xtprocadmin -A | ./xtprocadmin2nodes > nodes.csv
 
+if ($ARGV[0]=~/^--index/) {
+	shift @ARGV; # toss
+	$index= shift @ARGV; # save
+}
+
 # if you successfully do the below, we'll also use that info
 #   echo "use XTAdmin; select * from processor;" | mysql > XTAdmin.processor
 $xtadmin = "XTAdmin.processor";
@@ -27,12 +32,12 @@ while (<>) {
 	$_ = lc $_; # lower case
 	@F = split; # split on whitespace
 	if (/nid/) { # first line is header
-		$F[2] = "node";
+		#$F[2] = "node";
 		delete @F[10,11,12,13]; # unwanted
-		print join ",", @F, @{$xtadmin{"header"}};
+		print join ",", "index", @F, @{$xtadmin{"header"}};
 	}
 	else {
-		print join ",", @F, @{$xtadmin{$F[0]}};
+		print join ",", $index, @F, @{$xtadmin{$F[0]}};
 	}
 	print "\n";
 }
