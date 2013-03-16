@@ -159,7 +159,7 @@
             
            <module name="Search">
             <param name="search">tag=moi host=$click.fields.host$</param>
-            <param name="earliest">-1d</param>
+            <param name="earliest">-7d</param>
             <param name="latest">now</param>
         
             <!-- Popup a new window containing the search results -->
