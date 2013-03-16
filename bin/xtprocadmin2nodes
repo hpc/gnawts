@@ -4,6 +4,11 @@
 #   xtprocadmin -A | ./xtprocadmin2nodes > nodes.csv
 # run as a normal user on a login node, but first try to do the below...
 
+if ($ARGV[0]=~/^--index/) {
+	shift @ARGV; # toss
+	$index= shift @ARGV; # save
+}
+
 # if you do the below first (eg as root on sdb), we'll also use this info
 #   echo "use XTAdmin; select * from processor;" | mysql > XTAdmin.processor
 $xtadmin = "XTAdmin.processor";
@@ -28,11 +33,12 @@ while (<>) {
 	$_ = lc $_; # lower case
 	@F = split; # split on whitespace
 	if (/nid/) { # first line is header
-        @F = splice @F, 0, $#F-3; # omit the last four (typically empty) fields
-		print join ",", @F, @{$xtadmin{"header"}};
+		#$F[2] = "node";
+		delete @F[10,11,12,13]; # unwanted
+		print join ",", "index", @F, @{$xtadmin{"header"}};
 	}
 	else {
-		print join ",", @F, @{$xtadmin{$F[0]}};
+		print join ",", $index, @F, @{$xtadmin{$F[0]}};
 	}
 	print "\n";
 }
