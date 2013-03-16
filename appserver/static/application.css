@@ -1,3 +1,12 @@
+.appLogo {
+    width: 101px;
+    height: 36px; 
+    background-image: url(appLogo.png);
+    background-repeat: no-repeat;
+    position:relative;
+    top:4px;
+}
+
 .item.default {
   padding: 0px;
 }
