@@ -7,6 +7,16 @@
     top:4px;
 }
 
+.appLogoContainer {
+    width:500px;
+    height:36px;
+    display:block;
+    
+    background-image:url(slogan.png);
+    background-repeat:no-repeat;
+    background-position:185px 6px;
+}
+
 .item.default {
   padding: 0px;
 }
