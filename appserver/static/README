@@ -1,2 +1,4 @@
 # Create appLogo.png using ImageMagick:
 convert -gravity west ../../../../../share/splunk/search_mrsparkle/exposed/img/skins/default/splunk_powered_logo_white.png -background none -extent 72x23 -size 36x36 appIcon.png -gravity center -background none -extent x36 +append appLogo.png
+
+# I created slogan.png using Acorn on MacOS, transparent background
