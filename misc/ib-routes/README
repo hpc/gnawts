@@ -1,0 +1,95 @@
+This directory has utilities for groking ib routes.
+
+DATA COLLECTION:
+I use copy_routes.sh to snapshot routes on admin2-man.
+Here's how I seeded the routes in splunk:
+ Create the routes files:
+  ./dumps2routes ~/data/1324257109.dump.gz
+  ./dumps2routes ~/data/1324317816.dump.gz
+  ./dumps2routes ~/data/1324402458.dump.gz
+ Compute their diffs:
+  ./diffroute.sh ~/data/1324257109.routes ~/data/1324317816.routes
+  ./diffroute.sh ~/data/1324317816.routes ~/data/1324402458.routes
+ Put a timestamp into the first one:
+  perl -ne 'print "1324257109 $_"' 1324257109.routes > /tmp/1324257109.routes
+ And give a copy to splunk to slurp up:
+  mv /tmp/1324257109.routes /logs/routes
+  cp 1324257109-1324317816.diff /logs/routes
+  cp 1324317816-1324402458.diff /logs/routes
+
+HOPS to CABLES:
+Here is a sample search:
+  sourcetype=routes rs1 rs2
+Which gives this output:
+  1324257109 rs1 rs2 17:a1-nem1-a:18
+  1324257109 rs2 rs1 18:a1-nem1-a:17
+so rs1->rs2 goes from rs1 (hosts always use port 1, not shown in the above)
+to a1-nem1-a, then out its port 18, into rs2 port 1.  this is
+basically two links.  corresponding entries in a csv table is below,
+where tx indicates the transmitter (sender), and rx indicates receiving:
+  link,txhost,txport,rxhost,rxport
+  1,rs1,,a1-nem1-a,17
+  2,a1-nem1-a,18,rs2,
+  3,rs2,,a1-nem1-a,18
+  4,a1-nem1-a,17,rs1,
+with this table, the routes would become:
+  1324257109 rs1 rs2 1 2
+  1324257109 rs2 rs1 3 4
+i'd put the table into splunk so it'd know how to do the lookups too.
+a table of the exact above for would be perfect (first row defines column names, host ports are null)
+the place to do use this would be the while loop at line 115 of dump2routes,
+except the mapping needs to be the same for all runs, so you'll need to save
+into a file the first run, and read it subsequent runs (eg create if it doesn't
+exist, if it does exist, use it).  with the data in this form, it should be easier
+to associate cables with both jobs and iberrors (they both have host fields, and the
+latter also has port numbers).
+
+ANALYSIS NOTES:
+Here are the types of logs in splunk you'll need:
+These logs define jobs and their exit status:
+  sourcetype=moabstats
+  sourcetype=joblog
+These are the routes:
+  sourcetype=routes
+Here are some errors:
+  sourcetype=syslog
+  sourcetype=iberror
+The latter of which is the network port errors.  Those don't have the timestamp
+right so I'll have to redo them, but it gives you an idea of what the data looks like.
+
+below should find all routes among rs1,rs2,rs3 in effect at 12/20/2011:0:0:
+   latest=12/20/2011:0:0:0 sourcetype=routes (host=rs1 OR host=rs2 OR host=rs3) (rhost=rs1 OR rhost=rs2 OR rhost=rs3) | dedup host rhost | head 6
+ where 6 is the number of permutations of three hosts taken two at a time.
+ now use a subsearch to form the search, from moabstats job records.
+ the tricks will be to form the host sets, and number of permutations.
+
+below should find all route changes for those hosts from time earliest to latest:
+   earliest=12/19/2011:0:0:0 latest=12/20/2011:0:0:0 sourcetype=routes (host=rs1 OR host=rs2 OR host=rs3) (rhost=rs1 OR rhost=rs2 OR rhost=rs3)
+
+TODO:
+0. above HOPS to CABLES item
+1. write a query that takes jobid as input, and outputs the associated routes
+2. ditto, but given a cable and a time, say which jobs used it
+3. now form a table of which cables were in which jobs over some time range.
+   the searches should be efficient, eg host set is union over jobs, and earliest/latest times.
+4. now form tables associating joblog exit states with cables (join)
+5. and tables associating cable symbolerror counts with job exit statuses
+6. decide which diffs to import into splunk (all, only some?), eg
+   symbolerror sampling frequency is 5 minutes.
+
+
+
+
+
+
+
+MISC NOTES (old):
+guid2lid from /var/cache
+opensm* from /var/log, resulting from -d 0x43
+utils in /usr/local/ofed/prod2/
+/usr/local/ofed/prod2/etc/opensm/ib-node-name-map - man ibnetdiscover
+GUID - Globally Unique Identifier
+LID - Local Identifier
+
+opensm-lfts.dump - routes file
+GUID.yml - maps guid to hostname, from /admin/etc
