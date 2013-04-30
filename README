@@ -1,7 +1,11 @@
-Gnawts - a Splunk app for fast detangling of supercomputer logs
+      Gnawts - a Splunk app for fast detangling of supercomputer logs
 
-See default/data/ui/view/Help.html to get started.
+To use:
+ 1) install Splunk from splunk.com
+ 2) install the Sideview Utils app from sideviewapps.com
+ 3) install this app
+See default/data/ui/views/Help.xml for more details.
 
-Copyright 2013 Sandia Corporation. Under the terms of Contract DE-AC04-94AL85000 with Sandia Corporation, the U.S. Government retains certain rights in this software.  (SCR 1552.0)
-
-Gnawts is released under version 2 of the GNU General Public License, see gpl-2.0.txt.
+For more info see:
+ http://static.usenix.org/event/slaml10/tech/full_papers/Stearley.pdf
+ https://www.usenix.org/system/files/mad12-final8.pdf
