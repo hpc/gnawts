@@ -1,1 +1,7 @@
-This is the HPC app for Splunk, see appserver/static/documentation.pdf to get started.
+Gnawts - a Splunk app for fast detangling of supercomputer logs
+
+See default/data/ui/view/Help.html to get started.
+
+Copyright 2013 Sandia Corporation. Under the terms of Contract DE-AC04-94AL85000 with Sandia Corporation, the U.S. Government retains certain rights in this software.  (SCR 1552.0)
+
+Gnawts is released under version 2 of the GNU General Public License, see gpl-2.0.txt.
