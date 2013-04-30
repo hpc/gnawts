@@ -25,22 +25,19 @@
 	be like untangling many strings in a knot.  Hard places in logs
 	are called knots, this app helps you chew (gnaw) through such
 	hard places in computer logs.  And the term "log" 
-	has a nautical background, and speed is measured in knots.
-    The red sky in the icon speaks to gnawt's ability to help forecast storms (or not) on HPC systems,
-	similar to red skies at sea, and the app was developed at 
-	Sandia National Laboratories, who has used a theme of "red"
-	in naming its HPC systems (ASCI Red, Red Storm, Red Sky).
+	has a nautical background, and speed is measured in knots (fast).
+    The red sky in the icon speaks to gnawt's ability to help forecast storms
+    (or not) on HPC systems, similar to red skies at sea.
 	So the name has multiple layers, just as the app has 
 	<a href="http://static.usenix.org/event/slaml10/tech/full_papers/Stearley.pdf">
 	multiple layers 
 	</a>
-	of functionality.  This page provides some tips on 
-	getting started - but by no means provides exhaustive documentation.
+	of functionality.  This page provides some tips on getting started.
 	<p>
 	Gnawts is open source, so if you have better design ideas,
-	or dashboards/searches/moi/etc to contribute, please do!  When ready, 
-	a link to the public git repository will appear here, in the mean
-	time please simply contact <a href="mailto:jrstear@sandia.gov">Jon Stearley</a>.
+	or dashboards/searches/moi/etc to contribute, please do!  The code is on
+    <a href="https://github.com/hpc/gnawts">github</a>, and/or contact
+	<a href="mailto:jrstear@sandia.gov">Jon Stearley</a>.
     </td></tr></table>
     ]]></param>
   </module>
