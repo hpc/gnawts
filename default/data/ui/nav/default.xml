@@ -1,4 +1,5 @@
 <nav>
+    <view name="Help"/>
     <view name="Summary" default='true'/>
     <view name="flashtimeline"/>
     <collection label="Messages Of Interest">

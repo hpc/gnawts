@@ -2,12 +2,14 @@
   <label>Summary</label>
   <module name="AccountBar" layoutPanel="appHeader" />
   <module name="AppBar" layoutPanel="appHeader" />
-  <module name="SideviewUtils" layoutPanel="appHeader" />
-  
   <module name="Message" layoutPanel="messaging">
     <param name="filter">*</param>
     <param name="maxSize">2</param>
     <param name="clearOnJobDispatch">False</param>
+  </module>
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+  <module name="ServerSideInclude" layoutPanel="appHeader">
+    <param name="src">error_messages.html</param>
   </module>
 
   <!-- a standard search bar -->
