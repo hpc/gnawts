@@ -45,9 +45,9 @@
   <module name="StaticContentSample" layoutPanel="panel_row2_col1">
     <param name="text"><![CDATA[
     <h1>Setup</h1>
-	This section provides info on how to setup Gnawts.  Unfortunately,
-	you can not just install it on an existing Splunk server with a 
-	bunch of existing data and have it work.
+	Gnawts depends on your using certain sourcetype names, and 
+	that you tell it how to recognize different clusters.  But first,
+	you'll need Sideview...
     <h2>Dependencies</h2>
 	Gnawts depends on the excellent Sideview Utils app.
 	Without it, many of Gnawt's dashboards will not function properly.
@@ -56,49 +56,36 @@
 	latest version</a> (which includes a cool dashboard editor), or an 
 	<a href="http://splunk-base.splunk.com/apps/36405/sideview-utils-lgpl">
 	older, LGPL version</a>.
-    <h2>Indexes</h2>
-	Gnawts is designed to support multiple HPC clusters.  In order
-	to do this, we wanted to have a way to just drop in new data
-	and have the GUI offer it automatically.  The way we chose was
-	to use a convention that each cluster's data is stored in its
-	own index, named hpc_foo where foo would be the name of the system
-	(or hpc_bar, etc).  Many of Gnawt's dashboards first do a search
-	for index names starting with hpc_, and then offer pull-downs to subset
-	results to individual systems based on the indexes found. 
-	The main upside is that in order to add a new system, one only has to 
-	add a new index (and similarly, for deletion), rather than add/delete it
-	to the app itself.  Another benefit is that role search_filters
-	can be used to subset groups of systems to different roles.
-	For instance, we have multiple admin groups each with their own 
-	clusters.  Each group gets a role, with its search_filter set to 
-	limit the clusters that group is authorized to view.  Then we
-	add new systems by adding new indexes - each group sees only the
-	data they are authorized to view, based on what data is present
-	on the server.
+    <h2>Multiple Clusters</h2>
+	Gnawts is designed to support multiple HPC clusters.  Some dashboards
+	have pulldown menus which can be used to limit the information on
+	that page to selected clusters.  The pulldown can be populated in
+	either of two ways:
 	<p>
-	Downsides to this approach include having to setup one index
-	per cluster, which all sites may not want to do.  And possible
-	performance issues when the number of clusters gets large.
-	At Sandia we have nearly 20 clusters setup and performance is 
-	peppy, but at some point the number of indexes may become a 
-	performance problem.
+	<i>Manual list (this is the default):</i> you edit
+	GNAWTS_HOME/lookups/sysnames.csv to contain the name of each cluster,
+	and the corresponding search which identifies events on that cluster.
+	For example, if all hosts in the foo cluster are named fooN (where N is
+	1-1024 let's say), you could put a line in the file "foo, host=foo*".
+	However, such wildcards execute slowly in Splunk.  For best
+	performance we recommend
+	putting all logs from each cluster in their own index, for instance,
+	the line "foo, index=foo" would mean that all logs from cluster can be
+	found in the index named foo.  This also enables limiting user access 
+	to certain clusters via per-role index filters.
 	<p>
-	Here is a sample indexes.conf, for two clusters, named foo and bar:
-	<PRE>
-[hpc_foo]
-homePath = &#36;SPLUNK_DB/hpc_foo/db
-coldPath = &#36;SPLUNK_DB/hpc_foo/colddb
-thawedPath = &#36;SPLUNK_DB/hpc_foo/thaweddb
-
-[hpc_bar]
-homePath = &#36;SPLUNK_DB/hpc_bar/db
-coldPath = &#36;SPLUNK_DB/hpc_bar/colddb
-thawedPath = &#36;SPLUNK_DB/hpc_bar/thaweddb
-	</PRE>
+        <i>Indexes named hpc_CLUSTER:</i> If you are willing to put all logs for
+	each cluster in it's own index, and use an hpc_CLUSTER naming 
+	convention, you don't have to maintain the above CSV file every
+	time you add a cluster.  In order to turn this on, redefine the
+	"sysnames" saved search by putting the contents
+	of GNAWTS_HOME/local/sysnames.savedsearch into
+	GNAWTS_HOME/local/savesearch.conf, for example: <CODE>`cd GNAWTS_HOME/local; cat sysnames.savedsearch >> savedsearch.conf`. </CODE>
 
     <h2>Sourcetypes</h2>
-	In addition to the index naming convention, the Gnawts app is built
-	around standardized sourcetypes.  Below is a list of key sourcetypes
+        In order to know what to do with certain log types which are not
+	defined by default with Splunk, Gnawts requires that you use 
+	certain sourcetype names.  Below is a list of key sourcetypes
 	and what information they provide.
 
 	<DL>
@@ -148,12 +135,38 @@ thawedPath = &#36;SPLUNK_DB/hpc_bar/thaweddb
 
 	To see the corresponding parsing rules (defining fields for each
 	sourcetype, etc), see <CODE>gnawts/default/props.conf</CODE>.
-	Below is a sample <CODE>inputs.conf</CODE> to monitor some of the 
-	above sourcetypes on the cluster named "bar".
+
+    <h2>For example</h2>
+        At Sandia, we put a Splunk Universal forwarder on the log 
+	collector node of each cluster, all pointed at a single Splunk
+	server (where the data is indexed, stored, searched).
+
+	When adding a new cluster, we first create the corresponding
+	index on the server (the index must exist before data can
+	be saved to it!) by adding the below to indexes.conf and
+	restarting splunk:
+<PRE>
+[hpc_foo]
+homePath = &#36;SPLUNK_DB/hpc_foo/db
+coldPath = &#36;SPLUNK_DB/hpc_foo/colddb
+thawedPath = &#36;SPLUNK_DB/hpc_foo/thaweddb
+</PRE>
+
+
+	Then, on foo's log aggregator we configure the Splunk Universal
+	Forwarder with the below inputs.conf, which specifies that all 
+	the logs from this forwarder should be saved in the index named
+	hpc_foo on the server, and which monitored files should have
+	which sourcetype names.  Note that the ignoreOlderThan option is handy
+	when monitoring directories with many files, such as moat/stats/,
+	but is optional (you'l want to comment that option out when
+	importing historical data, but then uncomment it for ongoing
+	monitoring).
+
 	<PRE>
 [default]
-host = bar-moab
-index = hpc_bar
+host = foo
+index = hpc_foo
 ignoreOlderThan = 7d
 
 [monitor:///var/log/syslog-ng/]
@@ -172,14 +185,10 @@ sourcetype = joblog
 sourcetype = slurmctld
 	</PRE>
 
-    <h2>Forwarders</h2>
-	This is not required for Gnawts, but FYI, at Sandia we have
-	a logs collector on each cluster, and we run a splunk
-	univeral forwarder on each of those (eg, the above 
-	<CODE>inputs.conf</CODE>) which sends logs to 
-	a central server, where the Gnawts app lives.  It should also be
-	possible to have an indexer on each collector, with Gnawts
-	installed on each and also on a search head.
+	<p>
+	LANL uses distributed indexing (with a Splunk indexer on
+	each cluster's log aggregator node), so the above is just
+	one example of how to configure a Gnawts setup.
     ]]></param>
   </module>
 

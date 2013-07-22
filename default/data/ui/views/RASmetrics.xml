@@ -1,25 +1,28 @@
-  <!-- Copyright (C) 2010-2011 Sideview LLC.  All Rights Reserved. -->
-<view autoCancelInterval="90" isVisible="true" onunloadCancelJobs="true" template="dashboard.html">
+<view autoCancelInterval="90" isVisible="false" onunloadCancelJobs="true" template="dashboard.html">
   <label>System RAS Metrics</label>
+
   <module name="AccountBar" layoutPanel="appHeader" />
+
   <module name="AppBar" layoutPanel="appHeader" />
+
   <module name="SideviewUtils" layoutPanel="appHeader" />
-  
+
   <module name="Message" layoutPanel="messaging">
     <param name="filter">*</param>
     <param name="maxSize">2</param>
     <param name="clearOnJobDispatch">False</param>
   </module>
-  
+
   <module name="HTML" layoutPanel="viewHeader">
     <param name="html"><![CDATA[
     <h1>System RAS Metrics</h1>
     Availability, System Mean Time to Interrupt (SMTTI), and Job Mean Time To Interrupt (JMTTI) metrics are sliding averages based on the following parameters.
     ]]></param>
   </module>
-  
-  <module name="Search" layoutPanel="panel_row1_col1" autoRun="True" group="Report Parameters">
-    <param name="search">| eventcount summarize=false index=hpc_* | where count>0 | eval system=ltrim(index,"hpc_") | fields system</param>    
+
+  <module name="Search" layoutPanel="panel_row1_col1" group="Report Parameters" autoRun="True">
+    <param name="search">| eventcount summarize=false index=hpc_* | where count&gt;0 | eval system=ltrim(index,"hpc_") | fields system</param>
+
     <module name="Pulldown">
       <param name="name">SelectedSystem</param>
       <param name="label">system</param>
@@ -31,82 +34,88 @@
         </list>
       </param>
 
-	  <module name="TextField" autoRun="True">
-	    <param name="name">days</param>
-	    <param name="float">left</param>
-	    <param name="template">earliest=-$value$d</param>
-	    <param name="label">Total number of days in report:</param>
-	    <param name="default">112</param>
-	    <param name="width">3em</param>
+      <module name="TextField" autoRun="True">
+        <param name="name">days</param>
+        <param name="float">left</param>
+        <param name="template">earliest=-$value$d</param>
+        <param name="label">Total number of days in report:</param>
+        <param name="default">112</param>
+        <param name="width">3em</param>
 
-		  <module name="TextField" autoRun="True">
-		    <param name="name">windays</param>
-		    <param name="float">left</param>
-		    <param name="label">Number of days used to calculate sliding averages:</param>
-		    <param name="default">28</param>
-		    <param name="width">3em</param>
+        <module name="TextField" autoRun="True">
+          <param name="name">windays</param>
+          <param name="float">left</param>
+          <param name="label">Number of days used to calculate sliding averages:</param>
+          <param name="default">28</param>
+          <param name="width">3em</param>
 
-	             <module name="Search">
-				    <param name="search"> index=summary $days$ orig_index=hpc_$SelectedSystem$ eventtype=$SelectedSystem$_* | cosbydate </param>
+          <module name="Search">
+            <param name="search"> index=summary $days$ orig_index=hpc_$SelectedSystem$ eventtype=$SelectedSystem$_* | cosbydate </param>
 
-				    <module name="PostProcess" layoutPanel="panel_row2_col1" group="Hours per Day">
-						  <param name="search"> timechart span=1d max(USR_hrs) AS ProductionUptime max(SYS_hrs) AS ScheduledDowntime max(ERR_hrs) AS UnscheduledDowntime </param>
-						  <module name="HiddenChartFormatter">
-						  <param name="charting.chart">column</param>
-						  <param name="charting.chart.stackMode">stacked</param>
-						     <module name="FlashChart">
-					         	<param name="height">300px</param>
-				 	         </module>
-						  </module>
-				    </module>
+            <module name="PostProcess" layoutPanel="panel_row2_col1" group="Hours per Day">
+              <param name="search"> timechart span=1d max(USR_hrs) AS ProductionUptime max(SYS_hrs) AS ScheduledDowntime max(ERR_hrs) AS UnscheduledDowntime </param>
 
-					<module name="PostProcess" layoutPanel="panel_row2_col2" group="SMTTI = ProductionUptime hours / Count of UnscheduledDowntimeStarts">
-						  <param name="search"> streamstats sum(USR_hrs) AS USRhoursInWindow window=$windays$ | streamstats sum(ERR_count) AS ERRCountInWindow window=$windays$ | eval SMTTi=round(USRhoursInWindow/ERRCountInWindow,2) | streamstats count(_time) as ndays window=$windays$ | where ndays=$windays$ | eval SMTTI=if(isnull(SMTTi),USRhoursInWindow,SMTTi) | timechart span=1d max(SMTTI) AS SMTTI</param>
-						  <module name="HiddenChartFormatter">
-						  	 <param name="charting.chart">line</param>
-						     <module name="FlashChart">
-					         	<param name="height">300px</param>
-				 	         </module>
-						  </module>
-				    </module>				
+              <module name="HiddenChartFormatter">
+                <param name="charting.chart">column</param>
+                <param name="charting.chart.stackMode">stacked</param>
 
-					<module name="PostProcess" layoutPanel="panel_row3_col1" group="Availability = 100 * ProductionUptime hours / Total hours">
-						  <param name="search"> streamstats sum(USR_hrs) AS USRhoursInWindow window=$windays$ | eval Avail=100*USRhoursInWindow/($windays$*24) | timechart span=1d max(Avail) AS Availability</param>
-						  <module name="HiddenChartFormatter">
-						  	 <param name="charting.chart">line</param>
-						     <module name="FlashChart">
-					         	<param name="height">300px</param>
-				 	         </module>
-						  </module>
-				    </module>
+                <module name="FlashChart">
+                  <param name="height">300px</param>
+                </module>
+              </module>
+            </module>
 
-					<module name="PostProcess" layoutPanel="panel_row3_col2" group="JMTTI = ProductionUptime hours / Count of Jobs killed by nodes entering UnscheduledDowntime">
-						  <param name="search"> join date type=outer [search index=summary orig_index=hpc_$SelectedSystem$ newState=ERR | lookup job host AS orig_host | where NOT isnull(jobid) | eval date=strftime(_time,"%Y-%m-%d") | stats count AS ERRcount by date ] | streamstats sum(USR_hrs) AS USRhoursInWindow window=$windays$ | streamstats sum(ERRcount) AS ERRcountInWindow window=$windays$ | eval JMTTI=USRhoursInWindow/ERRcountInWindow | timechart span=1d max(JMTTI) AS JMTTI</param>
-						  <module name="HiddenChartFormatter">
-						  	 <param name="charting.chart">line</param>
-						     <module name="FlashChart">
-					         	<param name="height">300px</param>
-				 	         </module>
-						  </module>
-				    </module>
-				    				    
-					<module name="PostProcess" layoutPanel="panel_row4_col1" group="Table of daily values">
-						  <param name="search"> reverse | rename USR_hrs AS ProductionUptimeHrs | rename SYS_hrs AS ScheduledDowntimeHrs | rename ERR_hrs AS UnscheduledDowntimeHrs | rename ERR_count AS UnscheduledDowntimeStarts | table date ProductionUptimeHrs ScheduledDowntimeHrs UnscheduledDowntimeHrs UnscheduledDowntimeStarts</param>
-						  <module name="Pager">
-					        <param name="entityName">results</param>
-					        <module name="SimpleResultsTable">
-					          <param name="displayRowNumbers">False</param>
-					          <param name="entityName">results</param>
-					        </module>
-					      </module>
-      
-				    </module>					
-				 </module>				
-		</module>
+            <module group="SMTTI = ProductionUptime hours / Count of UnscheduledDowntimeStarts" layoutPanel="panel_row2_col2" name="PostProcess">
+              <param name="search"> streamstats sum(USR_hrs) AS USRhoursInWindow window=$windays$ | streamstats sum(ERR_count) AS ERRCountInWindow window=$windays$ | eval SMTTi=round(USRhoursInWindow/ERRCountInWindow,2) | streamstats count(_time) as ndays window=$windays$ | where ndays=$windays$ | eval SMTTI=if(isnull(SMTTi),USRhoursInWindow,SMTTi) | timechart span=1d max(SMTTI) AS SMTTI</param>
+
+              <module name="HiddenChartFormatter">
+                <param name="charting.chart">line</param>
+
+                <module name="FlashChart">
+                  <param name="height">300px</param>
+                </module>
+              </module>
+            </module>
+
+            <module group="Availability = 100 * ProductionUptime hours / Total hours" layoutPanel="panel_row3_col1" name="PostProcess">
+              <param name="search"> streamstats sum(USR_hrs) AS USRhoursInWindow window=$windays$ | eval Avail=100*USRhoursInWindow/($windays$*24) | timechart span=1d max(Avail) AS Availability</param>
+
+              <module name="HiddenChartFormatter">
+                <param name="charting.chart">line</param>
+
+                <module name="FlashChart">
+                  <param name="height">300px</param>
+                </module>
+              </module>
+            </module>
+
+            <module group="JMTTI = ProductionUptime hours / Count of Jobs killed by nodes entering UnscheduledDowntime" layoutPanel="panel_row3_col2" name="PostProcess">
+              <param name="search"> join date type=outer [search index=summary orig_index=hpc_$SelectedSystem$ newState=ERR | lookup job host AS orig_host | where NOT isnull(jobid) | eval date=strftime(_time,"%Y-%m-%d") | stats count AS ERRcount by date ] | streamstats sum(USR_hrs) AS USRhoursInWindow window=$windays$ | streamstats sum(ERRcount) AS ERRcountInWindow window=$windays$ | eval JMTTI=USRhoursInWindow/ERRcountInWindow | timechart span=1d max(JMTTI) AS JMTTI</param>
+
+              <module name="HiddenChartFormatter">
+                <param name="charting.chart">line</param>
+
+                <module name="FlashChart">
+                  <param name="height">300px</param>
+                </module>
+              </module>
+            </module>
+
+            <module name="PostProcess" layoutPanel="panel_row4_col1" group="Table of daily values">
+              <param name="search"> reverse | rename USR_hrs AS ProductionUptimeHrs | rename SYS_hrs AS ScheduledDowntimeHrs | rename ERR_hrs AS UnscheduledDowntimeHrs | rename ERR_count AS UnscheduledDowntimeStarts | table date ProductionUptimeHrs ScheduledDowntimeHrs UnscheduledDowntimeHrs UnscheduledDowntimeStarts</param>
+
+              <module name="Pager">
+                <param name="entityName">results</param>
+
+                <module name="SimpleResultsTable">
+                  <param name="displayRowNumbers">False</param>
+                  <param name="entityName">results</param>
+                </module>
+              </module>
+            </module>
+          </module>
+        </module>
       </module>
-
     </module>
-   </module>
-
-
+  </module>
 </view>

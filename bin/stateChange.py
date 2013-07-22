@@ -86,7 +86,7 @@ def stateChangeLogic(record, nodes, start_state, end_state):
       # eg it could be an argument and set via local/savedsearches.conf for each machine,
       # but really it should be a percentage of the hosts in each hpc_system index...
       if (all>these and these>0.95*all):
-          debug2("Applying RSV to all known hosts ("+ str(these) +">0.95*"+ str(all)+"): "+raw)
+          debug("Applying RSV to all known hosts ("+ str(these) +">0.95*"+ str(all)+"): "+raw)
           node_list = node_states.keys() 
 
 #  debug2("---- in stateChangeLogic:" + str(record['_time']) + " start="+ start_state  + " end="+ end_state + " nodes="+nodes)
@@ -128,14 +128,14 @@ def main():
       new_options = ast.literal_eval(sys.argv[1]) 
       options.update(new_options)
 
-    debug2("OPTIONS: " + str(options))
+    debug("OPTIONS: " + str(options))
     cosre  = re.compile("cos_([\*\w]+)-([\*\w]+)")
     
     i=1
     if len(results) and results[0].has_key('_time'):
       if results[0].get('_time') > results[-1].get('_time'):
         results = results[::-1]                     # ensure chronological order
-      debug2("Starting on " + str(len(results)) + " events")
+      debug("Starting on " + str(len(results)) + " events")
       last_record = None
       for r in results:
 #        if i==1:
@@ -144,7 +144,7 @@ def main():
           if len(results)==1: # only record is StateName, update and output
             r['_time'] = nowtime # this doesn't seem to take effect
             output_results.append(r)
-          debug2("Setting initial node states")
+          debug("Setting initial node states")
           p  = re.compile("(StateName_\w+)=")
           ps = re.compile("StateName_(\w+)")
           for stateName in p.findall(r['_raw']):
@@ -159,7 +159,7 @@ def main():
         else:
           # now update our record
           if i%10000 == 0:
-            debug2("record " + str(i) + " of " + str(len(results)))
+            debug("record " + str(i) + " of " + str(len(results)))
 
           # make sure we have needed fields
           node = r.get(options.get('nodeField')) or r.get('nodes') or r.get('nids') or r.get('hosts')
@@ -174,9 +174,9 @@ def main():
                   start_state, end_state = match.groups()
                   stateChangeLogic(r, node, start_state, end_state)
             else:
-              debug2("--- Failed to find eventtype: "+ str(r))
+              debug("--- Failed to find eventtype: "+ str(r))
           else:
-            debug2("--- Failed to find node/nodes/hosts: "+ str(r))
+            debug("--- Failed to find node/nodes/hosts: "+ str(r))
           last_record = r
         i=i+1
 
@@ -192,11 +192,11 @@ def main():
     debug2(str(stack))
     results = splunk.Intersplunk.generateErrorResults("Error : Traceback: " + str(stack))
 
-  debug2("Outputting " + str(len(output_results)) + " events")
+  debug("Outputting " + str(len(output_results)) + " events")
   splunk.Intersplunk.outputResults( output_results )
 
 
 ##################################################################
-debug2("Starting at " + time.asctime())
+debug("Starting at " + time.asctime())
 main()
-debug2("Finished at " + time.asctime() + "\n\n")
+debug("Finished at " + time.asctime() + "\n\n")
