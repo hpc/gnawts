@@ -1,0 +1,2 @@
+index,nid,hex,nodename,type,arch,os,cpus,cu,availmem,pagesz,,,,,c/cu,label0,label1,label2,label3,cpu,slot,cage,cabinet,cab_position,cab_row,x_coord,y_coord,z_coord,processor_type,alloc_mode,process_slots,process_slots_free,processor_spec,next_red_black_switch,od_allocator_id
+hpc_muzia,0,0x0,c0-0c0s0n0,service,xt,service,6,6,16384,4096,2200,0,1,1,1,0,0,0,NULL,0,0,0,0,0,service,batch,4,4,NULL,NULL,1

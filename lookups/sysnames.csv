@@ -1,0 +1,11 @@
+name,search
+chama,index=hpc_chama
+redsky,index=hpc_redsky
+glory,index=hpc_glory
+compton,index=hpc_compton
+curie,index=hpc_curie
+ebird,index=hpc_ebird
+lynx,index=hpc_lynx
+muzia,index=hpc_muzia
+reddune,index=hpc_reddune
+redmesa,index=hpc_redmesa
