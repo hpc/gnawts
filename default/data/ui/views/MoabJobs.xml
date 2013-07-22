@@ -1,0 +1,125 @@
+<view autoCancelInterval="90" isVisible="true" onunloadCancelJobs="true" template="dashboard.html">
+  <label>Moab: Job Overview</label>
+
+  <module name="AccountBar" layoutPanel="appHeader" />
+
+  <module name="AppBar" layoutPanel="appHeader" />
+
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+
+  <module name="Message" layoutPanel="messaging">
+    <param name="filter">*</param>
+    <param name="maxSize">2</param>
+    <param name="clearOnJobDispatch">False</param>
+  </module>
+
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>Job Overview</h1>
+    ]]></param>
+  </module>
+
+  <module name="Search" layoutPanel="panel_row1_col1" group="Job Filters" autoRun="True">
+    <param name="group">Job Filters</param>
+    <param name="search"><![CDATA[
+| savedsearch sysnames
+]]></param>
+
+    <module name="Pulldown">
+      <param name="float">left</param>
+      <param name="labelField">name</param>
+      <param name="staticOptions">
+        <list>
+          <param name="label">All</param>
+          <param name="value"/>
+        </list>
+      </param>
+      <param name="valueField">search</param>
+      <param name="name">selectedSystem</param>
+      <param name="label">System:</param>
+      <param name="float">left</param>
+      <param name="searchFieldsToDisplay"/>
+
+      <module name="TextField" autoRun="True">
+        <param name="name">days</param>
+        <param name="float">left</param>
+        <param name="template">earliest=-$value$d</param>
+        <param name="label">Number of days in report range:</param>
+        <param name="default">7</param>
+        <param name="width">3em</param>
+
+        <module name="TextField">
+          <param name="name">jobsize</param>
+          <param name="float">left</param>
+          <param name="template">nprocs&lt;$value$</param>
+          <param name="label">Job size less than (processes):</param>
+          <param name="default">256</param>
+          <param name="width">5em</param>
+
+          <module name="TextField" autoRun="True">
+            <param name="name">hrs</param>
+            <param name="float">left</param>
+            <param name="template">hrs&lt;$value$</param>
+            <param name="label">Job length less than (hours):</param>
+            <param name="default">12</param>
+            <param name="width">5em</param>
+
+            <module name="TextField" autoRun="True">
+              <param name="name">xtra</param>
+              <param name="float">left</param>
+              <param name="label">Extra search parameters:</param>
+              <param name="default">NOT user=sierra</param>
+              <param name="width">15em</param>
+
+              <module name="Search">
+                <param name="search"><![CDATA[
+ $days$ $selectedSystem$ sourcetype=moabstats etype=jobend $jobsize$ $xtra$| dedup jobid | eval hrs=round((end-start)/3600,1) | where $hrs$
+]]></param>
+
+                <module name="PostProcess" layoutPanel="panel_row2_col1" group="Job Size (nprocs)">
+                  <param name="search"> bucket count bins=10 | chart count by nprocs </param>
+
+                  <module name="HiddenChartFormatter">
+                    <param name="charting.axisLabelsX.majorLabelStyle.useBitmapRendering">true</param>
+                    <param name="charting.axisLabelsX.majorLabelStyle.useBitmapSmoothing">true</param>
+                    <param name="charting.axisLabelsX.majorLabelStyle.bitmapSmoothingQuality">8</param>
+                    <param name="charting.axisLabelsX.majorLabelStyle.bitmapSmoothingSharpness">5</param>
+                    <param name="charting.axisLabelsX.majorLabelStyle.rotation">90</param>
+
+                    <module name="FlashChart">
+                      <param name="height">300px</param>
+                    </module>
+                  </module>
+                </module>
+
+                <module name="PostProcess" layoutPanel="panel_row2_col2" group="Job Length (hrs)">
+                  <param name="search"> bucket hrs bins=10 | chart count by hrs </param>
+
+                  <module name="HiddenChartFormatter">
+
+                    <module name="FlashChart">
+                      <param name="height">300px</param>
+                    </module>
+                  </module>
+                </module>
+
+                <module name="PostProcess" layoutPanel="panel_row3_col1" group="Total usage per user">
+                  <param name="search"> eval phrs=hrs*nprocs | stats count AS TotalJobCount sum(phrs) AS TotalProcessorHours values(nprocs) AS JobSizeNprocs values(hrs) AS JobDurationHrs by user | eval JobSizeNprocs=mvjoin(JobSizeNprocs, ",") | eval JobDurationHrs=mvjoin(JobDurationHrs, ",") | sort -TotalProcessorHours | table user TotalJobCount TotalProcessorHours JobSizeNprocs JobDurationHrs</param>
+
+                  <module name="Pager">
+                    <param name="entityName">results</param>
+
+                    <module name="SimpleResultsTable">
+                      <param name="displayRowNumbers">False</param>
+                      <param name="entityName">results</param>
+                    </module>
+                  </module>
+                </module>
+              </module>
+            </module>
+          </module>
+        </module>
+      </module>
+    </module>
+  </module>
+</view>

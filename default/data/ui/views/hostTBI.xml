@@ -1,29 +1,31 @@
-  <!-- Copyright (C) 2010-2011 Sideview LLC.  All Rights Reserved. -->
-<view autoCancelInterval="90" isVisible="true" onunloadCancelJobs="true" template="dashboard.html">
+<view autoCancelInterval="90" isVisible="false" onunloadCancelJobs="true" template="dashboard.html">
   <label>Time Between Interrupts</label>
+
   <module name="AccountBar" layoutPanel="appHeader" />
+
   <module name="AppBar" layoutPanel="appHeader" />
+
   <module name="SideviewUtils" layoutPanel="appHeader" />
-  
+
   <module name="Message" layoutPanel="messaging">
     <param name="filter">*</param>
     <param name="maxSize">2</param>
     <param name="clearOnJobDispatch">False</param>
   </module>
-  
+
   <module name="HTML" layoutPanel="viewHeader">
     <param name="html"><![CDATA[
     <h1>Time Between Interrupt of Any Host</h1>
-    Time Between Interrupt (TBI) is measured as the time between ANY HOST entering UnscheduledDowntime.  
+    Time Between Interrupt (TBI) is measured as the time between ANY HOST entering UnscheduledDowntime.
     To be meaningful, a SINGLE system should be selected below.
     Zero-length TBI's (when multiple hosts go down at the same second) are omitted from results by default.
-    Extra search parameters can be used to narrow the report range, such as "search hrs<10" to look only at short TBI's.  
+    Extra search parameters can be used to narrow the report range, such as "search hrs<10" to look only at short TBI's.
     ]]></param>
   </module>
-  
-  <module name="Search" layoutPanel="panel_row1_col1" autoRun="True" group="Report Parameters">
 
-   <param name="search">| eventcount summarize=false index=hpc_* | where count>0 | eval system=substr(index,5) | fields system</param>
+  <module name="Search" layoutPanel="panel_row1_col1" group="Report Parameters" autoRun="True">
+    <param name="search">| eventcount summarize=false index=hpc_* | where count&gt;0 | eval system=substr(index,5) | fields system</param>
+
     <module name="Pulldown">
       <param name="name">SelectedSystem</param>
       <param name="label">System:</param>
@@ -36,85 +38,87 @@
         </list>
       </param>
 
-	  <module name="TextField" autoRun="True">
-	    <param name="name">days</param>
-	    <param name="float">left</param>
-	    <param name="label">Total number of days in report:</param>
-	    <param name="template">earliest=-$value$d</param>
-	    <param name="default">30</param>
-	    <param name="width">3em</param>
+      <module name="TextField" autoRun="True">
+        <param name="name">days</param>
+        <param name="float">left</param>
+        <param name="label">Total number of days in report:</param>
+        <param name="template">earliest=-$value$d</param>
+        <param name="default">30</param>
+        <param name="width">3em</param>
 
-		  <module name="TextField" autoRun="True">
-		    <param name="name">windays</param>
-		    <param name="float">left</param>
-		    <param name="label">Number of days used to calculate MTBI:</param>
-		    <param name="default">7</param>
-		    <param name="width">3em</param>
+        <module name="TextField" autoRun="True">
+          <param name="name">windays</param>
+          <param name="float">left</param>
+          <param name="label">Number of days used to calculate MTBI:</param>
+          <param name="default">7</param>
+          <param name="width">3em</param>
 
-		   <module name="TextField" autoRun="True">
-		    <param name="name">xtra</param>
-		    <param name="float">left</param>
-		    <param name="label">Extra search parameters:</param>
-		    <param name="default">search *</param>
-		    <param name="width">20em</param>
-		    
-              <module name="Checkbox" autoRun="True">
-                <param name="name">dedup</param>
-                <param name="label">Include zero-length TBI's</param>
-                <param name="offValue"> dedup _time | </param>
+          <module name="TextField" autoRun="True">
+            <param name="name">xtra</param>
+            <param name="float">left</param>
+            <param name="label">Extra search parameters:</param>
+            <param name="default">search *</param>
+            <param name="width">20em</param>
 
-	             <module name="Search">
-				  <param name="search">index=summary $days$ $SelectedSystem$ newState=HardDown OR newState=SoftDown</param>
-                  <module name="ViewRedirectorLink" >
-                    <param name="label">View events</param>
-                    <param name="viewTarget">flashtimeline</param>
-                  </module>
-                 </module>
+            <module name="Checkbox" autoRun="True">
+              <param name="name">dedup</param>
+              <param name="label">Include zero-length TBI's</param>
+              <param name="offValue"> dedup _time | </param>
 
-	             <module name="Search">
-				    <param name="search"> index=summary $days$ $SelectedSystem$ newState=HardDown OR newState=SoftDown | $dedup$ streamstats global=false window=2 first(_time) AS first last(_time) AS last | eval hrs=(first-last)/3600 | $xtra$ </param>
-				  				    				    
-					<module name="PostProcess" layoutPanel="panel_row2_col1" group="TBI Statistics">
-						  <param name="search"> stats count mean(hrs) min(hrs) perc25(hrs) median(hrs) perc75(hrs) max(hrs) </param>
-						  <module name="Pager">
-					        <param name="entityName">results</param>
-					        <module name="SimpleResultsTable">
-					          <param name="displayRowNumbers">False</param>
-					          <param name="entityName">results</param>
-					        </module>
-					      </module>
-				    </module>					
-	
-					<module name="PostProcess" layoutPanel="panel_row3_col1" group="TBI Distribution">
-						  <param name="search"> bucket hrs bins=20 | chart count by hrs</param>
-						  <module name="HiddenChartFormatter">
-						  <param name="charting.chart">column</param>
-						     <module name="FlashChart">
-					         	<param name="height">300px</param>
-				 	         </module>
-						  </module>
-				    </module>
-	
-					<module name="PostProcess" layoutPanel="panel_row4_col1" group="MTBI Trend - N-day sliding average (see parameter setting for sliding window size)">
-                          <!-- could nest the below in the above postprocess for greater efficiency -->
-						  <param name="search"> streamstats global=false window=$windays$ mean(hrs) AS MTBI | timechart span=1d max(MTBI) AS MTBI</param>
-						  <module name="HiddenChartFormatter">
-						  	 <param name="charting.chart">line</param>
-						     <module name="FlashChart">
-					         	<param name="height">300px</param>
-				 	         </module>
-						  </module>
-				    </module>
+              <module name="Search">
+                <param name="search">index=summary $days$ $SelectedSystem$ newState=HardDown OR newState=SoftDown</param>
 
-				 </module>
+                <module name="ViewRedirectorLink">
+                  <param name="label">View events</param>
+                  <param name="viewTarget">flashtimeline</param>
+                </module>
               </module>
 
-			</module>				
-		</module>
+              <module name="Search">
+                <param name="search"> index=summary $days$ $SelectedSystem$ newState=HardDown OR newState=SoftDown | $dedup$ streamstats global=false window=2 first(_time) AS first last(_time) AS last | eval hrs=(first-last)/3600 | $xtra$ </param>
+
+                <module name="PostProcess" layoutPanel="panel_row2_col1" group="TBI Statistics">
+                  <param name="search"> stats count mean(hrs) min(hrs) perc25(hrs) median(hrs) perc75(hrs) max(hrs) </param>
+
+                  <module name="Pager">
+                    <param name="entityName">results</param>
+
+                    <module name="SimpleResultsTable">
+                      <param name="displayRowNumbers">False</param>
+                      <param name="entityName">results</param>
+                    </module>
+                  </module>
+                </module>
+
+                <module name="PostProcess" layoutPanel="panel_row3_col1" group="TBI Distribution">
+                  <param name="search"> bucket hrs bins=20 | chart count by hrs</param>
+
+                  <module name="HiddenChartFormatter">
+                    <param name="charting.chart">column</param>
+
+                    <module name="FlashChart">
+                      <param name="height">300px</param>
+                    </module>
+                  </module>
+                </module>
+
+                <module name="PostProcess" layoutPanel="panel_row4_col1" group="MTBI Trend - N-day sliding average (see parameter setting for sliding window size)">
+                  <!-- could nest the below in the above postprocess for greater efficiency -->
+                  <param name="search"> streamstats global=false window=$windays$ mean(hrs) AS MTBI | timechart span=1d max(MTBI) AS MTBI</param>
+
+                  <module name="HiddenChartFormatter">
+                    <param name="charting.chart">line</param>
+
+                    <module name="FlashChart">
+                      <param name="height">300px</param>
+                    </module>
+                  </module>
+                </module>
+              </module>
+            </module>
+          </module>
+        </module>
       </module>
-
     </module>
-
-   </module>
-
+  </module>
 </view>

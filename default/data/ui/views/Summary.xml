@@ -1,184 +1,333 @@
 <view autoCancelInterval="90" isVisible="true" onunloadCancelJobs="true" template="dashboard.html">
   <label>Summary</label>
+
   <module name="AccountBar" layoutPanel="appHeader" />
+
   <module name="AppBar" layoutPanel="appHeader" />
+
   <module name="Message" layoutPanel="messaging">
     <param name="filter">*</param>
     <param name="maxSize">2</param>
     <param name="clearOnJobDispatch">False</param>
   </module>
+
   <module name="SideviewUtils" layoutPanel="appHeader" />
+
   <module name="ServerSideInclude" layoutPanel="appHeader">
     <param name="src">error_messages.html</param>
   </module>
-
   <!-- a standard search bar -->
+
   <module name="SearchBar" layoutPanel="splSearchControls-inline">
-        <param name="useAssistant">true</param>
-        <param name="useTypeahead">true</param>
-        <param name="useOwnSubmitButton">False</param>
-        <module name="TimeRangePicker">
-            <param name="selected">Last 24 hours</param>
-            <param name="searchWhenChanged">False</param>
-            <module name="SubmitButton">
-                <param name="allowSoftSubmit">True</param>
-                <module name="ViewRedirector" layoutPanel="viewHeader">
-                    <param name="viewTarget">flashtimeline</param>
-                </module>
-            </module>
+    <param name="useAssistant">true</param>
+    <param name="useTypeahead">true</param>
+    <param name="useOwnSubmitButton">False</param>
+
+    <module name="TimeRangePicker">
+      <param name="selected">Last 24 hours</param>
+
+      <module name="SubmitButton">
+        <param name="allowSoftSubmit">True</param>
+
+        <module name="ViewRedirector" layoutPanel="viewHeader">
+          <param name="viewTarget">flashtimeline</param>
         </module>
+      </module>
+    </module>
   </module>
-  
- <module name="Search" layoutPanel="panel_row1_col1" group="Logs in a job" autoRun="True">
 
-   <!-- Get a list of systems based on what hpc_* indexes exist -->
-   <!-- Do this once for the page and re-use it in all panes -->
-   <!-- Run it through map to subset the list according to the user's role permissions -->
-   <param name="search">| eventcount summarize=false index=hpc_* | where count>0 | eval system=substr(index,5) | fields system</param>
+  <module name="Search" layoutPanel="panel_row1_col1" group="Logs in a job" autoRun="True">
+    <param name="group">Logs in a job</param>
+    <!-- Get a list of systems based on what hpc_* indexes exist -->
+    <!-- Do this once for the page and re-use it in all panes -->
+    <!-- Run it through map to subset the list according to the user's role permissions -->
+    <param name="search"><![CDATA[
+| savedsearch sysnames
 
-   <!-- How to render all the below on a single line? -->
-   <!-- Enter a job number -->
-   <module name="TextField">
-    <param name="name">job</param>
-    <param name="label">Show logs for the latest job having Moab ID:</param>
-    <param name="width">7em</param>
+]]></param>
+    <!-- How to render all the below on a single line? -->
+    <!-- Enter a job number -->
 
-    <!-- Offer a list of systems -->
-    <module name="Pulldown">
-      <param name="name">selectedSystem</param>
-      <param name="label">On system:</param>
-      <param name="searchFieldsToDisplay">
-        <list>
-          <param name="label">system</param>
-          <param name="value">system</param>
-        </list>
-      </param>
-    
-		<!-- Kick off a search -->
+    <module name="TextField">
+      <param name="name">job</param>
+      <param name="label">Show logs for the latest job having Moab ID:</param>
+      <param name="width">7em</param>
+      <!-- Offer a list of systems -->
+
+      <module name="Pulldown">
+        <param name="label">On system:</param>
+        <param name="labelField">name</param>
+        <param name="staticOptions">
+          <list>
+            <param name="label">All</param>
+            <param name="value"/>
+          </list>
+        </param>
+        <param name="valueField">search</param>
+        <!-- Kick off a search -->
+
         <module name="Search">
-          <param name="search">`job($job$,hpc_$selectedSystem$)`</param>
+          <param name="search"><![CDATA[
+`job(jobid=$job$,filter="$selection$")`
+
+
+
+]]></param>
           <param name="earliest">-30d</param>
           <param name="latest">now</param>
-        
-        <!-- Popup a new window containing the search results -->
-        <module name="ViewRedirector">
-          <param name="viewTarget">flashtimeline</param>
-          <param name="popup">True</param>
-        </module>
-        
-       </module>
-     </module>
-    </module>
+          <!-- Popup a new window containing the search results -->
 
-<!-- uncomment this HTML module block when messing with the summary index...
-  <module name="HTML">
-    <param name="html"><![CDATA[
+          <module name="ViewRedirector">
+            <param name="viewTarget">flashtimeline</param>
+            <param name="popup">True</param>
+          </module>
+        </module>
+      </module>
+    </module>
+    <!-- uncomment this HTML module block when messing with the summary index...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<module name="HTML">
+<param name="html"><![CDATA[
     <FONT COLOR="ff0000">This is currently being worked on (do not trust it). -jon</FONT>
     ]]></param>
-  </module>
+</module>
 -->
     <!-- Offer a list of systems -->
-<!--
-  <module name="HTML"  layoutPanel="panel_row2_col1" group="Hosts Of Interest" autoRun="True">
-    <module name="Pulldown">
-      <param name="name">selectedSystems</param>
-      <param name="label">Systems to include:</param>
-      <param name="size">4</param>
-      <param name="template">orig_index=hpc_$value$</param>
-      <param name="separator">+OR+</param>
-      <param name="outerTemplate">($value$)</param>
-      <param name="staticFieldsToDisplay"></param>
-      <param name="searchFieldsToDisplay">
-        <list>
-          <param name="label">system</param>
-          <param name="value">system</param>
-        </list>
-      </param>
-	  
-      <module name="Checkbox" autoRun="True">
-        <param name="name">nullJobid</param>
-        <param name="label">Include hosts which are currently running a job</param>
-        <param name="offValue"> where isnull(jobid) | </param>
+    <!--
 
-       <module name="Search">
-        <param name="search"> | savedsearch "COS: HostsOfInterest" | search $selectedSystems$ | $nullJobid$ table ChangedStateAt node jobid slurmstate reason COS orig_event </param>
-        
-        <module name="Pager">
-          <param name="entityName">results</param>
-          <module name="SimpleResultsTable">
-            <param name="displayRowNumbers">False</param>
-            <param name="entityName">results</param>
-            <param name="drilldown">row</param>
-            
-           <module name="Search">
-            <param name="search">`hostdownwin($click.fields.node$,-5m,+1m)`</param>
-            <param name="earliest">-30d</param>
-        
-            <module name="ViewRedirector">
-              <param name="viewTarget">flashtimeline</param>
-              <param name="popup">True</param>
-            </module>
-           </module>
-          </module>
-         </module>
-        </module>
-      </module>
-    </module>
-  </module>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<module name="HTML"  layoutPanel="panel_row2_col1" group="Hosts Of Interest" autoRun="True">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<module name="Pulldown">
+<param name="name">selectedSystems</param>
+<param name="label">Systems to include:</param>
+<param name="size">4</param>
+<param name="template">orig_index=hpc_$value$</param>
+<param name="separator">+OR+</param>
+<param name="outerTemplate">($value$)</param>
+<param name="staticFieldsToDisplay"></param>
+<param name="searchFieldsToDisplay">
+<list>
+<param name="label">system</param>
+<param name="value">system</param>
+</list>
+</param>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<module name="Checkbox" autoRun="True">
+<param name="name">nullJobid</param>
+<param name="label">Include hosts which are currently running a job</param>
+<param name="offValue"> where isnull(jobid) | </param>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<module name="Search">
+<param name="search"> | savedsearch "COS: HostsOfInterest" | search $selectedSystems$ | $nullJobid$ table ChangedStateAt node jobid slurmstate reason COS orig_event </param>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<module name="Pager">
+<param name="entityName">results</param>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<module name="SimpleResultsTable">
+<param name="displayRowNumbers">False</param>
+<param name="entityName">results</param>
+<param name="drilldown">row</param>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<module name="Search">
+<param name="search">`hostdownwin($click.fields.node$,-5m,+1m)`</param>
+<param name="earliest">-30d</param>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<module name="ViewRedirector">
+<param name="viewTarget">flashtimeline</param>
+<param name="popup">True</param>
+</module>
+</module>
+</module>
+</module>
+</module>
+</module>
+</module>
+</module>
 -->
-  
-  <module name="HTML" layoutPanel="panel_row2_col1" group="Messages Of Interest" autoRun="True">
-        
-    <!-- Offer a list of systems -->
-    <module name="Pulldown">
-      <param name="name">selectedSystems</param>
-      <param name="label">Systems to include:</param>
-      <param name="size">4</param>
-      <param name="template">index=hpc_$value$</param>
-      <param name="separator">+OR+</param>
-      <param name="outerTemplate">($value$)</param>
-      <param name="staticFieldsToDisplay"></param>
-      <param name="searchFieldsToDisplay">
-        <list>
-          <param name="label">system</param>
-          <param name="value">system</param>
-        </list>
-      </param>
-      <!-- would like to position this to the right of the pulldown, to waste less screen space -->
-      <module name="TimeRangePicker">
-        <param name="default">Last 60 minutes</param>
-        <param name="searchWhenChanged">True</param>
-	  
-      <module name="Search">
-        <param name="search">tag=moi $selectedSystems$ | ctable host eventtype </param>
-        
-        <module name="Pager">
-          <param name="entityName">results</param>
-          <module name="SimpleResultsTable">
-            <param name="displayRowNumbers">False</param>
-            <param name="entityName">results</param>
-            <param name="drilldown">row</param>
-            
-           <module name="Search">
-            <param name="search">tag=moi host=$click.fields.host$</param>
-            <param name="earliest">-7d</param>
-            <param name="latest">now</param>
-        
-            <!-- Popup a new window containing the search results -->
-            <module name="ViewRedirector">
-              <param name="viewTarget">flashtimeline</param>
-              <param name="popup">True</param>
+
+    <module name="HTML" layoutPanel="panel_row2_col1" group="Messages Of Interest" autoRun="True">
+      <!-- Offer a list of systems -->
+
+      <module name="Pulldown">
+        <param name="valueField">search</param>
+        <param name="labelField">name</param>
+        <param name="staticOptions">
+          <list>
+            <param name="label">All</param>
+            <param name="value"/>
+          </list>
+        </param>
+        <param name="searchFieldsToDisplay"/>
+        <param name="name">selectedSystems</param>
+        <param name="label">Systems to include:</param>
+        <param name="size">4</param>
+        <param name="template">$value$</param>
+        <param name="separator">+OR+</param>
+        <param name="outerTemplate">($value$)</param>
+        <!-- would like to position this to the right of the pulldown, to waste less screen space -->
+
+        <module name="TimeRangePicker">
+          <param name="default">Last 60 minutes</param>
+          <param name="searchWhenChanged">True</param>
+
+          <module name="Search">
+            <param name="search">tag=moi $selectedSystems$ | ctable host eventtype </param>
+
+            <module name="Pager">
+              <param name="entityName">results</param>
+
+              <module name="SimpleResultsTable">
+                <param name="displayRowNumbers">False</param>
+                <param name="entityName">results</param>
+                <param name="drilldown">row</param>
+
+                <module name="Search">
+                  <param name="search">tag=moi host=$click.fields.host$</param>
+                  <param name="earliest">-7d</param>
+                  <param name="latest">now</param>
+                  <!-- Popup a new window containing the search results -->
+
+                  <module name="ViewRedirector">
+                    <param name="viewTarget">flashtimeline</param>
+                    <param name="popup">True</param>
+                  </module>
+                </module>
+              </module>
             </module>
-           </module>
           </module>
         </module>
-  
-  
-        </module>
-  
       </module>
     </module>
   </module>
- </module>
-  
 </view>
