@@ -1,0 +1,36 @@
+Steps used to set up the splunkforwarder on muzia are below.  -JRS 2013-02-20
+
+on MZSMW1, this forwards everything but the moab logs:
+0. be root on mzsmw1
+1. tar -C /opt -zxf ~jrstear/splunkforwarder-5.0.2-149561-Linux-x86_64.tgz 
+2. cp inputs.mzsmw1 /opt/splunkforwarder/etc/system/local/inputs.conf
+3. /opt/splunkfowarder/bin/splunk start
+4. /opt/splunkfowarder/bin/splunk start add forward-server splunk-hpc.sandia.gov:8001 -ssl-cert-path /opt/splunkforwarder/etc/auth/server.pem -ssl-root-ca-path /opt/splunkforwarder/etc/auth/ca.pem -ssl-password password
+5. /opt/splunkforwarder/bin/splunk enable boot-start
+
+on SDB, this forwards the moab logs:
+0. be root on sdb
+1. tar -C /ufs/logs -zxf ~jrstear/splunkforwarder-5.0.2-149561-Linux-x86_64.tgz 
+2. cp inputs.sdb /ufs/logs/splunkforwarder/etc/system/local/inputs.conf
+3. /ufs/logs/splunkfowarder/bin/splunk start
+4. /ufs/logs/splunkfowarder/bin/splunk start add forward-server splunk-hpc.sandia.gov:8001 -ssl-cert-path /ufs/logs/splunkforwarder/etc/auth/server.pem -ssl-root-ca-path /ufs/logs/splunkforwarder/etc/auth/ca.pem -ssl-password password
+5. /ufs/logs/splunkfowarder/bin/splunk stop
+6. tar -C /ufs/logs -zcf /rr/current/software/splunkforwarder-sdb.tgz
+7. as root on boot, xtopview -c sdb
+8. tar -C /var -zxf /software/splunkforwarder-sdb.tgz
+9. vi /var/splunkforwarder/etc/system/local/outputs.conf
+   change all occurrences of /ufs/logs to /var
+10 /var/splunkforwarder/bin/splunk enable boot-start
+(a shorter process may be possible, this is the one that was used and worked)
+
+on MZLOGIN01E (which has it's own logs):
+0. be root on mzlogin01e
+1. tar -C /opt -zxf ~jrstear/splunkforwarder-5.0.2-149561-Linux-x86_64.tgz 
+2. cp inputs.mzlogin01e /opt/splunkforwarder/etc/system/local/inputs.conf
+3. /opt/splunkfowarder/bin/splunk start
+4. /opt/splunkfowarder/bin/splunk start add forward-server splunk-hpc.sandia.gov:8001 -ssl-cert-path /opt/splunkforwarder/etc/auth/server.pem -ssl-root-ca-path /opt/splunkforwarder/etc/auth/ca.pem -ssl-password password
+5. /opt/splunkforwarder/bin/splunk enable boot-start
+
+
+As a bonus FYI: XTAdmin.processor and xtprocadmin.out are saved here as part of
+the process described in hpc/bin/xtprocadmin2nodes

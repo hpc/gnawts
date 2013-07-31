@@ -1,0 +1,81 @@
+# this is inputs.conf for muzia's mzsmw1 node, which has all logs except moab
+
+[default]
+host = muzia
+index = hpc_muzia
+ignoreOlderThan = 14d
+
+
+# the below have host as the third word on each line
+[monitor:///var/opt/cray/log/smwmessages-*\d]
+sourcetype = rsyslog
+
+[monitor:///var/opt/cray/log/raid-*\d+]
+sourcetype = rsyslog
+
+[monitor:///var/opt/cray/log/logsystem-*\d+]
+sourcetype = rsyslog
+
+[monitor:///var/opt/cray/log/p0-\d+t\d*/messages-\d+]
+sourcetype = rsyslog
+
+[monitor:///var/opt/cray/log/controller/*/messages-\d+]
+sourcetype = rsyslog
+
+[monitor:///var/opt/cray/log/p0-\d+t\d*/compute/*-\d+]
+sourcetype = rsyslog
+
+
+
+
+
+
+# the below have host as the second word on each line
+[monitor:///var/opt/cray/log/p0-\d+t\d*/nhc-\d+]
+sourcetype = nhc
+
+[monitor:///var/opt/cray/log/p0-\d+t\d*/ccm-\d+]
+sourcetype = ccm
+
+[monitor:///var/opt/cray/log/p0-\d+t\d*/console-\d+]
+sourcetype = console
+
+[monitor:///var/opt/cray/log/p0-\d+t\d*/nlrd-\d+]
+sourcetype = nlrd
+
+
+
+
+
+# the below have host as the second word on each line, after some colons
+[monitor:///var/opt/cray/log/event-*\d+]
+sourcetype = erd
+
+
+
+
+
+########### others TBD...
+# no examples to inspect
+#[monitor:///var/opt/cray/log/p0-\d+t\d*/alps/*-\d+]
+#sourcetype = alps
+
+# multi-line events, needs special props/transforms
+#[monitor:///var/opt/cray/log/p0-\d+t\d*/consumer-\d+]
+#sourcetype = consumer
+
+# needs special props/transforms
+#[monitor:///var/opt/cray/log/p0-\d+t\d*/netwatch-\d+]
+#sourcetype = netwatch
+
+# likely needs special props/transforms
+#[monitor:///var/opt/cray/log/p0-\d+t\d*/pcimon-\d+]
+#sourcetype = pcimon
+
+# may need special props/transforms (have not seen enough examples...)
+#[monitor:///var/opt/cray/log/p0-\d+t\d*/dumpd-\d+]
+#sourcetype = dumpd
+
+# no examples to inspect
+#[monitor:///var/opt/cray/log/sedc/*-\d]
+#sourcetype = sedc

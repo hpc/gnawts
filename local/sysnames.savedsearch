@@ -5,6 +5,6 @@ dispatch.earliest_time = -24h@h
 dispatch.latest_time = now
 displayview = flashtimeline
 request.ui_dispatch_view = flashtimeline
-search = | eventcount summarize=false index=hpc_* | where count>0 | eval name=substr(index,5) | eval search="index=".index | fields + name search
+search = | inputlookup sysnames
 vsid = hj76m2mh
 

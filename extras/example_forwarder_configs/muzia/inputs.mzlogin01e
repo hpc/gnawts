@@ -1,0 +1,9 @@
+# this is inputs.conf for muzia's mzlogin01e node
+
+[default]
+host = mzlogin01e
+index = hpc_muzia
+ignoreOlderThan = 14d
+
+[monitor:///var/log/messages]
+sourcetype = syslog

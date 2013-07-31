@@ -1,0 +1,12 @@
+# this is inputs.conf for muzia's sdb node, which has the moab logs
+
+[default]
+host = sdb
+index = hpc_curie
+ignoreOlderThan = 14d
+
+[monitor:///var/spool/moab/stats/events.*]
+sourcetype = moabstats
+
+[monitor:///var/spool/moab/log/moab.log]
+sourcetype = moab
