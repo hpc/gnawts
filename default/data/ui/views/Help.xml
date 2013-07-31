@@ -62,25 +62,27 @@
 	that page to selected clusters.  The pulldown can be populated in
 	either of two ways:
 	<p>
-	<i>Manual list (this is the default):</i> you edit
-	GNAWTS_HOME/lookups/sysnames.csv to contain the name of each cluster,
-	and the corresponding search which identifies events on that cluster.
-	For example, if all hosts in the foo cluster are named fooN (where N is
-	1-1024 let's say), you could put a line in the file "foo, host=foo*".
-	However, such wildcards execute slowly in Splunk.  For best
-	performance we recommend
-	putting all logs from each cluster in their own index, for instance,
-	the line "foo, index=foo" would mean that all logs from cluster can be
-	found in the index named foo.  This also enables limiting user access 
-	to certain clusters via per-role index filters.
+    <i>One index per cluster:</i> By default, system lists will be 
+    automatically populated by finding all indexes containing at least one event.
+    We recommend putting all logs for each cluster into its own index, whose
+    name matches the cluster name.  This enables efficient searches when
+    drilling into specific clusters, and you can use per-role index filters to
+    control who can see what.
+    If the index names start with hpc_, that prefix string is ignored (this is a historical
+    backwards compatability issue).
 	<p>
-        <i>Indexes named hpc_CLUSTER:</i> If you are willing to put all logs for
-	each cluster in it's own index, and use an hpc_CLUSTER naming 
-	convention, you don't have to maintain the above CSV file every
-	time you add a cluster.  In order to turn this on, redefine the
-	"sysnames" saved search by putting the contents
-	of GNAWTS_HOME/local/sysnames.savedsearch into
-	GNAWTS_HOME/local/savesearch.conf, for example: <CODE>`cd GNAWTS_HOME/local; cat sysnames.savedsearch >> savedsearch.conf`. </CODE>
+	<i>Manual list:</i> If you want to form lists of clusters via some other
+    method, you can modify the sysnames saved search to consult a lookup
+    file instead.  For example, add the line "foo, host=foo*"
+    to GNAWTS_HOME/local/sysnames.csv, and then redefine the saved search via
+    <CODE>`cd GNAWTS_HOME/local; cat sysnames.savedsearch >> savedsearch.conf`</CODE>.
+    Now, the cluster list will contain foo, and searches within it will use the 
+    search predicate host=foo*.  However, beware that wildcard searches can be
+    quite inefficient, expecially if the wildcard is at the start of the name
+    instead of the end.  Putting "foo,index=foo" in sysnames.csv would be
+    functionally equivalent to the aforementioned one index per cluster
+    method, but you would control the list manually (instead of it being
+    populated automatically - eg add an index and it will appear in the list).
 
     <h2>Sourcetypes</h2>
         In order to know what to do with certain log types which are not
