@@ -1,0 +1,24 @@
+These files contain examples of how to configure Splunk universal forwarders
+to send logs to a central Splunk indexer/search server.
+
+The general install process is:
+# download the splunk universal forwarder tarball from http://www.splunk.com/download
+# untar it into /opt/splunkforwarder, eg for 5.0.3:
+  tar -zC /opt -f splunk-5.0.3-163460-Linux-x86_64.tgz
+# tell splunk where to send logs
+  cp defaults/outputs.conf /opt/splunkforwarder/etc/system/local/
+# tell splunk what to watch
+  cp system/inputs.conf /opt/splunkforwarder/etc/system/local/
+# tell system to start splunk at boot
+   /opt/splunkforwarder/bin/splunk enable boot-start
+# start splunk
+   /etc/init.d/splunk start
+
+
+Here are a list of systems:
+muzia, curie (CRAY XT6, XE6, see READMEs)
+glory145 (TLCC)
+redsky-monitor1
+shannon
+teller
+
