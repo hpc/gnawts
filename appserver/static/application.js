@@ -76,3 +76,39 @@ if (typeof(Sideview)!="undefined") {
     }
 }
 
+
+//Chama Rack View:  tags the inlet temperatures and adds css class name
+if (Splunk.util.getCurrentView() == "Chama_Heat_Map" ) {
+    if (Splunk.Module.SimpleResultsTable) {
+        Splunk.Module.SimpleResultsTable = $.klass(Splunk.Module.SimpleResultsTable, {
+            forEachCellInColumn: function(callback) {
+		var container = this.container;
+              	container.find('tr:not(.header)').each(function() {
+                    // does not support colspans.
+                    var columnIndex = $(this).parent().children().index($(this));
+
+                    container.find("td:nth-child(" + (columnIndex+2)  + ")").each(function() {
+        		callback($(this));
+                    });
+		});
+            },
+            onResultsRendered: function() {
+                this.forEachCellInColumn(function(tdElement) {
+                    if (tdElement.text() < 27) {
+			tdElement.addClass("Normal");
+                    } else if(tdElement.text() >=27 && tdElement.text()<=29){
+                        tdElement.addClass("NormalHigh"); 
+		    } else if(tdElement.text() >=30 && tdElement.text()<=33){
+		        tdElement.addClass("Warning");
+		    }
+		    else{
+                        tdElement.addClass("Critical");
+                    }  
+        	});
+
+
+            }
+	});
+    }
+}
+

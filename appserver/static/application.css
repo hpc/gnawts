@@ -64,3 +64,44 @@ em.time {
 ol li {
   margin-bottom: 0px;
 }
+
+
+
+# This is specific to Chama Heat Map grid.  Information is fed from application.js
+.SimpleResultsTable td.Normal  {
+    background-color:#00bbff;
+    font-color: black;
+    font-weight: bold;
+    border-style: solid:
+    border-width: 5px;
+    border-color: black;
+}
+
+.SimpleResultsTable td.NormalHigh  {
+    background-color:#ffff00;
+    font-color: black;
+    font-weight: bold;
+    border-style: solid:
+    border-width: 5px;
+    border-color: black;
+}
+
+
+.SimpleResultsTable td.Warning {
+    background-color:#ff6600;
+    font-color: black;
+    font-weight: bold;
+    border-style: solid:
+    border-width: 5px;
+    border-color: black;
+}
+
+.SimpleResultsTable td.Critical    {
+    background-color:#ff0000;
+    font-color: black;
+    font-weight: bold;
+    border-style: solid:
+    border-width: 5px;
+    border-color: black;
+}
+# End of Chama Heat Map grid specific data
