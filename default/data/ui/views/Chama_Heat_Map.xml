@@ -1,0 +1,157 @@
+<view autoCancelInterval="90" isVisible="true" onunloadCancelJobs="true" template="dashboard.html">
+  <label>Chama_Temp_Grid</label>
+
+  <module name="AccountBar" layoutPanel="appHeader" />
+
+  <module name="AppBar" layoutPanel="appHeader" />
+
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+
+  <module name="Message" layoutPanel="messaging">
+    <param name="filter">*</param>
+    <param name="maxSize">2</param>
+    <param name="clearOnJobDispatch">False</param>
+  </module>
+
+  <module name="Search" layoutPanel="panel_row1_col1" group="Rack View" autoRun="True">
+    <param name="group">Rack View</param>
+    <param name="search"><![CDATA[
+| eventcount summarize=false index=hpc_* | where count>0 | eval system=substr(index,5) | fields system
+
+]]></param>
+
+    <module name="Pulldown">
+      <param name="name">SelectedSystem</param>
+      <param name="label">System:</param>
+      <param name="template">index=hpc_$value$</param>
+      <param name="float">left</param>
+      <param name="searchFieldsToDisplay">
+        <list>
+          <param name="label">system</param>
+          <param name="value">system</param>
+        </list>
+      </param>
+
+      <module name="TextField">
+        <param name="name">earliest</param>
+        <param name="float">left</param>
+        <param name="label">Earliest:</param>
+        <param name="template">earliest=$value$</param>
+        <param name="default">-60m</param>
+        <param name="width">10em</param>
+
+        <module name="TextField" autoRun="True">
+          <param name="name">latest</param>
+          <param name="float">left</param>
+          <param name="label">Latest:</param>
+          <param name="template">latest=$value$</param>
+          <param name="default">now()</param>
+          <param name="width">10em</param>
+
+          <module name="HTML">
+            <param name="html"><![CDATA[
+                          Earliest and Latest are standard Splunk time modifiers like -7d (seven days) or MM/DD/YYYY:HH:MM:SS.
+
+]]></param>
+          </module>
+
+          <module name="Search">
+            <param name="search"><![CDATA[
+$SelectedSystem$  $earliest$ $latest$  sourcetype=syslog hw_mon inlet_temp | rex field=_raw "hw_mon: inlet_temp:\\s+(?<iscb>iscb\\d+)" | rex field=_raw max_match=10 "\\s+(?<p1>\\d+)" | mvexpand p1| eval maxtemp=max(p1)|lookup chama_iscb iscb  | chart max(maxtemp) BY shelf rack limit=16
+
+
+
+
+
+
+
+
+
+
+]]></param>
+
+            <module name="SimpleResultsTable">
+              <param name="count">14</param>
+              <param name="displayRowNumbers">off</param>
+              <param name="allowTransformedFieldSelect">true</param>
+              <param name="drilldown">all</param>
+              <param name="count">14</param>
+
+              <module name="Search" layoutPanel="panel_row2_col1">
+                <param name="search"><![CDATA[
+$SelectedSystem$  earliest=-1w latest=now() sourcetype=syslog hw_mon inlet_temp [| inputlookup iscb.csv | search row="$click.value$" col="$click.name2$" | eval query=iscb | fields + query ]| rex field=_raw "hw_mon: inlet_temp:\\s+(?<iscb>iscb\\d+)"| rex field=_raw max_match=10 "\\s+(?<p1>\\d+)'C" | mvexpand p1| eval maxtemp=max(p1)  | timechart span=1h max(maxtemp) by iscb
+
+]]></param>
+
+                <module name="HiddenChartFormatter">
+                  <param name="chart">line</param>
+                  <param name="charting.secondaryAxis.minimumNumber">15</param>
+                  <param name="primaryAxisTitle.text">Inlet temp over time</param>
+                  <param name="charting.secondaryAxis.maximumNumber">40</param>
+                  <param name="secondaryAxisTitle.text">Degrees C'</param>
+
+                  <module name="JSChart" />
+                </module>
+              </module>
+
+              <module name="Search" layoutPanel="panel_row2_col1">
+                <param name="search"><![CDATA[
+$SelectedSystem$  earliest=-1w latest=now() sourcetype=syslog hw_mon cpu_temp [| inputlookup iscb.csv | search row="$click.value$" col="$click.name2$" | eval query=iscb | fields + query ]| rex field=_raw "hw_mon: cpu_temp:\\s+(?<iscb>iscb\\d+)"| rex field=_raw max_match=10 "\\s+(?<p1>\\d+)" | mvexpand p1| eval maxtemp=max(p1)  | timechart span=1h max(maxtemp) by iscb
+
+]]></param>
+
+                <module name="HiddenChartFormatter">
+                  <param name="chart">line</param>
+                  <param name="charting.secondaryAxis.minimumNumber">10</param>
+                  <param name="primaryAxisTitle.text">CPU temp over time</param>
+                  <param name="charting.secondaryAxis.maximumNumber">110</param>
+                  <param name="secondaryAxisTitle.text">Degrees C'</param>
+
+                  <module name="JSChart" />
+                </module>
+              </module>
+
+              <module name="Search" layoutPanel="panel_row2_col1">
+                <param name="search"><![CDATA[
+$SelectedSystem$  earliest=-1w latest=now() sourcetype=syslog hw_mon Watts  [| inputlookup iscb.csv | search row="$click.value$" col="$click.name2$" | eval query=iscb | fields + query ]  | rex field=_raw "(?<ISCB>iscb\\d+).+\\s+(?<Total_Watts>\\d+)W" | timechart span=1h max(Total_Watts) by ISCB useother=false
+
+]]></param>
+
+                <module name="HiddenChartFormatter">
+                  <param name="primaryAxisTitle.text">Watts over time</param>
+                  <param name="secondaryAxisTitle.text">Watts</param>
+                  <param name="chart">line</param>
+
+                  <module name="JSChart" />
+                </module>
+              </module>
+            </module>
+
+            <module name="HTML">
+              <param name="html">
+&lt;html&gt;
+&lt;SPAN style="BACKGROUND-COLOR: #00bbff"&gt; &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;
+&lt;/SPAN&gt;&lt;b&gt;&amp;nbsp;&amp;nbsp;Less than 27 degrees C&lt;/b&gt;&lt;br&gt;
+&lt;SPAN style="BACKGROUND-COLOR: #ffff00"&gt; &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;
+&lt;/SPAN&gt;&lt;b&gt;&amp;nbsp;&amp;nbsp;27 - 29 degrees C&lt;/b&gt;
+&lt;/br&gt;
+&lt;SPAN style="BACKGROUND-COLOR: #ff6600"&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;
+&lt;/SPAN&gt;
+&lt;b&gt;&amp;nbsp;&amp;nbsp;30 - 33 degrees C&lt;/b&gt;&lt;br&gt;
+&lt;SPAN style="BACKGROUND-COLOR: #ff0000"&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; &lt;/SPAN&gt;
+&lt;b&gt;&amp;nbsp;&amp;nbsp;Greater than 33 degrees C&lt;/b&gt;
+&lt;/br&gt;
+</param>
+            </module>
+
+            <module name="JobStatus">
+              <param name="enableWizards">False</param>
+              <param name="showCreateMenu">False</param>
+              <param name="showSaveMenu">False</param>
+            </module>
+          </module>
+        </module>
+      </module>
+    </module>
+  </module>
+</view>
