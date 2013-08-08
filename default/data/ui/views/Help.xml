@@ -68,8 +68,16 @@
     name matches the cluster name.  This enables efficient searches when
     drilling into specific clusters, and you can use per-role index filters to
     control who can see what.
-    If the index names start with hpc_, that prefix string is ignored (this is a historical
-    backwards compatability issue).
+    In order for this approach to work, another step is <u>absolutely critical</u> -
+    you <b>MUST</b> add the indexes to the default search list for your splunk user/role
+    (otherwise, the user will not search those indexes, and nothing will appear in gnawts).
+    If you do not need to limit access via roles as described above, a best practice is
+    to simply add "All non-internal indexes" to the "Indexes searched by default" for the "user"
+    role, via the Splunk GUI under "Manager » Access controls » Roles » user".  In this way,
+    any time you add additional indexes they will automatically appear in Gnawts lists and results.
+    As a minor note, if the index names start with hpc_, that prefix string is ignored in forming
+    cluster name lists (this is a backwards compatibility convenience).
+
 	<p>
 	<i>Manual list:</i> If you want to form lists of clusters via some other
     method, you can modify the sysnames saved search to consult a lookup
@@ -133,10 +141,15 @@
 	 of many of their other logs which they break into separate files.
 	 No general gnawts functionality depends on this, but if you 
 	 do have a Cray XT3, XE6, XK6, etc, you'll want this sourcetype.
+     If you do have a cray, you will also <b>need</b> to update <CODE>gnawts/lookups/cray.csv</CODE>
+     as described in <CODE>gnawts/bin/xtprocadmin2csv</CODE>.
 	</DL>
 
 	To see the corresponding parsing rules (defining fields for each
 	sourcetype, etc), see <CODE>gnawts/default/props.conf</CODE>.
+    It should be possible to use Splunk sourcetype aliases in order to make the
+    above work with gnawts, eg in the case that you have already indexed a bunch
+    of data using sourcetype names that do not match the above.
 
     <h2>For example</h2>
         At Sandia, we put a Splunk Universal forwarder on the log 

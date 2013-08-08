@@ -1,0 +1,54 @@
+#!/usr/bin/perl
+
+# this script makes the cray.csv lookup file on a Cray XT/XE system which
+# Splunk uses to translate between physical and logical namespaces for nodes
+# (eg c0-0c0s0n0 vs nid 0).  You generate the file by running
+#   xtprocadmin -A | ./xtprocadmin2csv > cray.csv
+# run as a normal user on a login node, and then move the file to gnawts/lookups/cray.csv
+# (just overwrite the stub that is currently in there).
+
+# The lookup can also incorporate information from the XTAdmin database, if you
+# do the extra step described in the next comment block.
+
+# Do teh below as root on the sdb node, and put the resulting file in the same directory
+# as you run the this xtprocadmin2csv script in:
+#   echo "use XTAdmin; select * from processor;" | mysql > XTAdmin.processor
+$xtadmin = "XTAdmin.processor";
+if (-s $xtadmin) {
+	open XTADMIN, $xtadmin or die "Can't read $xtadmin: $!\n";
+	$header = <XTADMIN>;
+	($nid, @cols) = split /\s+/, $header;
+	splice @cols, 6,1; # omit processor_status
+	@{$xtadmin{"header"}} = @cols;
+	while (<XTADMIN>) {
+		($nid, @cols) = split /\s+/, $_;
+		splice @cols, 6, 1; # omit processor_status
+		@{$xtadmin{$nid}} = @cols;
+	}
+	close XTADMIN;
+}
+
+# use the --index argument if you have multiple clusters in your gnawts install,
+# so it knows what cluster this lookup file applies to.  if you have multiple
+# crays, just concatenate the lookup files that you generate for each using this script
+if ($ARGV[0]=~/^--index/) {
+	shift @ARGV; # toss
+	$index= shift @ARGV; # save
+}
+
+
+while (<>) {
+	chomp;
+	tr/\(\)//d; # delete parens
+	$_ = lc $_; # lower case
+	@F = split; # split on whitespace
+	if (/nid/) { # first line is header
+		#$F[2] = "node";
+		delete @F[10,11,12,13]; # unwanted
+		print join ",", "index", @F, @{$xtadmin{"header"}};
+	}
+	else {
+		print join ",", $index, @F, @{$xtadmin{$F[0]}};
+	}
+	print "\n";
+}
