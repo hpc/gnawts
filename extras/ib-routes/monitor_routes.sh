@@ -1,4 +1,12 @@
 #!/bin/bash
+
+# this script was used to feed splunk near-real-time.
+# i later just changed to copying routes and putting them
+# all into splunk later (eg copy_routes.sh).
+# routes.pl was later renamed dumps2routes and 
+# diffroute.sh superceeds routemerge.pl.
+# so this script won't work as is but gives an idea of what to do
+
 # run this on the subnet manager host, eg admin2-man on redsky
 export routes="opensm-lfts.dump"
 export splunkdir="/admin/splunk/infiniband"
