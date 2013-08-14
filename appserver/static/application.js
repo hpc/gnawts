@@ -84,7 +84,7 @@ if (Splunk.util.getCurrentView() == "Chama_Heat_Map" ) {
             forEachCellInColumn: function(callback) {
 		var container = this.container;
               	container.find('tr:not(.header)').each(function() {
-                    // does not support colspans.
+
                     var columnIndex = $(this).parent().children().index($(this));
 
                     container.find("td:nth-child(" + (columnIndex+2)  + ")").each(function() {
@@ -112,3 +112,34 @@ if (Splunk.util.getCurrentView() == "Chama_Heat_Map" ) {
     }
 }
 
+
+
+
+
+
+if ((Splunk.util.getCurrentView() === "ClusterMonitor") && Splunk.Module.SimpleResultsTable) {
+    Splunk.Module.SimpleResultsTable = $.klass(Splunk.Module.SimpleResultsTable, {
+        onResultsRendered: function ($super) {
+            var retVal = $super();
+            this.myCustomColorMapDecorator();
+            return retVal;
+        },
+        myCustomColorMapDecorator: function () {
+            $("tr:has(td)", this.container).each(function () {
+                var tr = $(this);
+                if (tr.find("td:nth-child(2)").text() > "01:00:00") {
+                   tr.find("td:nth-child(2)").addClass("NormalHigh");
+                }
+                if (tr.find("td:nth-child(3)").text() > 500) {
+                   tr.find("td:nth-child(3)").addClass("Critical");
+                }
+		else if (tr.find("td:nth-child(3)").text() > 100) {
+                   tr.find("td:nth-child(3)").addClass("NormalHigh");
+                }
+
+            });
+        }
+    });
+}
+	
+	

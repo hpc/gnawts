@@ -66,8 +66,6 @@ ol li {
 }
 
 
-
-# This is specific to Chama Heat Map grid.  Information is fed from application.js
 .SimpleResultsTable td.Normal  {
     background-color:#00bbff;
     font-color: black;
@@ -104,4 +102,3 @@ ol li {
     border-width: 5px;
     border-color: black;
 }
-# End of Chama Heat Map grid specific data

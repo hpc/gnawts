@@ -1,0 +1,71 @@
+<view autoCancelInterval="90" isVisible="true" onunloadCancelJobs="true" template="dashboard.html">
+  <label>ClusterMonitor</label>
+
+  <module name="AccountBar" layoutPanel="appHeader" />
+
+  <module name="AppBar" layoutPanel="appHeader" />
+
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+
+  <module name="Message" layoutPanel="messaging">
+    <param name="filter">*</param>
+    <param name="maxSize">2</param>
+    <param name="clearOnJobDispatch">False</param>
+  </module>
+
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>Cluster Monitor Dashboard</h1>
+    The first panel shows successful and unsuccessful login attempts.
+    The second panel shows last completed jobs.
+
+]]></param>
+  </module>
+
+  <module name="Search" layoutPanel="panel_row1_col1" group="Report Parameters" autoRun="True">
+    <param name="group">Report Parameters</param>
+    <param name="search"><![CDATA[
+earliest=-48h sshd accepted OR failed | rex field=_raw "(?<result>\S+) password for (?<user>\S+)" | eval lastsuccess=if(searchmatch("Accepted"),_time,null()) | stats latest(lastsuccess) as "SuccessfulLoginHrsAgo" count(eval(searchmatch("Failed"))) as  "Failed Logins" sparkline(count(eval(searchmatch("Failed")))) as  "SparklineOfFailed"  by index |  eval hrsago=tostring(now()-SuccessfulLoginHrsAgo,"duration") | eval SuccessfulLoginHrsAgo=hrsago| fields - hrsago
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+]]></param>
+
+    <module name="SimpleResultsTable">
+      <param name="displayRowNumbers">off</param>
+      <param name="displayRowNumbers">off</param>
+      <param name="fields">colormap, range</param>
+    </module>
+  </module>
+</view>
