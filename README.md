@@ -1,7 +1,9 @@
 Gnawts
 ======
 
-A Splunk app for fast detangling of supercomputer logs.
+![A Knotty Logo](appserver/static/bigIcon.png)
+Gnawts is a Splunk app for fast detangling of supercomputer logs. The name is a pun: HPC systems have many hosts emitting many logs concurrently, which can be related or not - making these into a coherent signal and making sense of them can be like untangling many strings in a knot. Hard places in logs are called knots, this app helps you chew (gnaw) through such hard places in computer logs. And the term "log" has a nautical background, and speed is measured in knots (fast). So the name has multiple layers, just as the app has multiple layers of functionality.  In the icon, the red sky in the icon relates to gnawt's ability to help forecast storms (or not) on HPC systems, similar to red skies at sea.
+
 
 Configuration
 -------------
