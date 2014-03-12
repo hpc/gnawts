@@ -78,7 +78,7 @@ if (typeof(Sideview)!="undefined") {
 
 
 //Chama Rack View:  tags the inlet temperatures and adds css class name
-if (Splunk.util.getCurrentView() == "Chama_Heat_Map" ) {
+if (Splunk.util.getCurrentView() == "Chama_Heat_Map" || Splunk.util.getCurrentView() == "ChamaRackTemp" ) {
     if (Splunk.Module.SimpleResultsTable) {
         Splunk.Module.SimpleResultsTable = $.klass(Splunk.Module.SimpleResultsTable, {
             forEachCellInColumn: function(callback) {
@@ -94,11 +94,14 @@ if (Splunk.util.getCurrentView() == "Chama_Heat_Map" ) {
             },
             onResultsRendered: function() {
                 this.forEachCellInColumn(function(tdElement) {
-                    if (tdElement.text() < 27) {
+		    if (tdElement.text().substr(3,2) >= 90) {
+ 		        tdElement.addClass("Critical");
+		    }	           
+                    else if (tdElement.text().substr(0,2) < 27) {
 			tdElement.addClass("Normal");
-                    } else if(tdElement.text() >=27 && tdElement.text()<=29){
+                    } else if(tdElement.text().substr(0,2) >=27 && tdElement.text().substr(0,2)<=29){
                         tdElement.addClass("NormalHigh"); 
-		    } else if(tdElement.text() >=30 && tdElement.text()<=33){
+		    } else if(tdElement.text().substr(0,2) >=30 && tdElement.text().substr(0,2)<=33){
 		        tdElement.addClass("Warning");
 		    }
 		    else{
@@ -116,7 +119,7 @@ if (Splunk.util.getCurrentView() == "Chama_Heat_Map" ) {
 
 
 
-
+// Customized javascript to change the colors of Cells for ClusterMonitor Dashboard
 if ((Splunk.util.getCurrentView() === "ClusterMonitor") && Splunk.Module.SimpleResultsTable) {
     Splunk.Module.SimpleResultsTable = $.klass(Splunk.Module.SimpleResultsTable, {
         onResultsRendered: function ($super) {
@@ -127,7 +130,9 @@ if ((Splunk.util.getCurrentView() === "ClusterMonitor") && Splunk.Module.SimpleR
         myCustomColorMapDecorator: function () {
             $("tr:has(td)", this.container).each(function () {
                 var tr = $(this);
+//		alert(tr.find("td:nth-child(2)").text());
                 if (tr.find("td:nth-child(2)").text() > "01:00:00") {
+
                    tr.find("td:nth-child(2)").addClass("NormalHigh");
                 }
                 if (tr.find("td:nth-child(3)").text() > 500) {
@@ -135,6 +140,47 @@ if ((Splunk.util.getCurrentView() === "ClusterMonitor") && Splunk.Module.SimpleR
                 }
 		else if (tr.find("td:nth-child(3)").text() > 100) {
                    tr.find("td:nth-child(3)").addClass("NormalHigh");
+                }
+		if (tr.find("td:nth-child(6)").text() > 85){
+                   tr.find("td:nth-child(6)").addClass("Critical");
+                }
+                else if (tr.find("td:nth-child(6)").text() > 65) {
+                   tr.find("td:nth-child(6)").addClass("NormalHigh");
+                }
+
+            });
+        }
+    });
+}
+	
+
+// Customized javascript to change the colors of Cells for ClusterMonitor Dashboard
+if ((Splunk.util.getCurrentView() === "ClusterHealth")) {
+    Splunk.Module.SimpleResultsTable = $.klass(Splunk.Module.SimpleResultsTable, {
+        onResultsRendered: function ($super) {
+            var retVal = $super();
+            this.myCustomColorMapDecorator();
+            return retVal;
+        },
+        myCustomColorMapDecorator: function () {
+            $("tr:has(td)", this.container).each(function () {
+                var tr = $(this);
+//		alert(tr.find("td:nth-child(2)").text());
+                if (tr.find("td:nth-child(2)").text() > "01:00:00") {
+
+                   tr.find("td:nth-child(2)").addClass("NormalHigh");
+                }
+                if (tr.find("td:nth-child(3)").text() > 500) {
+                   tr.find("td:nth-child(3)").addClass("Critical");
+                }
+		else if (tr.find("td:nth-child(3)").text() > 100) {
+                   tr.find("td:nth-child(3)").addClass("NormalHigh");
+                }
+		if (tr.find("td:nth-child(6)").text() > 85){
+                   tr.find("td:nth-child(6)").addClass("Critical");
+                }
+                else if (tr.find("td:nth-child(6)").text() > 65) {
+                   tr.find("td:nth-child(6)").addClass("NormalHigh");
                 }
 
             });

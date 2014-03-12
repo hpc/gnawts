@@ -90,8 +90,8 @@ version = 5.0.2
 modtime = 1362467001.698792000
 
 [savedsearches/CheckIfMoabIsPaused]
-version = 4.3
-modtime = 1360171204.212099000
+version = 6.0
+modtime = 1389655802.869717000
 owner = awarren
 access = read : [ * ]
 export = none
@@ -172,10 +172,11 @@ modtime = 1345037459.933619000
 owner = awarren
 
 [savedsearches/MOI%3A%20by%20host%2Ceventtype]
-version = 4.3
-modtime = 1328588102.040910000
-access = read : [ * ]
+access = read : [ admin, can_delete, power, splunk-system-role, user ], write : [ admin, can_delete, power, splunk-system-role, user ]
+export = none
 owner = jrstear
+version = 6.0
+modtime = 1390953936.603577000
 
 [savedsearches/MOI%3A%20by%20user%2Ceventtype]
 version = 4.3
@@ -191,8 +192,8 @@ access = read : [ * ]
 export = none
 
 [savedsearches/Moab%20Scheduling%20Iteration%20Close%20To%20RMPollInterval]
-version = 4.3
-modtime = 1360170227.234093000
+version = 6.0
+modtime = 1389713761.481919000
 owner = awarren
 access = read : [ * ]
 export = none
@@ -341,8 +342,8 @@ access = read : [ * ], write : [ admin, can_delete ]
 export = none
 
 [savedsearches/_ScheduledView__MoabSlurmDashboard]
-version = 4.3
-modtime = 1360171227.857432000
+version = 6.0
+modtime = 1389834721.891753000
 owner = awarren
 access = read : [ * ]
 export = none
@@ -707,12 +708,6 @@ version = 4.2
 access = read : [ admin ]
 owner = nobody
 
-[savedsearches/restart%20slurmdbd%20message]
-version = 4.3
-modtime = 1360171086.884924000
-export = none
-owner = awarren
-
 [savedsearches/taco2_errors_5min]
 version = 4.3
 modtime = 1345064694.815905000
@@ -825,15 +820,8 @@ access = read : [ * ], write : [ * ]
 owner = jrstear
 
 [views/MOI-jobs_hosts]
-version = 4.3
-modtime = 1335883303.991258000
-
-[views/MoabSlurmDashboard]
-version = 5.0.2
-modtime = 1363032307.357995000
-owner = awarren
-access = read : [ * ], write : [ admin, can_delete ]
-export = none
+version = 6.0
+modtime = 1385485567.516637000
 
 [views/NodeDownStats]
 version = 4.2.2
@@ -856,15 +844,15 @@ version = 5.0.2
 modtime = 1362469215.837146000
 
 [views/SRN_ECN_NetApps]
-version = 4.3
-modtime = 1358272233.848899000
+version = 6.0
+modtime = 1386258867.794468000
 owner = mjkochi
 access = read : [ * ]
 export = none
 
 [views/capviz_hpc_cluster_messages_by_frequency]
-version = 4.3
-modtime = 1345063741.452366000
+version = 6.0
+modtime = 1385486571.015893000
 owner = cabeggi
 access = read : [ * ]
 export = none
@@ -951,20 +939,6 @@ modtime = 1330982534.818340000
 export = system
 owner = nobody
 
-[viewstates/%2A%3A9tekm53v]
-version = 4.2.4
-modtime = 1323286756.474860000
-export = system
-access = read : [ * ]
-owner = nobody
-
-[viewstates/%2A%3Aey58sut7]
-version = 4.2.4
-modtime = 1323120376.287899000
-export = system
-access = read : [ * ]
-owner = nobody
-
 [viewstates/%2A%3Agu4z7xpm]
 version = 4.2
 export = system
@@ -976,23 +950,11 @@ modtime = 1352583919.286356000
 export = system
 owner = nobody
 
-[viewstates/%2A%3Ajc0cvtju]
-version = 4.3
-modtime = 1360171227.739817000
-export = system
-owner = nobody
-
 [viewstates/%2A%3Am3jkub09]
 version = 4.2
 export = system
 access = read : [ * ]
 owner = nobody
-
-[viewstates/%2A%3Annqm9jxs]
-version = 4.3
-modtime = 1361984392.617425000
-export = system
-owner = rrossbe
 
 [viewstates/%2A%3Aprr4qzrl]
 version = 4.2
@@ -1066,13 +1028,6 @@ export = system
 access = read : [ * ]
 owner = nobody
 
-[viewstates/flashtimeline%3Agvnzbnnj]
-version = 4.2.4
-modtime = 1322756930.549499000
-export = system
-access = read : [ * ]
-owner = nobody
-
 [viewstates/flashtimeline%3Agw66e8s4]
 version = 4.2.4
 modtime = 1323857191.630463000
@@ -1087,42 +1042,9 @@ export = system
 access = read : [ * ]
 owner = nobody
 
-[viewstates/flashtimeline%3Agw6ncssy]
-version = 4.2.4
-modtime = 1323885685.933906000
-export = system
-owner = djbrown
-
-[viewstates/flashtimeline%3Agw6zogj3]
-version = 4.2.4
-modtime = 1323906385.135223000
-export = system
-access = read : [ * ]
-owner = nobody
-
-[viewstates/flashtimeline%3Agw6zwlqo]
-version = 4.2.4
-modtime = 1323906765.319509000
-export = system
-access = read : [ * ]
-owner = nobody
-
-[viewstates/flashtimeline%3Agw9okc0u]
-version = 4.2.4
-modtime = 1324069115.674779000
-export = system
-owner = djbrown
-
 [viewstates/flashtimeline%3Agwdqo8lb]
 version = 4.2.4
 modtime = 1324314521.674438000
-export = system
-access = read : [ * ]
-owner = nobody
-
-[viewstates/flashtimeline%3Agy4tvv2k]
-version = 4.2.4
-modtime = 1328129285.295728000
 export = system
 access = read : [ * ]
 owner = nobody
@@ -1133,77 +1055,11 @@ modtime = 1328646855.208153000
 export = system
 owner = nobody
 
-[viewstates/flashtimeline%3Agyg37ksw]
-version = 4.3
-modtime = 1328810076.439199000
-export = system
-owner = nobody
-
-[viewstates/flashtimeline%3Agyg3c91p]
-version = 4.3
-modtime = 1328810294.486269000
-export = system
-owner = nobody
-
-[viewstates/flashtimeline%3Agyrgk68r]
-version = 4.3
-modtime = 1329497627.068405000
-export = system
-owner = awarren
-
-[viewstates/flashtimeline%3Agz0evffm]
-version = 4.3
-modtime = 1330038988.854206000
-export = system
-owner = awarren
-
-[viewstates/flashtimeline%3Agz0fniyj]
-version = 4.3
-modtime = 1330040299.241665000
-export = system
-owner = awarren
-
-[viewstates/flashtimeline%3Agzbllbce]
-version = 4.3
-modtime = 1330715401.964240000
-export = system
-owner = awarren
-
-[viewstates/flashtimeline%3Agzh3eofp]
-version = 4.3
-modtime = 1331047656.212144000
-export = system
-owner = awarren
-
 [viewstates/flashtimeline%3Agzlwl1fk]
 version = 4.3
 modtime = 1331338527.056149000
 export = system
 owner = nobody
-
-[viewstates/flashtimeline%3Ah019fwo3]
-version = 4.3
-modtime = 1332267114.720427000
-export = system
-owner = awarren
-
-[viewstates/flashtimeline%3Ah0lguns8]
-version = 4.3
-modtime = 1333488883.945345000
-export = system
-owner = awarren
-
-[viewstates/flashtimeline%3Ah13rxpr1]
-version = 4.3
-modtime = 1334595893.535702000
-export = system
-owner = nobody
-
-[viewstates/flashtimeline%3Ah1y3oox4]
-version = 4.3
-modtime = 1336429612.929748000
-export = system
-owner = awarren
 
 [viewstates/flashtimeline%3Ah228emxn]
 version = 4.3
@@ -1211,51 +1067,9 @@ modtime = 1336679406.672614000
 export = system
 owner = nobody
 
-[viewstates/flashtimeline%3Ah27nqx6c]
-version = 4.3
-modtime = 1337007504.978514000
-export = system
-owner = awarren
-
-[viewstates/flashtimeline%3Ah2td6rjp]
-version = 4.3
-modtime = 1338320025.620540000
-export = system
-owner = awarren
-
-[viewstates/flashtimeline%3Ah45otpuf]
-version = 4.3
-modtime = 1341241951.962770000
-export = system
-owner = nobody
-
 [viewstates/flashtimeline%3Ah4puaxn4]
 version = 4.3
 modtime = 1342460472.194869000
-export = system
-owner = nobody
-
-[viewstates/flashtimeline%3Ah4puknbv]
-version = 4.3
-modtime = 1342460925.388596000
-export = system
-owner = nobody
-
-[viewstates/flashtimeline%3Ah4pzt222]
-version = 4.3
-modtime = 1342469715.821912000
-export = system
-owner = nobody
-
-[viewstates/flashtimeline%3Ah4q3r6kp]
-version = 4.3
-modtime = 1342476346.917524000
-export = system
-owner = nobody
-
-[viewstates/flashtimeline%3Ah4sqlwus]
-version = 4.3
-modtime = 1342635664.405184000
 export = system
 owner = nobody
 
@@ -1295,12 +1109,6 @@ modtime = 1344438727.009977000
 export = system
 owner = mjkochi
 
-[viewstates/flashtimeline%3Ah5o1kf4u]
-version = 4.3
-modtime = 1344528522.059060000
-export = system
-owner = jhlives
-
 [viewstates/flashtimeline%3Ah7tbkoix]
 version = 4.3
 modtime = 1349201225.963539000
@@ -1310,108 +1118,6 @@ owner = nobody
 [viewstates/flashtimeline%3Ah7tblenb]
 version = 4.3
 modtime = 1349201259.817094000
-export = system
-owner = nobody
-
-[viewstates/flashtimeline%3Ah7uk9kyw]
-version = 4.3
-modtime = 1349276290.945479000
-export = system
-owner = nobody
-
-[viewstates/flashtimeline%3Ah7uogtdg]
-version = 4.3
-modtime = 1349283346.847971000
-export = system
-owner = nobody
-
-[viewstates/flashtimeline%3Ah7ux0cec]
-version = 4.3
-modtime = 1349297694.950808000
-export = system
-owner = nobody
-
-[viewstates/flashtimeline%3Ah7uxc9y8]
-version = 4.3
-modtime = 1349298251.558784000
-export = system
-owner = nobody
-
-[viewstates/flashtimeline%3Ah7uz89h7]
-version = 4.3
-modtime = 1349301423.576786000
-export = system
-owner = nobody
-
-[viewstates/flashtimeline%3Ah7v0nz9x]
-version = 4.3
-modtime = 1349303836.445990000
-export = system
-owner = nobody
-
-[viewstates/flashtimeline%3Ah7v1985j]
-version = 4.3
-modtime = 1349304827.738506000
-export = system
-owner = nobody
-
-[viewstates/flashtimeline%3Ah7v23i4l]
-version = 4.3
-modtime = 1349306240.386571000
-export = system
-owner = nobody
-
-[viewstates/flashtimeline%3Ah81u5ajy]
-version = 4.3
-modtime = 1349716150.658827000
-export = system
-owner = nobody
-
-[viewstates/flashtimeline%3Ah81v788i]
-version = 4.3
-modtime = 1349717920.067602000
-export = system
-owner = nobody
-
-[viewstates/flashtimeline%3Ah81v7q7h]
-version = 4.3
-modtime = 1349717943.360098000
-export = system
-owner = nobody
-
-[viewstates/flashtimeline%3Ah81v896p]
-version = 4.3
-modtime = 1349717967.951221000
-export = system
-owner = nobody
-
-[viewstates/flashtimeline%3Ah824xlft]
-version = 4.3
-modtime = 1349734266.832485000
-export = system
-owner = nobody
-
-[viewstates/flashtimeline%3Ah84smuzy]
-version = 4.3
-modtime = 1349895009.237822000
-export = system
-owner = nobody
-
-[viewstates/flashtimeline%3Ah84uajft]
-version = 4.3
-modtime = 1349897793.474009000
-export = system
-owner = nobody
-
-[viewstates/flashtimeline%3Ah904q91x]
-version = 4.3
-modtime = 1351789774.182397000
-export = system
-owner = nobody
-
-[viewstates/flashtimeline%3Ahaeki5qz]
-version = 4.3
-modtime = 1354839579.354643000
 export = system
 owner = nobody
 
@@ -1463,12 +1169,6 @@ modtime = 1362410661.125009000
 export = system
 owner = nobody
 
-[viewstates/flashtimelineS%3Ah7kqjwlg]
-version = 4.3
-modtime = 1348682188.484576000
-export = system
-owner = nobody
-
 [workflow_actions/hosts]
 version = 4.3
 modtime = 1333729554.540670000
@@ -1485,11 +1185,6 @@ owner = jrstear
 owner = nobody
 version = 5.0.2
 modtime = 1362460257.287859000
-
-[viewstates/%2A%3Asheinnca]
-owner = nobody
-version = 5.0.2
-modtime = 1362460797.130345000
 
 [savedsearches/COS%3A%20DailyDownHostlist]
 version = 5.0.2
@@ -1553,8 +1248,8 @@ version = 5.0.2
 modtime = 1362469849.695113000
 
 [views/Summary]
-version = 5.0.2
-modtime = 1362471553.735135000
+version = 6.0
+modtime = 1389111377.508166000
 
 [props/syslog/FIELDALIAS-jobid]
 version = 5.0.2
@@ -1573,4 +1268,141 @@ modtime = 1363119602.044801000
 [views/Help]
 version = 5.0.2
 modtime = 1367269686.402439000
+
+[views/ChamaRackTemp]
+version = 6.0
+modtime = 1390864339.027051000
+
+[indexes/hpc_taco2]
+version = 6.0
+modtime = 1385421275.778101000
+
+[savedsearches/MOI%3A%20jobcount%20piechart]
+version = 6.0
+modtime = 1385485647.185823000
+
+[html/MOI-jobs_hosts]
+access = read : [ * ], write : [ * ]
+owner = rrossbe
+version = 6.0
+modtime = 1385499024.914445000
+
+[views/count_of_distinct_jobs]
+owner = rrossbe
+version = 6.0
+modtime = 1385498061.047085000
+
+[html/count_of_distinct_jobs]
+access = read : [ * ], write : [ * ]
+owner = rrossbe
+version = 6.0
+modtime = 1385498983.415709000
+
+[views/chama_iscb_temps]
+version = 6.0
+modtime = 1386007581.101195000
+
+[indexes/hpc_teller]
+version = 6.0
+modtime = 1387414801.333923000
+
+[savedsearches/compton-max-dhcpd]
+version = 6.0
+modtime = 1387472993.240779000
+
+[savedsearches/dhcpshannon]
+version = 6.0
+modtime = 1387474107.168200000
+
+[savedsearches/comptonfailedtoauth]
+version = 6.0
+modtime = 1387473941.580006000
+
+[savedsearches/Volta]
+version = 6.0
+modtime = 1392942751.889787000
+
+[savedsearches/loginSummary]
+version = 6.0
+modtime = 1387556623.832727000
+
+[savedsearches/Shannon-Failed]
+version = 6.0
+modtime = 1392767953.943540000
+
+[views/NEW_moab_and_slurm_admin_dashboard_clone]
+access = read : [ admin, user ], write : [ admin, user ]
+export = system
+owner = cmarias
+version = 6.0
+modtime = 1392767154.304001000
+
+[savedsearches/MOI%3A%20by%20host%2Ceventype%20new]
+access = read : [ * ]
+export = none
+owner = rrossbe
+version = 6.0
+modtime = 1390953805.480717000
+
+[savedsearches/MOI%3A%20by%20user%2Ceventtype%20new]
+access = read : [ * ]
+export = none
+owner = rrossbe
+version = 6.0
+modtime = 1390953825.871633000
+
+[views/ISCBdata]
+version = 6.0
+modtime = 1391104712.335966000
+
+[savedsearches/comptonerror22]
+version = 6.0
+modtime = 1392767241.305312000
+
+[savedsearches/Compton%3AUser-root-Failures]
+version = 6.0
+modtime = 1392767686.587887000
+
+[savedsearches/IPTABLES]
+version = 6.0
+modtime = 1392767777.716490000
+
+[savedsearches/Volta-Deny]
+version = 6.0
+modtime = 1392768258.707508000
+
+[savedsearches/Volta-root-accepted]
+version = 6.0
+modtime = 1392942956.069274000
+
+[views/ClusterMonitor]
+version = 6.0
+modtime = 1394646410.934578000
+
+[indexes/hpc-wctools-dev]
+owner = cmarias
+version = 6.0
+modtime = 1393282824.562329000
+
+[indexes/hpc-wctools-snl]
+owner = cmarias
+version = 6.0
+modtime = 1393282860.677178000
+
+[indexes/hpc-wctools-lanl]
+owner = cmarias
+version = 6.0
+modtime = 1393282876.925575000
+
+[indexes/hpc-wctool-llnl]
+owner = cmarias
+version = 6.0
+modtime = 1393282898.547444000
+
+[views/FilesystemUsage]
+access = read : [ * ], write : [ admin ]
+export = none
+owner = rrossbe
+version = 6.0
+modtime = 1394569198.420458000
 
