@@ -1,0 +1,114 @@
+<view autoCancelInterval="90" isVisible="true" onunloadCancelJobs="true" template="dashboard.html">
+  <label>Lustre Errors</label>
+
+  <module name="AccountBar" layoutPanel="appHeader" />
+
+  <module name="AppBar" layoutPanel="appHeader" />
+
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+
+  <module name="Message" layoutPanel="messaging">
+    <param name="filter">*</param>
+    <param name="maxSize">2</param>
+    <param name="clearOnJobDispatch">False</param>
+  </module>
+
+  <module name="Search" layoutPanel="panel_row1_col1" group="Report Parameters" autoRun="True">
+    <param name="search">| eventcount summarize=false index=hpc_* | where count&gt;0 | eval system=substr(index,5) | fields system</param>
+
+    <module name="Pulldown">
+      <param name="name">SelectedSystem</param>
+      <param name="label">System:</param>
+      <param name="template">index=hpc_$value$</param>
+      <param name="float">left</param>
+      <param name="searchFieldsToDisplay">
+        <list>
+          <param name="label">system</param>
+          <param name="value">system</param>
+        </list>
+      </param>
+
+      <module name="TextField">
+        <param name="name">earliest</param>
+        <param name="float">left</param>
+        <param name="label">Earliest:</param>
+        <param name="template">earliest=$value$</param>
+        <param name="default">-24h</param>
+        <param name="width">10em</param>
+
+        <module name="TextField" autoRun="True">
+          <param name="name">latest</param>
+          <param name="float">left</param>
+          <param name="label">Latest:</param>
+          <param name="template">latest=$value$</param>
+          <param name="default">now()</param>
+          <param name="width">10em</param>
+
+          <module name="HTML">
+            <param name="html"><![CDATA[
+                          Earliest and Latest are standard Splunk time modifiers like -7d (seven days) or MM/DD/YYYY:HH:MM:SS.
+                          <FONT COLOR="ff0000">Max range is -14d.</FONT>
+    			]]></param>
+          </module>
+
+          <module name="Search" layoutPanel="panel_row2_col1" group="Lustre Error Count per index">
+            <param name="group">Lustre Error Count per index</param>
+            <param name="search"><![CDATA[
+lustreerror rc $SelectedSystem$ $earliest$ $latest$ | where rc<0 | lookup errno errno AS rc | ctable description index usetotal=F
+]]></param>
+
+            <module name="Pager">
+              <param name="entityName">results</param>
+
+              <module name="SimpleResultsTable">
+                <param name="drilldown">all</param>
+
+                <module name="Search" layoutPanel="panel_row3_col1" autoRun="True">
+                  <param name="search"><![CDATA[
+lustreerror rc index=$click.name2$ $earliest$ $latest$ | where rc<0 | lookup errno errno AS rc | timechart count BY description
+]]></param>
+
+                  <module name="HTML">
+                    <param name="html"><![CDATA[
+                                                  <h1> Lustre Error Count for $click.name2$ </h1>
+
+]]></param>
+                  </module>
+
+                  <module name="Search">
+                    <param name="search"><![CDATA[
+lustreerror rc index=$click.name2$ $earliest$ $latest$ | where rc<0 | lookup errno errno AS rc | timechart count BY description
+]]></param>
+
+                    <module name="ViewRedirectorLink">
+                      <param name="label">View events</param>
+                      <param name="popup">True</param>
+                      <param name="viewTarget">flashtimeline</param>
+                    </module>
+                  </module>
+
+                  <module name="HiddenChartFormatter">
+                    <param name="legend.placement">bottom</param>
+                    <param name="primaryAxisTitle.text">Time</param>
+                    <param name="charting.chart">column</param>
+                    <param name="secondaryAxisTitle.text">Count</param>
+
+                    <module name="FlashChart">
+                      <param name="height">300px</param>
+                    </module>
+                  </module>
+                </module>
+              </module>
+            </module>
+
+            <module name="HTML">
+              <param name="html"><![CDATA[
+Click a column to see that systems error count over time.
+]]></param>
+            </module>
+          </module>
+        </module>
+      </module>
+    </module>
+  </module>
+</view>
